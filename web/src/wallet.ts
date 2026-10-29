@@ -5,6 +5,16 @@ import {
   type Address,
 } from 'viem'
 
+function createConnectedWallet(account: string) {
+  const address = getAddress(account)
+  const walletClient = createWalletClient({
+    account: address,
+    transport: custom(window.ethereum!),
+  })
+
+  return { address, walletClient }
+}
+
 export async function connectWallet() {
   if (!window.ethereum) {
     throw new Error('No browser wallet found. Install MetaMask, Rabby, or another EIP-1193 wallet.')
@@ -16,13 +26,22 @@ export async function connectWallet() {
 
   if (!accounts?.[0]) throw new Error('Wallet did not return an account.')
 
-  const address = getAddress(accounts[0])
-  const walletClient = createWalletClient({
-    account: address,
-    transport: custom(window.ethereum),
-  })
+  return createConnectedWallet(accounts[0])
+}
 
-  return { address, walletClient }
+/**
+ * Restore an already-authorized wallet connection without opening a prompt.
+ * The wallet keeps the permission; the web app only rebuilds its in-memory
+ * client after a page refresh. No private key or wallet session is stored.
+ */
+export async function restoreWallet() {
+  if (!window.ethereum) return null
+
+  const accounts = (await window.ethereum.request({
+    method: 'eth_accounts',
+  })) as string[]
+
+  return accounts?.[0] ? createConnectedWallet(accounts[0]) : null
 }
 
 /**
