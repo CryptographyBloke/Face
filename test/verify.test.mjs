@@ -11,7 +11,7 @@ test('verifies matching ENS TXT', async () => {
       Answer: [{ type: 16, data: `"a=${address}"` }],
     }),
   });
-  const result = await verifyEnsTxt('hnudao.online', address, { fetchImpl });
+  const result = await verifyEnsTxt('example.com', address, { fetchImpl });
   assert.equal(result.ok, true);
 });
 
@@ -24,7 +24,7 @@ test('does not mark unsigned TXT as ready', async () => {
       Answer: [{ type: 16, data: `"a=${address}"` }],
     }),
   });
-  const result = await verifyEnsTxt('hnudao.online', address, { fetchImpl });
+  const result = await verifyEnsTxt('example.com', address, { fetchImpl });
   assert.equal(result.authenticated, false);
   assert.equal(result.ok, false);
 });
