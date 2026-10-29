@@ -1,0 +1,7 @@
+# Wallet Face — public wallet avatar and profile application
+# Public pages and static assets are intentionally crawlable.
+
+User-agent: *
+Allow: /
+
+# There are currently no private or administrative routes exposed by this site.
