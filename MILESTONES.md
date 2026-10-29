@@ -41,8 +41,8 @@ Targets are proposals, not achieved results. Individual avatar upload should rem
 ## Immediate priorities
 
 1. Recruit testers and measure end-to-end upload and profile-read reliability.
-2. Build a read-only resolver prototype and integrate it into several independent demo apps before adding a new registry contract.
-3. Validate demand with community pilots before adding workspaces or billing.
+2. Validate the implemented resolver/SDK with an external partner-controlled integration; the three included examples are first-party demos, not independent adoption.
+3. Provision and verify a durable staging backend before inviting real users to claim profiles, then validate community demand before adding billing.
 
 ## Product principles
 
