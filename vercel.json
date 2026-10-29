@@ -1,0 +1,19 @@
+{
+  "installCommand": "npm ci && npm --prefix web ci",
+  "buildCommand": "npm run build",
+  "outputDirectory": "web/dist",
+  "framework": null,
+  "functions": {"api/index.mjs":{"maxDuration":60}},
+  "rewrites": [
+    {"source":"/v1/:path*","destination":"/api?_route=v1/:path*"},
+    {"source":"/health","destination":"/api?_route=health"},
+    {"source":"/","destination":"/index.html"},
+    {"source":"/u/:path*","destination":"/index.html"},
+    {"source":"/profile/:path*","destination":"/index.html"},
+    {"source":"/spaces/:path*","destination":"/index.html"},
+    {"source":"/developers","destination":"/index.html"},
+    {"source":"/communities","destination":"/index.html"},
+    {"source":"/privacy","destination":"/index.html"},
+    {"source":"/examples/:path*","destination":"/index.html"}
+  ]
+}
