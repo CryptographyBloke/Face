@@ -2,11 +2,27 @@
 
 > Status updated: 2026-10-29
 
+## 0.3 feature branch progress (not production promotion)
+
+Implemented on `feature/face-spaces-mvp`: public profile routes, bounded real Snapshot Space
+imports, a versioned resolver API, typed SDK/React component, three first-party integration
+examples, native EOA-signed claims with SQLite persistence, fresh Snapshot-admin checks,
+branding, role labels and revocable organization badges. The original avatar flow remains.
+
+Local/backend checks and real read-only Hub smoke tests are available. Vercel preview mode
+is explicitly read-only; a writable production backend is not provisioned. Native write
+logic is locally tested, not promoted to `dao.sarl`. See `DEPLOYMENT.md` and `SECURITY.md`.
+
+Still open: invitations, bulk exports, Safe/EIP-1271, mobile-wallet/WalletConnect validation,
+shared serverless persistence, distributed limits, partner adoption and paid operations.
+
 ## Current state — public prototype
 
 The production site is available at <https://dao.sarl>. The app supports wallet connection, JPG/PNG upload to IPFS, gasless Snapshot Profile signing, profile read-back, bilingual UI, logout, local preview, gateway fallback, and links to compatible services. ENS synchronization is optional.
 
-The web client is static and has no custom account database, resolver API, organization workspace, billing, or moderation dashboard. It depends on browser wallets, Pineapple, Snapshot, and public IPFS gateways.
+The production avatar-only release is static. The 0.3 branch adds API/persistence as described
+above; billing and full organization onboarding are still not implemented. External wallet,
+Pineapple, Snapshot and IPFS availability remain dependencies.
 
 There is no universal avatar registry: third-party applications need to integrate Snapshot, ENS, Stamp, IPFS, or a future resolver API before they can display these avatars.
 

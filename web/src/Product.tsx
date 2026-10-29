@@ -1,0 +1,153 @@
+import { useEffect, useState, lazy, Suspense, type ReactNode } from "react";
+import { Identicon } from "../../packages/sdk/src/react";
+import "./product.css";
+const AvatarPublisher = lazy(() => import("./App"));
+const ProfilePage = lazy(() => import("./product/ProfilePage"));
+const Explore = lazy(() => import("./product/Explore"));
+const SpacePage = lazy(() => import("./product/SpacePage"));
+const Manage = lazy(() => import("./product/Manage"));
+const Developers = lazy(() => import("./product/Developers"));
+const Examples = lazy(() => import("./product/Examples"));
+type Lang = "zh" | "en";
+export default function Product() {
+  const [lang, setLang] = useState<Lang>(() => {
+    try {
+      const saved = localStorage.getItem("wallet-face-language");
+      return saved === "zh" || saved === "en"
+        ? saved
+        : navigator.language.startsWith("zh")
+          ? "zh"
+          : "en";
+    } catch {
+      return "en";
+    }
+  });
+  const zh = lang === "zh";
+  useEffect(() => {
+    document.documentElement.lang = zh ? "zh-CN" : "en";
+    try {
+      localStorage.setItem("wallet-face-language", lang);
+    } catch {}
+  }, [lang, zh]);
+  const path = location.pathname.split("/").filter(Boolean);
+  let body: ReactNode;
+  try {
+    if (!path.length)
+      body = <AvatarPublisher locale={lang} onLocaleChange={setLang} />;
+    else if (path[0] === "u" && path.length === 2)
+      body = <ProfilePage address={decodeURIComponent(path[1])} zh={zh} />;
+    else if (path[0] === "profile" && path[1] === "1" && path.length === 3) {
+      location.replace("/u/" + encodeURIComponent(path[2]));
+      body = null;
+    } else if (path[0] === "spaces" && path.length === 1)
+      body = <Explore zh={zh} />;
+    else if (path[0] === "spaces" && path.length === 2)
+      body = <SpacePage id={decodeURIComponent(path[1])} zh={zh} />;
+    else if (path[0] === "spaces" && path[2] === "manage" && path.length === 3)
+      body = <Manage id={decodeURIComponent(path[1])} zh={zh} />;
+    else if (path[0] === "developers") body = <Developers zh={zh} />;
+    else if (
+      path[0] === "examples" &&
+      ["directory", "governance", "wallet"].includes(path[1])
+    )
+      body = <Examples kind={path[1]} zh={zh} />;
+    else if (path[0] === "communities")
+      body = (
+        <section className="panel">
+          <div className="eyebrow">FOR COMMUNITIES</div>
+          <h1>
+            {zh
+              ? "让公开参与变得可见，让组织身份有据可查。"
+              : "Visible participation. Verifiable community identity."}
+          </h1>
+          <p>
+            {zh
+              ? "可演示：公开参与者目录、签名认领资料、管理员品牌配置、组织角色与可撤销徽章。"
+              : "Demonstrable: public participant directories, signed profiles, admin branding, organization roles and revocable badges."}
+          </p>
+          <p>
+            {zh
+              ? "拟议付费服务：定制品牌、托管部署、API 运维；尚未上线计费。"
+              : "Proposed paid services: custom branding, managed deployment and API operations. Billing is not live."}
+          </p>
+          <a
+            className="button"
+            href="https://github.com/CryptographyBloke/Face/issues/new?title=Community%20pilot"
+          >
+            {zh ? "申请设计伙伴试点" : "Request a design-partner pilot"} ↗
+          </a>
+        </section>
+      );
+    else if (path[0] === "privacy")
+      body = (
+        <section className="panel">
+          <h1>{zh ? "隐私与数据来源" : "Privacy and data sources"}</h1>
+          <p>
+            {zh
+              ? "公开投票记录来源于 Snapshot；仅展示公开参与事实，不推断正式成员身份。原生资料仅在钱包明确签名后公开。可签名隐藏原生资料，但无法删除 Snapshot 或 IPFS 上已公开的数据。"
+              : "Governance facts come from Snapshot public data, not inferred official membership. Native profiles are published only after explicit wallet signing. You may sign to hide native fields; this cannot erase existing public Snapshot or IPFS data."}
+          </p>
+          <p>
+            {zh
+              ? "服务器保存授权签名、随机 nonce 和审核所需时间记录。不保存私钥，不构建广告画像。"
+              : "The server stores authorization signatures, random nonces and audit timestamps. It never stores private keys or builds advertising profiles."}
+          </p>
+        </section>
+      );
+    else
+      body = (
+        <section className="panel">
+          <h1>404</h1>
+          <a href="/">{zh ? "返回头像工具" : "Back to Avatar"}</a>
+        </section>
+      );
+  } catch {
+    body = (
+      <section className="panel" role="alert">
+        {zh ? "无效的网址" : "Invalid route"}
+      </section>
+    );
+  }
+  return (
+    <>
+      <header className="topbar">
+        <a href="/" className="wordmark">
+          <Identicon address="0xface" size={28} />
+          Wallet Face
+        </a>
+        <nav aria-label={zh ? "主导航" : "Main navigation"}>
+          <a href="/">{zh ? "头像" : "Avatar"}</a>
+          <a href="/spaces">{zh ? "探索社区" : "Explore Spaces"}</a>
+          <a href="/developers">{zh ? "开发者" : "Developers"}</a>
+          <a href="/communities">{zh ? "社区服务" : "For Communities"}</a>
+        </nav>
+        <label>
+          <span className="srOnly">Language</span>
+          <select
+            value={lang}
+            onChange={(e) => setLang(e.target.value as Lang)}
+          >
+            <option value="zh">中文</option>
+            <option value="en">English</option>
+          </select>
+        </label>
+      </header>
+      <div className={!path.length ? "publisher-layout" : "product-layout"}>
+        <Suspense
+          fallback={
+            <div className="skeleton" role="status">
+              {zh ? "加载中…" : "Loading…"}
+            </div>
+          }
+        >
+          {body}
+        </Suspense>
+      </div>
+      <footer className="product-footer">
+        Wallet Face ·{" "}
+        <a href="/privacy">{zh ? "隐私与数据来源" : "Privacy & provenance"}</a>{" "}
+        · <a href="https://github.com/CryptographyBloke/Face">GitHub ↗</a>
+      </footer>
+    </>
+  );
+}

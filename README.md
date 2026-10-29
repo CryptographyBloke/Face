@@ -1,5 +1,34 @@
 # Wallet Face / 钱包头像
 
+## 0.3 upgrade branch / 0.3 升级分支
+
+This branch adds public wallet profiles, bounded Snapshot public-participant directories,
+a resolver API, a TypeScript/React SDK, and a locally persistent signed-claims/admin MVP.
+It does **not** promote changes to `dao.sarl`. Vercel previews are intentionally read-only;
+native claims/admin writes require the persistent Node 24 + SQLite server.
+
+本分支新增公开钱包资料、Snapshot 公开治理参与者目录、Resolver API、TypeScript/React
+SDK，以及使用本地持久化数据库的签名认领和管理员 MVP。**没有替换 dao.sarl 生产站点**。
+Vercel 预览默认只读；认领、角色和徽章写入须使用持久化 Node 24 + SQLite 后端。
+
+```bash
+npm ci
+npm --prefix web ci
+npm run build
+npm start
+```
+
+Open / 打开 `http://localhost:8787`. No paid API key is required. Optional configuration:
+copy `.env.example` to `.env.local`, then use `npm run dev` to load it.
+
+Documentation / 文档：
+[Architecture](ARCHITECTURE.md) · [API](API.md) · [Security](SECURITY.md) ·
+[Deployment / rollback](DEPLOYMENT.md) · [Commercial pilot](COMMERCIAL_PILOT.md).
+
+Validation / 验证：`npm test`, `npm --prefix web test`,
+`npm --prefix packages/sdk run build`, `npm run build`, `npm run test:protocol`,
+and optional real read-only `npm run smoke`.
+
 An open-source wallet-avatar publishing tool. Connect a wallet, upload an image, sign a profile update, and let compatible applications resolve the avatar by wallet address. ENS is optional.
 
 一个开源的钱包头像发布工具：连接钱包、上传图片、签名发布资料，让兼容应用通过钱包地址解析头像。ENS 不是必需条件。
@@ -43,9 +72,9 @@ There is no universal avatar registry. Snapshot, Stamp, ENS-aware, or IPFS-aware
 
 不存在能强制所有网站统一读取头像的注册表。Snapshot、Stamp、ENS 或 IPFS 兼容应用需要主动支持相应来源；本项目无法让任意网站自动采用新的头像来源。
 
-The web app is a static browser client with no custom user database or server-side key custody. It relies on the wallet, Pineapple, Snapshot, and public IPFS gateways.
+The existing avatar publisher remains browser-driven. The upgrade adds a separate API and optional SQLite persistence without server-side key custody. It still relies on the wallet, Pineapple, Snapshot, and public IPFS gateways.
 
-网页是静态浏览器客户端，没有自建用户数据库或服务端密钥托管；运行依赖钱包、Pineapple、Snapshot 和公共 IPFS 网关。
+原头像发布流程仍由浏览器协调；升级另加 API 和可选 SQLite 持久化，不托管用户私钥。运行仍依赖钱包、Pineapple、Snapshot 和公共 IPFS 网关。
 
 ## Repository / 仓库结构
 

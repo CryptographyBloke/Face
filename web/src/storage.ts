@@ -32,16 +32,20 @@ export function assertContentAddressedUri(uri: string) {
 }
 
 export function resolveAvatarUri(uri: string | null | undefined) {
-  if (!uri) return null
+  return resolveAvatarUris(uri)[0] || null
+}
+
+export function resolveAvatarUris(uri: string | null | undefined): string[] {
+  if (!uri) return []
   const value = uri.trim()
   if (value.startsWith('ipfs://')) {
     const gateway = (import.meta.env.VITE_IPFS_GATEWAY || 'https://ipfs.io/ipfs/').replace(/\/$/, '')
-    return `${gateway}/${value.slice('ipfs://'.length)}`
+    return [...new Set([gateway, 'https://dweb.link/ipfs', 'https://gateway.pinata.cloud/ipfs'])].map(g => `${g}/${value.slice('ipfs://'.length)}`)
   }
   if (value.startsWith('ar://')) {
     const gateway = (import.meta.env.VITE_ARWEAVE_GATEWAY || 'https://arweave.net').replace(/\/$/, '')
-    return `${gateway}/${value.slice('ar://'.length)}`
+    return [`${gateway}/${value.slice('ar://'.length)}`]
   }
-  if (/^https?:\/\//i.test(value)) return value
-  return null
+  if (/^https?:\/\//i.test(value)) return [value]
+  return []
 }

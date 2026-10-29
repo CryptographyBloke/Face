@@ -157,7 +157,7 @@ function AvatarImage({ sources, alt, emptyLabel }: AvatarImageProps) {
   )
 }
 
-export default function App() {
+export default function App({locale,onLocaleChange}:{locale?:Language;onLocaleChange?:(lang:Language)=>void}={}) {
   const [language, setLanguage] = useState<Language>(detectLanguage)
   const [address, setAddress] = useState<Address>()
   const [walletClient, setWalletClient] = useState<AppWalletClient>()
@@ -169,6 +169,7 @@ export default function App() {
   const [notice, setNotice] = useState('')
 
   const t = translations[language]
+  useEffect(()=>{if(locale)setLanguage(locale)},[locale])
   const connected = Boolean(address && walletClient)
   const imageSources = [
     ...(preview ? [preview] : []),
@@ -375,7 +376,7 @@ export default function App() {
             <span className="srOnly">{t.language}</span>
             <select
               value={language}
-              onChange={(event) => setLanguage(event.target.value as Language)}
+              onChange={(event) => {setLanguage(event.target.value as Language);onLocaleChange?.(event.target.value as Language)}}
               aria-label={t.language}
             >
               <option value="zh">中文</option>
@@ -431,6 +432,7 @@ export default function App() {
         )}
         {avatarURI && address && (
           <div className="externalApps">
+            <a href={'/u/'+address}>{language==='zh'?'打开我的公开资料':'Open my public profile'}</a>
             <p className="externalAppsTitle">{t.tryElsewhere}</p>
             <div className="externalLinks">
               {snapshotUrl && (

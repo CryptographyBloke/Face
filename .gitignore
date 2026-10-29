@@ -1,7 +1,12 @@
 .env
 .env.*
+!.env.example
 node_modules/
 web/dist/
 web/tsconfig.tsbuildinfo
 web/.openai/
 .DS_Store
+node_modules/
+.env
+data/
+*.sqlite*
