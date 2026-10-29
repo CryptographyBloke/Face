@@ -1,22 +1,23 @@
 import { useEffect, useState } from 'react'
 import type { Address } from 'viem'
 import { publishEnsAvatar } from './ens'
-import { connectWallet, disconnectWallet, type AppWalletClient } from './wallet'
+import { connectWallet, disconnectWallet, restoreWallet, type AppWalletClient } from './wallet'
 import { publishSnapshotAvatar, readSnapshotAvatar } from './snapshot'
-import { resolveAvatarUri, uploadAvatar, validateAvatarFile } from './storage'
+import { resolveAvatarUri, resolveAvatarUris, uploadAvatar, validateAvatarFile } from './storage'
 
-type Step = 'idle' | 'connecting' | 'disconnecting' | 'uploading' | 'signing' | 'publishing' | 'done'
+type Step = 'idle' | 'restoring' | 'connecting' | 'disconnecting' | 'uploading' | 'signing' | 'publishing' | 'done'
 type Language = 'zh' | 'en'
 
 const translations = {
   zh: {
-    brand: 'HNUDAO · 钱包头像',
+    brand: 'Wallet Face · 钱包头像',
     language: '界面语言',
     title: '你的钱包，你的头像。',
     lead: '连接钱包，选择图片，一次发布到兼容的头像资料层。',
     noAvatar: '还没有头像',
     avatarPreview: '钱包头像预览',
     connect: '连接钱包',
+    restoring: '恢复钱包连接…',
     connecting: '连接中…',
     logout: '退出登录',
     loggingOut: '退出中…',
@@ -38,10 +39,11 @@ const translations = {
     avatarPublished: (ensNotice: string) =>
       `头像已发布。支持 Snapshot 和 Stamp 的应用可以通过钱包地址读取。${ensNotice}`,
     noEns: '无需设置 ENS。Snapshot 发布无需 Gas；如果已有 ENS 名称，可额外同步一次头像记录。',
-    memberDeveloper: 'HNUDAO 成员开发',
-    author: '作者：HNUDAO founder',
-    telegram: 'TG：cryptoAceisme',
     github: 'GitHub 源码',
+    tryElsewhere: '在其他应用中试用头像',
+    snapshot: '打开 Snapshot',
+    stamp: '打开 Stamp',
+    ipfsImage: '打开 IPFS 图片',
     connectFirst: '请先连接钱包。',
     chooseFirst: '请先选择头像。',
     invalidType: '请选择 JPG 或 PNG 图片。',
@@ -50,13 +52,14 @@ const translations = {
     noAccount: '钱包没有返回账户。',
   },
   en: {
-    brand: 'HNUDAO · Wallet Avatar',
+    brand: 'Wallet Face · Wallet Avatar',
     language: 'Interface language',
     title: 'Your wallet. Your avatar.',
     lead: 'Connect a wallet, choose an image, and publish it across compatible profile layers.',
     noAvatar: 'No avatar yet',
     avatarPreview: 'Wallet avatar preview',
     connect: 'Connect wallet',
+    restoring: 'Restoring wallet…',
     connecting: 'Connecting…',
     logout: 'Logout',
     loggingOut: 'Logging out…',
@@ -78,10 +81,11 @@ const translations = {
     avatarPublished: (ensNotice: string) =>
       `Avatar published. Snapshot and Stamp-compatible apps can resolve it from your wallet address.${ensNotice}`,
     noEns: 'No ENS setup required. Snapshot is gasless; an existing ENS name may add one optional transaction.',
-    memberDeveloper: 'Built by a HNUDAO member',
-    author: 'Author: HNUDAO founder',
-    telegram: 'TG: cryptoAceisme',
     github: 'GitHub source',
+    tryElsewhere: 'Try the avatar elsewhere',
+    snapshot: 'Open Snapshot',
+    stamp: 'Open Stamp',
+    ipfsImage: 'Open IPFS image',
     connectFirst: 'Connect your wallet first.',
     chooseFirst: 'Choose an avatar first.',
     invalidType: 'Please choose a JPG or PNG image.',
@@ -91,7 +95,7 @@ const translations = {
   },
 } as const
 
-const GITHUB_URL = 'https://github.com/CryptographyBloke/ens-dns-bootstrap'
+const GITHUB_URL = 'https://github.com/CryptographyBloke/Face'
 
 function detectLanguage(): Language {
   try {
@@ -118,6 +122,41 @@ function errorText(cause: unknown, language: Language) {
   return raw
 }
 
+type AvatarImageProps = {
+  sources: string[]
+  alt: string
+  emptyLabel: string
+}
+
+function AvatarImage({ sources, alt, emptyLabel }: AvatarImageProps) {
+  const sourceKey = sources.join('|')
+  const [sourceIndex, setSourceIndex] = useState(0)
+  const [failed, setFailed] = useState(false)
+
+  useEffect(() => {
+    setSourceIndex(0)
+    setFailed(false)
+  }, [sourceKey])
+
+  const source = sources[sourceIndex]
+  if (!source || failed) {
+    return <div className="avatar empty" aria-label={emptyLabel}>+</div>
+  }
+
+  return (
+    <img
+      className="avatar"
+      key={source}
+      src={source}
+      alt={alt}
+      onError={() => {
+        if (sourceIndex + 1 < sources.length) setSourceIndex(sourceIndex + 1)
+        else setFailed(true)
+      }}
+    />
+  )
+}
+
 export default function App() {
   const [language, setLanguage] = useState<Language>(detectLanguage)
   const [address, setAddress] = useState<Address>()
@@ -125,14 +164,19 @@ export default function App() {
   const [avatarURI, setAvatarURI] = useState<string | null>(null)
   const [preview, setPreview] = useState<string | null>(null)
   const [selectedFile, setSelectedFile] = useState<File | null>(null)
-  const [step, setStep] = useState<Step>('idle')
+  const [step, setStep] = useState<Step>('restoring')
   const [error, setError] = useState<string | null>(null)
   const [notice, setNotice] = useState('')
 
   const t = translations[language]
   const connected = Boolean(address && walletClient)
-  const imageSrc = preview || resolveAvatarUri(avatarURI)
+  const imageSources = [
+    ...(preview ? [preview] : []),
+    ...resolveAvatarUris(avatarURI),
+  ]
   const shareUrl = address ? `https://cdn.stamp.fyi/avatar/${address}?s=512` : null
+  const snapshotUrl = address ? `https://snapshot.box/#/profile/${address}` : null
+  const ipfsUrl = resolveAvatarUri(avatarURI)
   const busy = !['idle', 'done'].includes(step)
 
   useEffect(() => {
@@ -143,6 +187,96 @@ export default function App() {
       // Language selection still works when local storage is unavailable.
     }
   }, [language])
+
+  useEffect(() => {
+    let active = true
+    const provider = window.ethereum
+
+    const clearWalletState = () => {
+      if (!active) return
+      setAddress(undefined)
+      setWalletClient(undefined)
+      setAvatarURI(null)
+      setPreview(null)
+      setSelectedFile(null)
+    }
+
+    const restore = async () => {
+      try {
+        const restoredWallet = await restoreWallet()
+        if (!active) return
+
+        if (!restoredWallet) {
+          setStep('idle')
+          return
+        }
+
+        setAddress(restoredWallet.address)
+        setWalletClient(restoredWallet.walletClient)
+
+        try {
+          const current = await readSnapshotAvatar(restoredWallet.address)
+          if (!active) return
+          setAvatarURI(current)
+        } catch {
+          // A profile read failure must not erase the restored wallet session.
+        }
+      } catch {
+        // Silent restoration is best-effort. The user can still connect manually.
+      } finally {
+        if (active) setStep('idle')
+      }
+    }
+
+    void restore()
+
+    const handleAccountsChanged = async () => {
+      try {
+        const nextWallet = await restoreWallet()
+        if (!active) return
+        if (!nextWallet) {
+          clearWalletState()
+          setStep('idle')
+          return
+        }
+
+        setAddress(nextWallet.address)
+        setWalletClient(nextWallet.walletClient)
+        setAvatarURI(null)
+        setPreview(null)
+        setSelectedFile(null)
+
+        try {
+          setAvatarURI(await readSnapshotAvatar(nextWallet.address))
+        } catch {
+          // Keep the new wallet connected even when Snapshot is unavailable.
+        }
+      } catch {
+        clearWalletState()
+        setStep('idle')
+      }
+    }
+
+    const handleProviderDisconnect = () => {
+      clearWalletState()
+      setStep('idle')
+    }
+
+    provider?.on?.('accountsChanged', handleAccountsChanged)
+    provider?.on?.('disconnect', handleProviderDisconnect)
+
+    return () => {
+      active = false
+      provider?.removeListener?.('accountsChanged', handleAccountsChanged)
+      provider?.removeListener?.('disconnect', handleProviderDisconnect)
+    }
+  }, [])
+
+  useEffect(() => {
+    return () => {
+      if (preview?.startsWith('blob:')) URL.revokeObjectURL(preview)
+    }
+  }, [preview])
 
   const handleConnect = async () => {
     setError(null)
@@ -173,7 +307,6 @@ export default function App() {
     setError(null)
     try {
       validateAvatarFile(file)
-      if (preview?.startsWith('blob:')) URL.revokeObjectURL(preview)
       setSelectedFile(file)
       setPreview(URL.createObjectURL(file))
       setStep('idle')
@@ -187,7 +320,6 @@ export default function App() {
     setNotice('')
     setStep('disconnecting')
     await disconnectWallet()
-    if (preview?.startsWith('blob:')) URL.revokeObjectURL(preview)
     setAddress(undefined)
     setWalletClient(undefined)
     setAvatarURI(null)
@@ -223,8 +355,8 @@ export default function App() {
       }
 
       setAvatarURI(uploadedURI)
-      if (preview?.startsWith('blob:')) URL.revokeObjectURL(preview)
-      setPreview(null)
+      // Keep the local object URL on screen until the user chooses another
+      // image. This avoids a blank avatar while the IPFS gateway propagates.
       setSelectedFile(null)
       setStep('done')
       setNotice(t.avatarPublished(ensNotice))
@@ -256,16 +388,12 @@ export default function App() {
         <p className="lead">{t.lead}</p>
 
         <div className="avatarWrap">
-          {imageSrc ? (
-            <img className="avatar" src={imageSrc} alt={t.avatarPreview} />
-          ) : (
-            <div className="avatar empty" aria-label={t.noAvatar}>+</div>
-          )}
+          <AvatarImage sources={imageSources} alt={t.avatarPreview} emptyLabel={t.noAvatar} />
         </div>
 
         {!connected ? (
           <button className="primary" onClick={handleConnect} disabled={busy}>
-            {step === 'connecting' ? t.connecting : t.connect}
+            {step === 'restoring' ? t.restoring : step === 'connecting' ? t.connecting : t.connect}
           </button>
         ) : (
           <>
@@ -280,27 +408,48 @@ export default function App() {
               <input
                 type="file"
                 accept="image/png,image/jpeg"
-                onChange={(event) => handleFile(event.target.files?.[0])}
+                onClick={(event) => {
+                  // Allow choosing the same file again after a failed attempt.
+                  event.currentTarget.value = ''
+                }}
+                onChange={(event) => { void handleFile(event.target.files?.[0]) }}
                 disabled={busy}
               />
               <span>{preview ? t.chooseAnother : t.upload}</span>
             </label>
 
-            <button className="primary" onClick={handlePublish} disabled={busy || !preview}>
-              {busy ? t.working : preview ? t.publish : t.chooseImage}
+            <button className="primary" onClick={handlePublish} disabled={busy || !selectedFile}>
+              {busy ? t.working : selectedFile ? t.publish : t.chooseImage}
             </button>
           </>
         )}
 
-        {avatarURI && !preview && (
+        {avatarURI && (
           <p className="uri" title={avatarURI}>
             {avatarURI}
           </p>
         )}
-        {shareUrl && avatarURI && (
-          <a className="shareLink" href={shareUrl} target="_blank" rel="noreferrer">
-            {t.openShare}
-          </a>
+        {avatarURI && address && (
+          <div className="externalApps">
+            <p className="externalAppsTitle">{t.tryElsewhere}</p>
+            <div className="externalLinks">
+              {snapshotUrl && (
+                <a className="externalLink" href={snapshotUrl} target="_blank" rel="noreferrer">
+                  {t.snapshot}
+                </a>
+              )}
+              {shareUrl && (
+                <a className="externalLink" href={shareUrl} target="_blank" rel="noreferrer">
+                  {t.stamp}
+                </a>
+              )}
+              {ipfsUrl && (
+                <a className="externalLink" href={ipfsUrl} target="_blank" rel="noreferrer">
+                  {t.ipfsImage}
+                </a>
+              )}
+            </div>
+          </div>
         )}
         {notice && <p className="notice">{notice}</p>}
         {error && <p className="error">{error}</p>}
@@ -308,12 +457,7 @@ export default function App() {
         <p className="fine">{t.noEns}</p>
 
         <footer className="siteFooter">
-          <p className="memberCredit">{t.memberDeveloper}</p>
           <div className="footerLinks">
-            <span>{t.author}</span>
-            <a href="https://t.me/cryptoAceisme" target="_blank" rel="noreferrer">
-              {t.telegram}
-            </a>
             <a href={GITHUB_URL} target="_blank" rel="noreferrer">
               {t.github}
             </a>
