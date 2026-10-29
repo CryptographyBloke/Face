@@ -1,4 +1,31 @@
-# Wallet Face 0.3 preview — release evidence
+# Wallet Face 0.3 — release evidence
+
+## Production update / 正式上线（2026-10-29）
+
+At the owner's explicit request, the tested preview source was rebuilt for Production
+and published to <https://dao.sarl/>. This update supersedes the preview-only status below.
+
+- Production deployment: `dpl_3pQ5gCG9qAWRQ53xzW8WEedYsfLY`, READY.
+- Source: `6b4fe82734d14d90f20fb3e6a80013491ba5db65`; framework React/Vite + Node API.
+- Build duration: approximately 38 seconds. No DNS or access-protection settings changed.
+- Rollback target retained: `dpl_6JgZJyd1WXTGgNkFxLW4cVRtZ38x`.
+- Public unauthenticated `/health` returned HTTP 200, version `0.3.0`, mode `read-only`.
+- Browser verification on the production domain rendered the original avatar entry,
+  navigation, Space import, real Yam participant directory and recent governance activity.
+  The observed count was 102 wallets within the documented bounded scan.
+- Production error/fatal runtime-log query for this deployment over the previous ten
+  minutes returned no matching logs. This is a limited observation, not continuous monitoring.
+- Native claims/admin writes remain disabled. The original browser Snapshot publisher
+  is retained; no real-wallet upload/signature was performed during this rollout.
+- `npm audit` reports one high advisory for runtime Zod (GHSA-mrhx-c7xc-m3w5), plus
+  two high findings in the frontend build/development dependency tree (Vite and source-map-js).
+  These dependencies were not upgraded during this deployment. Fixed-version upgrades,
+  compatibility tests and a follow-up release remain necessary. Request limits/read-only
+  mode are existing mitigations, not a claim that the advisories are resolved.
+- No automated monitoring or log-drain setup was added. Native data persistence and
+  fuller wallet/mobile validation remain rollout gaps.
+
+以下保留首次预览交付记录；生产状态以上述更新为准。
 
 Date: 2026-10-29. This is a feature-branch preview, not a production release.
 

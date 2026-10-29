@@ -2,8 +2,10 @@
 
 ## Status
 
-The existing `https://dao.sarl/` production site is not modified by this feature branch.
-No production DNS or persistent production database has been changed. The legacy
+The read-only 0.3 release was published to `https://dao.sarl/` on 2026-10-29 at the owner's
+request. Deployment `dpl_3pQ5gCG9qAWRQ53xzW8WEedYsfLY` rebuilt the verified preview source
+for Production. Native writes remain disabled; see `RELEASE_REPORT.md` for evidence and
+known dependency advisories. No production DNS or persistent database has changed. The legacy
 `face.hnudao.online` custom-domain removal is not reversed by this upgrade.
 
 ## Local persistent application (Node 24)

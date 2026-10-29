@@ -4,12 +4,12 @@
 
 This branch adds public wallet profiles, bounded Snapshot public-participant directories,
 a resolver API, a TypeScript/React SDK, and a locally persistent signed-claims/admin MVP.
-It does **not** promote changes to `dao.sarl`. Vercel previews are intentionally read-only;
+The read-only release is now live at `dao.sarl` (2026-10-29). Vercel deployments are intentionally read-only;
 native claims/admin writes require the persistent Node 24 + SQLite server.
 
 本分支新增公开钱包资料、Snapshot 公开治理参与者目录、Resolver API、TypeScript/React
-SDK，以及使用本地持久化数据库的签名认领和管理员 MVP。**没有替换 dao.sarl 生产站点**。
-Vercel 预览默认只读；认领、角色和徽章写入须使用持久化 Node 24 + SQLite 后端。
+SDK，以及使用本地持久化数据库的签名认领和管理员 MVP。只读版本已于 2026-10-29 上线 dao.sarl。
+Vercel 部署保持只读；认领、角色和徽章写入须使用持久化 Node 24 + SQLite 后端。
 
 ```bash
 npm ci
