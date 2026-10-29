@@ -25,7 +25,7 @@ Environment:
 
 Examples:
   CLOUDFLARE_API_TOKEN=... ens-dns-bootstrap setup \\
-    --domain hnudao.online \\
+    --domain example.com \\
     --address 0x101f99125E4Aa1402f0eaEF896cC175Ba1280f0A
 `;
 
