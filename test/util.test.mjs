@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import { normalizeDomain, parseArgs, validateAddress } from '../src/util.mjs';
 
 test('normalizes domain', () => {
-  assert.equal(normalizeDomain('HNUDAO.ONLINE.'), 'hnudao.online');
+  assert.equal(normalizeDomain('EXAMPLE.COM.'), 'example.com');
 });
 
 test('validates Ethereum address shape', () => {
@@ -13,9 +13,9 @@ test('validates Ethereum address shape', () => {
 });
 
 test('parses flags', () => {
-  const args = parseArgs(['setup', '--domain', 'hnudao.online', '--no-wait', '--json']);
+  const args = parseArgs(['setup', '--domain', 'example.com', '--no-wait', '--json']);
   assert.deepEqual(args._, ['setup']);
-  assert.equal(args.domain, 'hnudao.online');
+  assert.equal(args.domain, 'example.com');
   assert.equal(args['no-wait'], true);
   assert.equal(args.json, true);
 });
