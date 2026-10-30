@@ -1,8 +1,8 @@
 # Wallet Face web app / 钱包头像网页应用
 
-This directory contains the static React + TypeScript client. It coordinates the browser wallet, image upload, Snapshot profile publication, and avatar rendering; it does not run a custom application server.
+This directory contains the React + TypeScript client for wallet connection, image upload, Snapshot publication, public profiles and community directories. The resolver API lives in `../server` and the Vercel adapter in `../api`.
 
-本目录包含静态 React + TypeScript 客户端，负责协调浏览器钱包、图片上传、Snapshot 资料发布与头像显示；项目没有自建应用服务器。
+本目录包含 React + TypeScript 客户端，提供钱包连接、图片上传、Snapshot 发布、公开资料与社区目录。Resolver API 位于 `../server`，Vercel 适配器位于 `../api`。
 
 ## User flow / 使用流程
 
@@ -50,6 +50,6 @@ npm run test:protocol
 npm run build
 ```
 
-The protocol check compares the EIP-712 digest against Snapshot's expected typed-data format. Public avatar images and profile URIs are not private data.
+The protocol check compares the EIP-712 digest against Snapshot's expected typed-data format. Published avatar images and profile URIs are public.
 
 协议检查会将 EIP-712 摘要与 Snapshot 预期的结构化签名格式进行比对。头像图片和资料 URI 是公开数据。

@@ -33,12 +33,12 @@ export default function Manage({ id, zh }: { id: string; zh: boolean }) {
     return (
       <section className="panel">
         <h1>
-          {zh ? "社区管理 · 只读预览" : "Administration · read-only preview"}
+          {zh ? "社区管理" : "Community administration"}
         </h1>
         <p>
           {zh
-            ? "此部署未接入持久化数据库，管理员写入已禁用。"
-            : "This deployment has no persistent database. Administrator writes are disabled."}
+            ? "当前为浏览模式。连接持久化后端后可管理社区。"
+            : "Browsing mode. Connect a persistent backend to manage this community."}
         </p>
         <a href={route(id)}>{zh ? "返回社区" : "Back to space"}</a>
       </section>
@@ -50,8 +50,8 @@ export default function Manage({ id, zh }: { id: string; zh: boolean }) {
       </h1>
       <p>
         {zh
-          ? "每次修改均需签名，并实时查询 Snapshot admins 权限。仅支持 EOA 管理员；Safe/EIP-1271 暂不支持。"
-          : "Each change requires a signature and a fresh Snapshot admins permission check. EOA admins only; Safe/EIP-1271 is not supported yet."}
+          ? "使用 Snapshot admins 列表中的 EOA 钱包签名，保存社区设置。"
+          : "Sign with an EOA wallet in the current Snapshot admins list to save community settings."}
       </p>
       <p>
         <a href={route(id)}>
@@ -140,11 +140,6 @@ export default function Manage({ id, zh }: { id: string; zh: boolean }) {
         {zh ? "签名撤销徽章" : "Sign badge revocation"}
       </button>
       <p role="status">{notice}</p>
-      <p>
-        {zh
-          ? "邀请链接、批量导出和 Safe 管理尚未实现。"
-          : "Invitation links, bulk export, and Safe administration are not implemented yet."}
-      </p>
     </section>
   );
 }

@@ -33,7 +33,7 @@ async function operation(action, payload) {
   });
 }
 const result = await operation("profile.upsert", {
-  name: "Automated test fixture — not a real person",
+  name: "Automated test fixture",
   bio: "Temporary unfunded test wallet",
   avatarURI: "",
   links: [],

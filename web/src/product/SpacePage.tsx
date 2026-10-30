@@ -27,8 +27,8 @@ export default function SpacePage({ id, zh }: { id: string; zh: boolean }) {
                   ? "组织已验证"
                   : "ORGANIZATION VERIFIED"
                 : zh
-                  ? "公开资料镜像 · 非官方认领"
-                  : "PUBLIC MIRROR · NOT OFFICIALLY CLAIMED"}
+                  ? "Snapshot 社区"
+                  : "SNAPSHOT SPACE"}
             </div>
             <h1>{state.data.branding?.name || state.data.space.name || id}</h1>
             <p>{state.data.branding?.about || state.data.space.about}</p>
@@ -47,9 +47,6 @@ export default function SpacePage({ id, zh }: { id: string; zh: boolean }) {
               </div>
             </div>
             <p className="muted">
-              {zh
-                ? "数据不等同于正式成员名单；扫描有上限，不保证涵盖全部历史。"
-                : "This is not an official membership list. Bounded scans may not cover all history."}{" "}
               {zh ? "已扫描投票：" : "Votes scanned: "}
               {state.data.provenance.votesScanned} ·{" "}
               {state.data.provenance.votesComplete

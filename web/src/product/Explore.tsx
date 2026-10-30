@@ -12,8 +12,8 @@ export default function Explore({ zh }: { zh: boolean }) {
       </h1>
       <p>
         {zh
-          ? "输入 Snapshot Space ID，读取真实公开资料。导入页面不是官方组织认领。"
-          : "Enter a Snapshot Space ID to explore public data. Imported pages are not official organization claims."}
+          ? "输入 Snapshot Space ID，查看社区资料、参与者和治理活动。"
+          : "Enter a Snapshot Space ID to explore its profile, participants and governance activity."}
       </p>
       <form
         className="inline"

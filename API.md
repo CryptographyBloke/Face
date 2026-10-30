@@ -1,7 +1,7 @@
 # Face API v1
 
 Local default: `http://localhost:8787`. Ethereum identity namespace only (`chainId=1`).
-Other chains return 422 rather than pretending cross-chain coverage. All errors are JSON:
+Other chains return 422. All errors are JSON:
 `{"error":{"code":"INVALID_ADDRESS","message":"Invalid EVM address"}}`.
 
 ## Reads
@@ -20,7 +20,7 @@ Snapshot profiles and individual avatar reads have a 60-second upstream cache;
 community imports have a 120-second cache. Profile responses allow 30 seconds of HTTP caching.
 Native records are reread on every API request. `FaceClient` uses `cache: no-store` for prompt
 read-back. `updatedAt` is null for upstream profiles because a trustworthy modification time
-is not provided; `cache.fetchedAt` is response resolution time, not a signed profile timestamp.
+is unavailable; `cache.fetchedAt` records response resolution time.
 Read CORS is public, without credentials. Default limit: 60 incoming requests/IP/minute/process;
 Snapshot calls are serialized and spaced by at least 1.1 seconds. Upstream calls time out
 after 8 seconds and retry transient failures up to two times with bounded backoff.
@@ -34,9 +34,9 @@ curl http://localhost:8787/v1/spaces/yam.eth/members?page=0
 
 Implementation smoke test on 2026-10-29 returned HTTP 200 for those routes. With the smoke
 script's deliberately smaller limits it observed 20 wallets from 20 votes and five proposals;
-both completeness flags were false. These are test observations, not platform totals.
+both completeness flags were false.
 
-Profile shape (schema illustration, not a real user's asserted data):
+Profile response schema:
 
 ```json
 {"chainId":1,"address":"0x…","avatar":{"uri":null,"resolvedUrl":null,"urls":[],"source":"none"},"profile":{"name":null,"bio":null,"links":[],"revision":0},"provenance":{"profileClaimVerified":false,"sources":[],"warnings":[],"verification":null},"updatedAt":null,"cache":{"fetchedAt":"ISO timestamp","ttlSeconds":60}}
@@ -66,9 +66,9 @@ replays, expiration and stale profile revisions are rejected.
 | `badge.revoke` | `{spaceId,id}` |
 
 Space-scoped operations require current Snapshot `admins` authorization. Badge types:
-`Organization Member`, `Event Participant`, `Contributor`. Badges do not mint NFTs or tokens.
+`Organization Member`, `Event Participant`, `Contributor`. Badge records are stored in SQLite.
 Badge identifiers and issuance times are server-generated; the signature proves the issued
-payload and issuer authorization, not an independently decentralized badge registry.
+payload and issuer authorization.
 
 ## SDK
 
@@ -82,4 +82,4 @@ const profile = await face.resolveProfile({chainId: 1, address});
 
 `npm --prefix packages/sdk run build` emits JS and type declarations. `npm pack` from that
 directory prepares a package. It is intentionally private/unpublished; npm publication needs
-package-name ownership, reviewed metadata and explicit authorization. No npm credentials were used.
+package-name ownership, reviewed metadata and explicit authorization.

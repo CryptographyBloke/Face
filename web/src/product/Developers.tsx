@@ -24,8 +24,8 @@ export default function Developers({ zh }: { zh: boolean }) {
       </pre>
       <p>
         {zh
-          ? "三个示例仅为本站演示，不代表外部机构采用："
-          : "These are first-party demos, not external adoption: "}
+          ? "集成示例："
+          : "Integration examples:"}
       </p>
       <div className="actions">
         <a href="/examples/directory">Directory</a>

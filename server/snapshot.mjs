@@ -244,7 +244,7 @@ export class Snapshot {
             proposalsComplete,
             scanLimits: { votes: this.maxVotes, proposals: this.maxProposals },
             privacyPolicy:
-              "Shielded/private proposal votes are omitted. Counts describe the scanned public data, not official membership.",
+              "Public governance participation from the bounded Snapshot scan. Shielded/private proposal votes are omitted.",
           },
         };
       },

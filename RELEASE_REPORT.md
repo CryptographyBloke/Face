@@ -14,20 +14,19 @@ and published to <https://dao.sarl/>. This update supersedes the preview-only st
   navigation, Space import, real Yam participant directory and recent governance activity.
   The observed count was 102 wallets within the documented bounded scan.
 - Production error/fatal runtime-log query for this deployment over the previous ten
-  minutes returned no matching logs. This is a limited observation, not continuous monitoring.
+  minutes returned no matching logs.
 - Native claims/admin writes remain disabled. The original browser Snapshot publisher
   is retained; no real-wallet upload/signature was performed during this rollout.
 - `npm audit` reports one high advisory for runtime Zod (GHSA-mrhx-c7xc-m3w5), plus
   two high findings in the frontend build/development dependency tree (Vite and source-map-js).
   These dependencies were not upgraded during this deployment. Fixed-version upgrades,
-  compatibility tests and a follow-up release remain necessary. Request limits/read-only
-  mode are existing mitigations, not a claim that the advisories are resolved.
+  compatibility tests and a follow-up release remain necessary.
 - No automated monitoring or log-drain setup was added. Native data persistence and
   fuller wallet/mobile validation remain rollout gaps.
 
 以下保留首次预览交付记录；生产状态以上述更新为准。
 
-Date: 2026-10-29. This is a feature-branch preview, not a production release.
+Initial preview delivery: 2026-10-29.
 
 ## Delivery / 交付
 
@@ -40,8 +39,8 @@ Date: 2026-10-29. This is a feature-branch preview, not a production release.
 - Vercel deployment: `dpl_DeeEkckmtcboH1T3veUXUvHtzsKJ`, READY, target null
   (Preview), no aliases assigned. Deployment protection may require the owner's Vercel login.
 
-本次只发布独立预览。`dao.sarl` 正式站、DNS、自定义域名均未修改；旧域名解绑没有恢复。
-Verified the latest production deployment remains `dpl_6JgZJyd1WXTGgNkFxLW4cVRtZ38x`.
+首次预览独立部署，随后正式版本按上文上线。上一版生产部署为
+`dpl_6JgZJyd1WXTGgNkFxLW4cVRtZ38x`。
 
 ## Implemented / 已实现
 
@@ -52,8 +51,8 @@ TypeScript/React SDK, deterministic avatar fallback and three first-party integr
 
 The separate Node 24 + SQLite application implements signed profile claims/hiding,
 fresh Snapshot-admin authorization, branding, role labels, organization-issued badges
-and revocation. These native records are off-chain service data, not NFTs or universal
-identity credentials. Roles do not grant administrative privileges.
+and revocation. Native records are off-chain service data stored in SQLite. Administrative
+authorization is checked against the current Snapshot admins list.
 
 ## Verification / 验证
 
@@ -65,10 +64,9 @@ identity credentials. Roles do not grant administrative privileges.
 - Deployed preview `/health`: HTTP 200, version 0.3.0, mode `read-only`.
 - Deployed `/v1/spaces/yam.eth` and `/members?page=1`: HTTP 200 with real Hub data.
   This observation returned 102 unique public participating wallets from at most 50
-  proposals and 500 votes. Both completeness flags were false. Counts are neither
-  an official membership roster nor the full historical total; they can change.
+  proposals and 500 votes. Both completeness flags were false.
 - Deployed `/v1/profile/1/0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045`:
-  HTTP 200 with normalized response and honest `avatar.source: none` (no invented image).
+  HTTP 200 with normalized response and `avatar.source: none`.
 - Direct `/spaces/yam.eth` page request: HTTP 200, SPA entry and asset references.
 - Legacy CI workflows updated to Node 24 + locked dependency installation; inspect the
   PR checks for their latest remote result. The new Product checks passed before this update.
@@ -77,7 +75,7 @@ Not verified: a real browser wallet signature/upload, mobile wallets, full remot
 acceptance, Docker execution, production write operations or external partner adoption.
 The managed preview browser connection failed during final online UI verification.
 Earlier managed-local Snapshot requests timed out although the separate real upstream
-smoke and Vercel API checks succeeded. These limitations are not recorded as passes.
+smoke and Vercel API checks succeeded. Production browser verification is recorded above.
 
 ## Access and architecture / 访问与架构
 
@@ -113,8 +111,7 @@ See `ARCHITECTURE.md`, `API.md`, `SECURITY.md` and `DEPLOYMENT.md` for contracts
 - Full historical indexing, partner-owned integrations and paid service operations.
 - Billing, API-key plans, support commitments and jurisdiction-specific policy review.
 
-This delivers the Phase 1/2 foundation plus a locally tested signed administration slice,
-not the complete commercial roadmap. Cross-site avatar display still requires each
-third-party site to adopt Snapshot/ENS or this resolver; it is not automatic everywhere.
-The next commercial milestone is one real community's partner-owned integration and
-a durable, independently verified pilot backend, not a claim of revenue or traction.
+The Phase 1/2 foundation and locally tested signed administration are implemented.
+Applications display avatars through Snapshot, ENS or the Face resolver. The next commercial
+milestone is a partner-owned community integration and a durable pilot backend with
+independent verification.

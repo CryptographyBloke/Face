@@ -33,27 +33,24 @@ Use a single Node 24 process with a mounted persistent directory, TLS reverse pr
 `server/migrations/001.sql` is applied idempotently at startup. Do not use an ephemeral
 serverless filesystem for claim records or nonce storage.
 
-`Dockerfile` is supplied as a deployment starting point. Container execution was not assumed
-or reported as tested unless explicitly recorded in the release report. Review/pin the base
-image digest before a production rollout. Provisioning a new paid host/database is outside
-this implementation's authorization.
+`Dockerfile` is supplied for container deployment. Container validation is pending. Pin the
+base-image digest, attach persistent storage and verify backup/restore before accepting writes.
 
 ## Vercel preview (read-only)
 
 `vercel.json` builds `web/dist`, routes `/v1` and `/health` to `api/index.mjs`, and preserves SPA
-deep links. The preview adapter intentionally does not instantiate SQLite or enable native
-claims/admin writes. This avoids pretending that function-local files are durable storage.
+deep links. The Vercel adapter provides read endpoints. Native claims/admin writes require
+a shared durable database adapter.
 The avatar publisher still talks directly to Pineapple/Snapshot through the wallet.
 
-Deploy the feature branch to the existing verified team/project with target **preview**, not
-production. Do not assign custom domains or promote. A writable Vercel release needs a real
-shared database adapter (for example a managed SQL service), an authorization review and
-separate staging tests. That integration is not implemented here.
+Use the existing verified team/project. Publish tested updates to Production on `dao.sarl`.
+A writable Vercel release requires a shared database adapter, authorization review and staging
+tests. The current production mode is `read-only`.
 
 ## Migration and rollback
 
 1. Stop writes and back up the existing database. For this release there is no production
-   native database migration; it introduces a new optional schema rather than overwriting data.
+   native database migration; the optional schema uses a separate database.
 2. Apply/test against a separate staging database first. Keep the previous commit/build.
 3. Do not promote until the original avatar flow and signed write tests pass on the actual host.
 4. Roll back the application to the previous build and restore its matching database backup
@@ -77,5 +74,6 @@ npm run smoke
 ```
 
 The smoke test is a real read-only upstream integration and is intentionally not part of
-deterministic CI. It uses smaller scan limits and prints their provenance. npm publication,
-production promotion, paid services and custom-domain changes require separate approval.
+deterministic CI. It uses smaller scan limits and prints their provenance. Tested website
+updates are published directly to `dao.sarl`; paid resources, package publication and access
+changes require explicit authorization.

@@ -58,8 +58,8 @@ export default function ClaimForm({
       <section className="panel">
         <p>
           {zh
-            ? "这是只读预览。原生资料认领需要接入持久化后端；预览不会请求资料签名。"
-            : "Read-only preview. Native claims require a persistent backend; this preview will not request a claim signature."}
+            ? "资料浏览模式。连接持久化后端后可编辑原生资料。"
+            : "Profile browsing mode. Connect a persistent backend to edit native profiles."}
         </p>
       </section>
     );
@@ -74,8 +74,8 @@ export default function ClaimForm({
       <h2>{zh ? "认领 / 编辑钱包资料" : "Claim / edit wallet profile"}</h2>
       <p>
         {zh
-          ? "资料将公开；签名仅授权本次修改，不代表加入 DAO。仅支持普通 EOA 钱包。"
-          : "Fields will be public. Signing authorizes this update, not DAO membership. EOA wallets only."}
+          ? "使用 EOA 钱包签名，公开保存本次资料修改。"
+          : "Sign with an EOA wallet to publish this profile update."}
       </p>
       <label>
         {zh ? "名称" : "Display name"}

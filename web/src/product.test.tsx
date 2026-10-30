@@ -4,6 +4,10 @@ import App from "./App";
 import { FaceClient, validateAddress } from "../../packages/sdk/src/index";
 import { WalletFaceAvatar } from "../../packages/sdk/src/react";
 import { DirectoryList } from "./product/DirectoryList";
+import Explore from "./product/Explore";
+import Developers from "./product/Developers";
+import SpacePage from "./product/SpacePage";
+import ClaimForm from "./product/ClaimForm";
 vi.mock("@snapshot-labs/pineapple", () => ({
   upload: async () => ({ cid: "QmTestImage" }),
 }));
@@ -136,4 +140,83 @@ it("avatar component displays deterministic fallback on resolver failure", async
   );
   render(<WalletFaceAvatar address={addr} />);
   expect(screen.getByRole("img").getAttribute("aria-label")).toContain(addr);
+});
+
+it("exploration and developer copy introduce actions in both languages", () => {
+  const view = render(<Explore zh />);
+  expect(
+    screen.getByText(
+      "输入 Snapshot Space ID，查看社区资料、参与者和治理活动。",
+    ),
+  ).toBeTruthy();
+  view.rerender(<Explore zh={false} />);
+  expect(
+    screen.getByText(
+      "Enter a Snapshot Space ID to explore its profile, participants and governance activity.",
+    ),
+  ).toBeTruthy();
+  view.rerender(<Developers zh />);
+  expect(screen.getByText("集成示例：")).toBeTruthy();
+  view.rerender(<Developers zh={false} />);
+  expect(screen.getByText("Integration examples:")).toBeTruthy();
+});
+
+it("space copy preserves source and scan status alongside concise labels", async () => {
+  const provenance = {
+    fetchedAt: "2026-10-30T00:00:00.000Z",
+    sourceUrl: "https://snapshot.box/#/yam.eth",
+    votesScanned: 500,
+    votesComplete: false,
+  };
+  vi.stubGlobal(
+    "fetch",
+    vi.fn(async (input) => {
+      const url = String(input);
+      if (url.includes("/members"))
+        return Response.json({ items: [], page: 0, hasMore: false });
+      if (url.includes("/activity")) return Response.json({ items: [] });
+      return Response.json({
+        space: { id: "yam.eth", name: "Yam", about: "Community governance" },
+        official: false,
+        branding: null,
+        counts: {
+          publicParticipantsObserved: 102,
+          claimedProfilesObserved: 0,
+          proposalsObserved: 50,
+        },
+        provenance,
+      });
+    }),
+  );
+  const view = render(<SpacePage id="yam.eth" zh />);
+  expect(await screen.findByText("Snapshot 社区")).toBeTruthy();
+  expect(screen.getByText(/已扫描投票：500/)).toBeTruthy();
+  expect(screen.getByText(/达到扫描上限/)).toBeTruthy();
+  expect(screen.getByText(/来源：Snapshot/)).toBeTruthy();
+  view.rerender(<SpacePage id="yam.eth" zh={false} />);
+  expect(screen.getByText("SNAPSHOT SPACE")).toBeTruthy();
+  expect(screen.getByText(/Scan limited/)).toBeTruthy();
+});
+
+it("read-only profile states explain how editing becomes available", async () => {
+  vi.stubGlobal(
+    "fetch",
+    vi.fn(async () => Response.json({ mode: "read-only" })),
+  );
+  const profile = {
+    address: addr,
+    profile: { links: [] },
+    avatar: {},
+  } as never;
+  const view = render(<ClaimForm profile={profile} zh onSaved={() => {}} />);
+  expect(
+    await screen.findByText("资料浏览模式。连接持久化后端后可编辑原生资料。"),
+  ).toBeTruthy();
+  expect(screen.queryByRole("button")).toBeNull();
+  view.rerender(<ClaimForm profile={profile} zh={false} onSaved={() => {}} />);
+  expect(
+    screen.getByText(
+      "Profile browsing mode. Connect a persistent backend to edit native profiles.",
+    ),
+  ).toBeTruthy();
 });

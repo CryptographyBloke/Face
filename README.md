@@ -68,13 +68,13 @@ Snapshot publication is an off-chain signature flow and does not require an on-c
 
 ## Compatibility and limits / 兼容性与边界
 
-There is no universal avatar registry. Snapshot, Stamp, ENS-aware, or IPFS-aware apps can display the avatar only if they choose to support the corresponding source. This project does not make arbitrary websites automatically adopt a new avatar source.
+Compatible applications display avatars through their Snapshot, Stamp, ENS or IPFS integrations. Developers can also use the Face resolver API and React component.
 
-不存在能强制所有网站统一读取头像的注册表。Snapshot、Stamp、ENS 或 IPFS 兼容应用需要主动支持相应来源；本项目无法让任意网站自动采用新的头像来源。
+兼容应用通过 Snapshot、Stamp、ENS 或 IPFS 接口显示头像。开发者也可接入 Face Resolver API 和 React 组件。
 
-The existing avatar publisher remains browser-driven. The upgrade adds a separate API and optional SQLite persistence without server-side key custody. It still relies on the wallet, Pineapple, Snapshot, and public IPFS gateways.
+The avatar publisher runs in the browser. The API adds profile resolution and optional SQLite persistence. Wallets hold the private keys; Pineapple, Snapshot and public IPFS gateways handle publishing and retrieval.
 
-原头像发布流程仍由浏览器协调；升级另加 API 和可选 SQLite 持久化，不托管用户私钥。运行仍依赖钱包、Pineapple、Snapshot 和公共 IPFS 网关。
+浏览器协调头像发布，API 提供资料解析与可选 SQLite 持久化。钱包保管私钥，Pineapple、Snapshot 和公共 IPFS 网关负责发布与读取。
 
 ## Repository / 仓库结构
 
@@ -107,11 +107,11 @@ node src/cli.mjs setup --domain example.com --address 0x...
 
 - The app never requests a seed phrase or private key.
 - Wallet signatures and optional transactions require explicit wallet approval.
-- Logging out clears local app state; it does not delete public IPFS or Snapshot data.
+- Logging out clears local app state. IPFS and Snapshot retain their public records.
 
 - 应用不会索要助记词或私钥。
 - 钱包签名和可选链上交易都需要用户在钱包中明确确认。
-- 退出登录只清除本地应用状态，不会删除已经公开的 IPFS 或 Snapshot 数据。
+- 退出登录清除本地应用状态，IPFS 和 Snapshot 保留对应公开记录。
 
 ## License / 许可证
 

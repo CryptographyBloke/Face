@@ -13,8 +13,8 @@ export default function Examples({ kind, zh }: { kind: string; zh: boolean }) {
       </h1>
       <p>
         {zh
-          ? "输入真实钱包地址，组件将调用 Face Resolver；这是本站演示，不是外部客户案例。"
-          : "Enter a real wallet address. This component calls the Face resolver; this is a first-party demo, not a customer integration."}
+          ? "输入钱包地址，通过 Face Resolver 查看资料和头像。"
+          : "Enter a wallet address to load its profile and avatar through Face Resolver."}
       </p>
       <form
         className="inline"

@@ -25,7 +25,7 @@ Production now serves the 0.3 frontend and read-only resolver/community API. Per
 native writes, billing and full organization onboarding are still not enabled. External wallet,
 Pineapple, Snapshot and IPFS availability remain dependencies.
 
-There is no universal avatar registry: third-party applications need to integrate Snapshot, ENS, Stamp, IPFS, or a future resolver API before they can display these avatars.
+Third-party applications display avatars through Snapshot, ENS, Stamp, IPFS or the Face resolver API.
 
 ## Roadmap
 
@@ -37,17 +37,17 @@ There is no universal avatar registry: third-party applications need to integrat
 | M3 — Community pilot | Branded member pages, invite/import flow, roles/badges, moderation and export | Two or three pilot communities |
 | M4 — Commercial version | API keys, usage dashboard, billing, support, monitoring and operational policies | First recurring organizational customers |
 
-Targets are proposals, not achieved results. Individual avatar upload should remain free; possible paid value is organization tooling, resolver infrastructure, or white-label deployments.
+Roadmap targets guide upcoming work. Individual avatar upload stays free; paid services focus on organization tooling, resolver infrastructure and branded deployments.
 
 ## Immediate priorities
 
 1. Recruit testers and measure end-to-end upload and profile-read reliability.
-2. Validate the implemented resolver/SDK with an external partner-controlled integration; the three included examples are first-party demos, not independent adoption.
+2. Validate the implemented resolver/SDK in a partner-controlled website, using the three included examples as integration starting points.
 3. Provision and verify a durable staging backend before inviting real users to claim profiles, then validate community demand before adding billing.
 
 ## Product principles
 
 - Keep wallet keys in the user's wallet; never add key custody.
-- Keep Snapshot and ENS as compatibility adapters rather than hard requirements.
-- Do not claim that every website will display the avatar automatically.
+- Keep Snapshot and ENS integrations optional and modular.
+- Document supported integrations and make adding a new integration straightforward.
 - Avoid a custom registry contract until real integrations demonstrate the need.

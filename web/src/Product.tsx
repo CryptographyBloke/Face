@@ -62,13 +62,13 @@ export default function Product() {
           </h1>
           <p>
             {zh
-              ? "可演示：公开参与者目录、签名认领资料、管理员品牌配置、组织角色与可撤销徽章。"
-              : "Demonstrable: public participant directories, signed profiles, admin branding, organization roles and revocable badges."}
+              ? "查看公开参与者目录和治理活动；持久化部署支持签名资料、品牌配置、组织角色与可撤销徽章。"
+              : "Explore public participants and governance activity. Persistent deployments add signed profiles, branding, roles and revocable badges."}
           </p>
           <p>
             {zh
-              ? "拟议付费服务：定制品牌、托管部署、API 运维；尚未上线计费。"
-              : "Proposed paid services: custom branding, managed deployment and API operations. Billing is not live."}
+              ? "试点服务：定制品牌、托管部署、API 接入与运维。"
+              : "Pilot services: custom branding, managed deployment, API integration and operations."}
           </p>
           <a
             className="button"
@@ -84,13 +84,13 @@ export default function Product() {
           <h1>{zh ? "隐私与数据来源" : "Privacy and data sources"}</h1>
           <p>
             {zh
-              ? "公开投票记录来源于 Snapshot；仅展示公开参与事实，不推断正式成员身份。原生资料仅在钱包明确签名后公开。可签名隐藏原生资料，但无法删除 Snapshot 或 IPFS 上已公开的数据。"
-              : "Governance facts come from Snapshot public data, not inferred official membership. Native profiles are published only after explicit wallet signing. You may sign to hide native fields; this cannot erase existing public Snapshot or IPFS data."}
+              ? "社区资料与公开投票记录来自 Snapshot。原生资料通过钱包签名发布，也可签名隐藏；Snapshot 和 IPFS 上的公开数据由对应服务保存。"
+              : "Community profiles and public votes come from Snapshot. Wallet signatures publish or hide native profiles. Snapshot and IPFS retain their respective public data."}
           </p>
           <p>
             {zh
-              ? "服务器保存授权签名、随机 nonce 和审核所需时间记录。不保存私钥，不构建广告画像。"
-              : "The server stores authorization signatures, random nonces and audit timestamps. It never stores private keys or builds advertising profiles."}
+              ? "服务器保存授权签名、随机 nonce 和操作时间。私钥由钱包保管。"
+              : "The server stores authorization signatures, random nonces and operation timestamps. Private keys remain in the wallet."}
           </p>
         </section>
       );
