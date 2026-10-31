@@ -1,7 +1,8 @@
 import { useState } from "react";
 import type { Profile } from "../../../packages/sdk/src/index";
-import { connectWallet } from "../wallet";
-import { authorize, api, useLoad } from "./shared";
+import { authorize } from "./shared";
+import { useCapabilities } from "../app/resource";
+import { useWallet } from "../app/WalletProvider";
 export default function ClaimForm({
   profile,
   zh,
@@ -11,10 +12,8 @@ export default function ClaimForm({
   zh: boolean;
   onSaved: () => void;
 }) {
-  const mode = useLoad(
-    () => api.request<{ mode: string }>("/health"),
-    "health",
-  );
+  const mode = useCapabilities();
+  const { connect, wallet } = useWallet();
   const [name, setName] = useState(profile.profile.name || "");
   const [bio, setBio] = useState(profile.profile.bio || "");
   const [avatar, setAvatar] = useState(profile.avatar.uri || "");
@@ -25,7 +24,9 @@ export default function ClaimForm({
     setBusy(true);
     setNotice("");
     try {
-      const w = await connectWallet();
+      if (!mode.canWrite)
+        throw new Error("Profile editing requires a persistent backend");
+      const w = await connect();
       if (w.address.toLowerCase() !== profile.address.toLowerCase())
         throw new Error(
           zh
@@ -44,6 +45,7 @@ export default function ClaimForm({
               revision: profile.profile.revision,
             },
         profile.address,
+        w,
       );
       setNotice(zh ? "已保存签名资料" : "Signed profile saved");
       onSaved();
@@ -53,7 +55,10 @@ export default function ClaimForm({
       setBusy(false);
     }
   };
-  if (mode.data?.mode === "read-only")
+  if (
+    !mode.canWrite ||
+    wallet?.address.toLowerCase() !== profile.address.toLowerCase()
+  )
     return (
       <section className="panel">
         <p>

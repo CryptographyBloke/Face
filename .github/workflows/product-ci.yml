@@ -17,3 +17,5 @@ jobs:
       - run: npm --prefix packages/sdk run build
       - run: npm run build
       - run: npm run test:protocol
+      - run: npm audit
+      - run: npm --prefix web audit

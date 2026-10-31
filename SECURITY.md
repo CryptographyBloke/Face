@@ -2,6 +2,13 @@
 
 ## Enforced boundaries
 
+- Production native authorization is bound to `https://walletface.org`. Old-domain browser
+  state is not transferred. A new host requires a fresh wallet connection and signature.
+- The 0.4 dependency upgrade pins Zod 4.6.7 and Vite 7.3.7 and updates source-map-js.
+  Root and frontend `npm audit` reported zero vulnerabilities during release validation.
+- The QA-only build labels its connected-wallet fixture and rejects signing methods.
+  Standard production builds tree-shake the QA bootstrap and fixture modules.
+
 - No private keys/seed phrases are requested or stored. Only explicit wallet signatures.
 - Native EIP-712 authorization binds origin, chain 1, exact canonical payload, action,
   address, random nonce and expiry. Signature recovery is server-side. Nonce consumption

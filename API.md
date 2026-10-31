@@ -1,6 +1,6 @@
 # Face API v1
 
-Local default: `http://localhost:8787`. Ethereum identity namespace only (`chainId=1`).
+Public API: `https://walletface.org`; local default: `http://localhost:8787`. Ethereum identity namespace only (`chainId=1`).
 Other chains return 422. All errors are JSON:
 `{"error":{"code":"INVALID_ADDRESS","message":"Invalid EVM address"}}`.
 
@@ -12,7 +12,8 @@ Other chains return 422. All errors are JSON:
 | `GET /v1/profile/1/:address` | normalized profile, avatar URI/URLs/source, verification provenance, timestamps and cache metadata |
 | `GET /v1/avatar/1/:address` | avatar subset with source/provenance |
 | `GET /v1/spaces/:id` | public metadata, observed counts, limited proposals, optional verified branding, scan provenance |
-| `GET /v1/spaces/:id/members?page=0&search=0x` | 20 public governance participants/page; normalized and deduplicated |
+| `GET /v1/spaces/:id/summary` | Space metadata and source/timestamp; no participant-history scan |
+| `GET /v1/spaces/:id/members?page=0&search=0x&sort=recent` | 20 public governance participants/page; sort: recent, votes, address; search before pagination |
 | `GET /v1/spaces/:id/activity` | up to 50 recent public votes in the scan |
 | `GET /v1/spaces/:id/badges` | organization-issued badge records, including revoked records |
 
@@ -79,6 +80,9 @@ const face = new FaceClient('https://your-api.example');
 const profile = await face.resolveProfile({chainId: 1, address});
 // React: <WalletFaceAvatar address={address} size={40} baseUrl="https://your-api.example" />
 ```
+
+All SDK read methods accept optional `RequestInit`, including an AbortSignal. Directory reads
+accept `directory(id, page, search, options, sort)`; the default sort remains recent.
 
 `npm --prefix packages/sdk run build` emits JS and type declarations. `npm pack` from that
 directory prepares a package. It is intentionally private/unpublished; npm publication needs

@@ -1,6 +1,17 @@
 # Wallet Face — Product Milestones
 
-> Status updated: 2026-10-29
+> Status updated: 2026-10-31
+
+## 0.4 progress / 0.4 进展
+
+Unified application shell and wallet state, new home/discovery/following/recent pages,
+four Space sections, searchable/sortable/paginated participation, refreshed wallet profiles,
+avatar progress, bilingual themes and developer/pilot entrances are implemented on
+`feature/snapshot-inspired-ui-v04`. Current primary domain: <https://walletface.org>.
+Dependency advisories from 0.3 have been patched and regression-tested.
+
+下一阶段：真实手机钱包和签名发布测试、首个社区方自有网站接入、持久化试点后端与恢复演练。
+随后再按实际使用情况增加邀请、组织管理、API 计费与服务运营。
 
 ## 0.3 progress (read-only production release)
 
@@ -19,9 +30,9 @@ shared serverless persistence, distributed limits, partner adoption and paid ope
 
 ## Current state — public prototype
 
-The production site is available at <https://dao.sarl>. The app supports wallet connection, JPG/PNG upload to IPFS, gasless Snapshot Profile signing, profile read-back, bilingual UI, logout, local preview, gateway fallback, and links to compatible services. ENS synchronization is optional.
+The production primary domain is <https://walletface.org>. The app supports wallet connection, JPG/PNG upload to IPFS, gasless Snapshot Profile signing, profile read-back, bilingual UI, logout, local preview, gateway fallback, and links to compatible services. ENS synchronization is optional.
 
-Production now serves the 0.3 frontend and read-only resolver/community API. Persistent
+Production uses the read-only resolver/community API. Persistent
 native writes, billing and full organization onboarding are still not enabled. External wallet,
 Pineapple, Snapshot and IPFS availability remain dependencies.
 

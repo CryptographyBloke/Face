@@ -1,117 +1,89 @@
-# Wallet Face 0.3 — release evidence
+# Wallet Face 0.4 — release evidence / 发布验证
 
-## Production update / 正式上线（2026-10-29）
+Date: 2026-10-31. Branch: `feature/snapshot-inspired-ui-v04`.
+Baseline: `feature/face-spaces-mvp` at `ebba64ca2d48cb590bdcb66b553a153c35cb4896`.
+Primary domain: https://walletface.org.
 
-At the owner's explicit request, the tested preview source was rebuilt for Production
-and published to <https://dao.sarl/>. This update supersedes the preview-only status below.
+## Implemented
 
-- Production deployment: `dpl_3pQ5gCG9qAWRQ53xzW8WEedYsfLY`, READY.
-- Source: `6b4fe82734d14d90f20fb3e6a80013491ba5db65`; framework React/Vite + Node API.
-- Build duration: approximately 38 seconds. No DNS or access-protection settings changed.
-- Rollback target retained: `dpl_6JgZJyd1WXTGgNkFxLW4cVRtZ38x`.
-- Public unauthenticated `/health` returned HTTP 200, version `0.3.0`, mode `read-only`.
-- Browser verification on the production domain rendered the original avatar entry,
-  navigation, Space import, real Yam participant directory and recent governance activity.
-  The observed count was 102 wallets within the documented bounded scan.
-- Production error/fatal runtime-log query for this deployment over the previous ten
-  minutes returned no matching logs.
-- Native claims/admin writes remain disabled. The original browser Snapshot publisher
-  is retained; no real-wallet upload/signature was performed during this rollout.
-- `npm audit` reports one high advisory for runtime Zod (GHSA-mrhx-c7xc-m3w5), plus
-  two high findings in the frontend build/development dependency tree (Vite and source-map-js).
-  These dependencies were not upgraded during this deployment. Fixed-version upgrades,
-  compatibility tests and a follow-up release remain necessary.
-- No automated monitoring or log-drain setup was added. Native data persistence and
-  fuller wallet/mobile validation remain rollout gaps.
+- Persistent application shell, global EIP-1193 wallet state and context search.
+- Home, discover/followed/recent collections, four Space sections and refreshed profiles.
+- URL-backed participant search/page/sort, compact provenance and public activity.
+- Avatar upload/sign/publish stages, immediate local preview and global avatar update.
+- Chinese/English, system/light/dark theme, mobile bottom navigation and dialog drawer.
+- Reusable cards, skeleton/error/empty states, modal focus handling, toast and clipboard fallback.
+- Metadata-only summary API, cancellable SDK reads and validated safe profile links.
+- Canonical metadata, original favicon, sitemap/robots directive, developer/pilot entrances.
+- Snapshot MIT source study and attribution; original React implementation.
 
-以下保留首次预览交付记录；生产状态以上述更新为准。
+## Automated evidence
 
-Initial preview delivery: 2026-10-29.
+- Backend/security/SQLite/HTTP suite: 20 passed, including exact-host redirect configuration.
+- Frontend/SDK/provider suite: 23 passed, including original publisher envelope regression,
+  shared wallet state, account changes, logout restoration, navigation, collections,
+  participant filters and read-only capability gates.
+- Web TypeScript/production build, SDK declarations and Snapshot EIP-712 digest check: passed.
+- Root and web npm audits: zero vulnerabilities after Zod 4.6.7, Vite 7.3.7 and source-map-js update.
+- Native wrong-origin, replay, tampering, stale revisions and admin authorization remain enforced.
+- HTTP deep links include home/avatar/followed/Space/participants/profile/developers.
 
-## Delivery / 交付
+Mocked tests use labeled fixture identities and intercept uploads/sequencer calls. They create
+no public profile changes. Real wallet signature/upload and mobile-wallet approval are pending.
 
-- Branch: `feature/face-spaces-mvp`.
-- Draft PR: <https://github.com/CryptographyBloke/Face/pull/2> (not merged).
-- Read-only preview: <https://hnudao-face-qbsl22pwx-dao-vote.vercel.app>.
-- Community example: <https://hnudao-face-qbsl22pwx-dao-vote.vercel.app/spaces/yam.eth>.
-- Preview source: `6b4fe82734d14d90f20fb3e6a80013491ba5db65`. Later branch
-  commits update CI and documentation only; this preview does not include those edits.
-- Vercel deployment: `dpl_DeeEkckmtcboH1T3veUXUvHtzsKJ`, READY, target null
-  (Preview), no aliases assigned. Deployment protection may require the owner's Vercel login.
+## Browser evidence
 
-首次预览独立部署，随后正式版本按上文上线。上一版生产部署为
-`dpl_6JgZJyd1WXTGgNkFxLW4cVRtZ38x`。
+The local managed preview serves the QA build. Real API data is read from the stable public
+walletface.org API because managed-local upstream Snapshot requests time out.
+The observed Yam scan contains 102 public wallets, 50 proposals and 500 public votes, with
+both completeness flags false. Activity, participant profiles and community metadata render.
 
-## Implemented / 已实现
+Responsive checks use real iframe CSS viewports at 1440, 1024, 768 and 375; the 1440 frame is
+visually scaled to 85% for capture within the available browser. Connected screenshots use a
+visibly labeled fixture that cannot sign. See docs/UI_RESEARCH.md for the exact setup.
 
-The original wallet → IPFS → gasless Snapshot publisher is retained, with bilingual
-navigation and public profile links. New functionality includes public address profiles,
-bounded Snapshot community directories and activity, a versioned resolver API, typed
-TypeScript/React SDK, deterministic avatar fallback and three first-party integration examples.
+Screenshots: [index](docs/screenshots/README.md).
+Escape closes the mobile drawer; real participant search returned the single matching wallet
+and linked to its public profile. Theme switching, language selection and local following
+were exercised in the browser. Checked frame document clientWidth equals scrollWidth.
 
-The separate Node 24 + SQLite application implements signed profile claims/hiding,
-fresh Snapshot-admin authorization, branding, role labels, organization-issued badges
-and revocation. Native records are off-chain service data stored in SQLite. Administrative
-authorization is checked against the current Snapshot admins list.
+## Deployment
 
-## Verification / 验证
+Preview: `dpl_5KQjiKVU3bbMuU4HpwKCwSUTtskS`, READY; build completed in about 32 seconds.
+Initial 0.4 Production: `dpl_93GCizrSn4mFWRrbPc2aRPktZtkF`, READY, rebuilt from that Preview.
+Source: `a3c9150b1c26d0703a4abf7fb2419268ba2e5ba7`.
+PR: https://github.com/CryptographyBloke/Face/pull/3 (base: 0.3 feature branch).
+The existing Vercel project was renamed by the owner to `walletface`; its ID is unchanged.
+Public browser checks confirmed the new homepage and `/v1/spaces/yam.eth/summary` on
+walletface.org after production alias assignment.
+The Aave community entry was corrected to `aavedao.eth` after a real summary API response
+confirmed its current metadata. SDK caller cancellation is combined with a 30-second timeout.
 
-- Backend/security/persistence/real HTTP integration: 17 tests pass.
-- Frontend and SDK regression suite: 6 tests pass (mocked wallet/upstream boundaries).
-- Web TypeScript + production build, SDK declarations/build, original Snapshot protocol
-  hash check and `git diff --check`: pass.
-- Real read-only Snapshot Hub smoke test: HTTP 200, bounded scan with provenance.
-- Deployed preview `/health`: HTTP 200, version 0.3.0, mode `read-only`.
-- Deployed `/v1/spaces/yam.eth` and `/members?page=1`: HTTP 200 with real Hub data.
-  This observation returned 102 unique public participating wallets from at most 50
-  proposals and 500 votes. Both completeness flags were false.
-- Deployed `/v1/profile/1/0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045`:
-  HTTP 200 with normalized response and `avatar.source: none`.
-- Direct `/spaces/yam.eth` page request: HTTP 200, SPA entry and asset references.
-- Legacy CI workflows updated to Node 24 + locked dependency installation; inspect the
-  PR checks for their latest remote result. The new Product checks passed before this update.
+Final Production: `dpl_CnaLbwozmtUz1TNYANQiNJ3NsHA8`, READY;
+source `9f512e33811e01735792cea23d81f0b81cd45148`.
+- https://walletface.org/ rendered the 0.4 home and real Yam/ENS/Aave DAO cards.
+- Public `/health` returned HTTP 200, version 0.4.0, mode read-only.
+- Public Yam member search with `sort=votes` returned exactly one matching wallet.
+- Public wallet resolution returned the matching normalized address and provenance.
+- dao.sarl deep link returned HTTP 308 to walletface.org, preserving path and both
+  `q` / `page` parameters. Browser navigation reached the filtered participant view.
+- www.walletface.org/avatar returned HTTP 308 to walletface.org/avatar.
+- robots.txt and sitemap.xml returned the new primary domain.
+- GitHub CI, Web CI and Product checks succeeded for the deployed source commit.
+  [Product run](https://github.com/CryptographyBloke/Face/actions/runs/41166593905).
+- [Final live screenshot](docs/screenshots/wallet-face-live-v04-final.jpg).
 
-Not verified: a real browser wallet signature/upload, mobile wallets, full remote visual
-acceptance, Docker execution, production write operations or external partner adoption.
-The managed preview browser connection failed during final online UI verification.
-Earlier managed-local Snapshot requests timed out although the separate real upstream
-smoke and Vercel API checks succeeded. Production browser verification is recorded above.
+The remote Preview retained deployment protection; its build/logs were inspected. Browser
+flow checks used the managed local preview and public production domain. No protected-preview
+access token, share link or security setting was introduced.
+Vercel native writes remain disabled. No production database, paid service or access-protection
+change is part of this release.
 
-## Access and architecture / 访问与架构
+Rollback target: `dpl_4LtevLxZM7vpQchDXoRuiX8cMtCd`.
 
-Vercel serves the compiled SPA and a stateless **read-only** API. API requests query the
-official Snapshot Hub with bounded scans, caching, retries and provenance. Native claims
-and administration are intentionally disabled there because no shared durable database
-has been provisioned. Original Snapshot avatar publication is a separate browser-wallet flow.
+## Remaining verification / 下一步
 
-For the writable local application, use Node 24:
-
-```bash
-npm ci
-npm --prefix web ci
-npm run build
-npm start
-# Open http://localhost:8787
-```
-
-Example preview reads (a protected preview may need an authenticated Vercel session):
-
-```bash
-curl 'https://hnudao-face-qbsl22pwx-dao-vote.vercel.app/health'
-curl 'https://hnudao-face-qbsl22pwx-dao-vote.vercel.app/v1/spaces/yam.eth/members?page=1'
-```
-
-See `ARCHITECTURE.md`, `API.md`, `SECURITY.md` and `DEPLOYMENT.md` for contracts and limits.
-
-## Remaining work / 尚未完成
-
-- Durable shared staging/production persistence and restore drills; no production promotion.
-- Invitation onboarding, bulk exports and complete append-only audit history.
-- Safe/EIP-1271, WalletConnect/mobile validation and distributed rate limits.
-- Full historical indexing, partner-owned integrations and paid service operations.
-- Billing, API-key plans, support commitments and jurisdiction-specific policy review.
-
-The Phase 1/2 foundation and locally tested signed administration are implemented.
-Applications display avatars through Snapshot, ENS or the Face resolver. The next commercial
-milestone is a partner-owned community integration and a durable pilot backend with
-independent verification.
+- Real EIP-1193 wallet upload/signature, mobile wallets/WalletConnect and optional ENS transaction.
+- Durable production native database, backup/restore drill, shared limits and append-only audit.
+- Partner-controlled SDK integration, pilot adoption and commercial operations.
+- China-mainland reachability requires independent regional measurement; this environment
+  does not establish nationwide availability.

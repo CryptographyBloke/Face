@@ -1,58 +1,15 @@
-import { useEffect, useState } from "react";
-import { FaceClient } from "../../../packages/sdk/src/index";
 import { connectWallet } from "../wallet";
-export const api = new FaceClient(import.meta.env.VITE_FACE_API_URL || "");
-export const short = (a: string) => a.slice(0, 6) + "…" + a.slice(-4);
-export const route = (id: string) => "/spaces/" + encodeURIComponent(id);
-export function useLoad<T>(load: () => Promise<T>, key: string) {
-  const [data, setData] = useState<T>();
-  const [error, setError] = useState("");
-  const [refresh, setRefresh] = useState(0);
-  useEffect(() => {
-    let active = true;
-    setData(undefined);
-    setError("");
-    load()
-      .then((d) => {
-        if (active) setData(d);
-      })
-      .catch((e) => {
-        if (active) setError(String(e.message));
-      });
-    return () => {
-      active = false;
-    };
-  }, [key, refresh]);
-  return { data, error, retry: () => setRefresh((r) => r + 1) };
-}
-export function Status({
-  error,
-  loading,
-  retry,
-  zh,
-}: {
-  error: string;
-  loading: boolean;
-  retry: () => void;
-  zh: boolean;
-}) {
-  return error ? (
-    <div className="alert" role="alert">
-      {zh ? "读取失败：" : "Could not load: "}
-      {error} <button onClick={retry}>{zh ? "重试" : "Retry"}</button>
-    </div>
-  ) : loading ? (
-    <div className="skeleton" role="status">
-      {zh ? "正在读取公开资料…" : "Loading public data…"}
-    </div>
-  ) : null;
-}
+import type { ConnectedWallet } from "../app/WalletProvider";
+import { api } from "../app/resource";
+export { api } from "../app/resource";
+export { spacePath as route, shortAddress as short } from "../app/config";
 export async function authorize(
   action: string,
   payload: unknown,
   expectedAddress?: string,
+  session?: ConnectedWallet,
 ) {
-  const { address, walletClient } = await connectWallet();
+  const { address, walletClient } = session || (await connectWallet());
   if (
     expectedAddress &&
     expectedAddress.toLowerCase() !== address.toLowerCase()

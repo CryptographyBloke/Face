@@ -1,4 +1,22 @@
-# Wallet Face 0.3 architecture / 架构
+# Wallet Face 0.4 architecture / 架构
+
+## Application shell / 应用框架
+
+React Router owns client-side navigation and nested Space sections. AppShell keeps the sidebar,
+context search and account menu mounted across page changes. WalletProvider shares one EIP-1193
+client, listens for account/chain/disconnect events, and rejects stale restore/connect results.
+PreferencesProvider shares language/theme. SpacesProvider validates browser-local follows/recent.
+The request cache deduplicates reads, aborts abandoned requests, expires data after 60 seconds,
+and separates keys by address, community, query, page and sort. Snapshot publishing updates a
+wallet-keyed in-memory avatar immediately while public services index the new URI.
+
+路由切换保留统一导航与钱包状态。收藏、最近访问、语言、主题保存在浏览器；钱包凭证
+由钱包管理。发布成功后头像立即更新，公开读取继续通过既有 API 和 Snapshot。
+
+The lightweight summary route reads Space metadata without scanning participant history.
+Directory sorting happens after search and before fixed-size pagination. Collection pages use
+summary reads; community pages fetch full scans on demand. See `docs/UI_RESEARCH.md` for source
+research, design adaptations and responsive QA methodology.
 
 ## Boundaries
 

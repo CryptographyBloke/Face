@@ -1,6 +1,6 @@
 {
   "name": "wallet-face",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "description": "Wallet profiles and public community participation infrastructure",
   "type": "module",
   "bin": {
@@ -29,7 +29,7 @@
   ],
   "dependencies": {
     "viem": "^2.57.13",
-    "zod": "^3.25.76"
+    "zod": "4.6.7"
   },
   "devDependencies": {
     "@types/react": "^19.3.0",
