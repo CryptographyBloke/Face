@@ -8,6 +8,7 @@ These captures precede the curated Aave ID correction from aave.eth to aavedao.e
 the production site uses the live verified Space ID.
 
 - [Before v0.4](wallet-face-before-v04.jpg)
+- [Final live production](wallet-face-live-v04-final.jpg)
 - [Home, 1440](wallet-face-home-1440.jpg) · [Home, 1024](wallet-face-home-1024.jpg)
 - [Explore](wallet-face-explore-1440.jpg)
 - [Space overview](wallet-face-space-1440.jpg)

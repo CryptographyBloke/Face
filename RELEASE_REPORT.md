@@ -18,7 +18,7 @@ Primary domain: https://walletface.org.
 
 ## Automated evidence
 
-- Backend/security/SQLite/HTTP suite: 20 tests, including exact-host redirect configuration.
+- Backend/security/SQLite/HTTP suite: 20 passed, including exact-host redirect configuration.
 - Frontend/SDK/provider suite: 23 passed, including original publisher envelope regression,
   shared wallet state, account changes, logout restoration, navigation, collections,
   participant filters and read-only capability gates.
@@ -54,10 +54,27 @@ Source: `a3c9150b1c26d0703a4abf7fb2419268ba2e5ba7`.
 PR: https://github.com/CryptographyBloke/Face/pull/3 (base: 0.3 feature branch).
 The existing Vercel project was renamed by the owner to `walletface`; its ID is unchanged.
 Public browser checks confirmed the new homepage and `/v1/spaces/yam.eth/summary` on
-walletface.org after production alias assignment. Canonical-host redirects are the following
-release step, after that successful new-domain check.
+walletface.org after production alias assignment.
 The Aave community entry was corrected to `aavedao.eth` after a real summary API response
 confirmed its current metadata. SDK caller cancellation is combined with a 30-second timeout.
+
+Final Production: `dpl_CnaLbwozmtUz1TNYANQiNJ3NsHA8`, READY;
+source `9f512e33811e01735792cea23d81f0b81cd45148`.
+- https://walletface.org/ rendered the 0.4 home and real Yam/ENS/Aave DAO cards.
+- Public `/health` returned HTTP 200, version 0.4.0, mode read-only.
+- Public Yam member search with `sort=votes` returned exactly one matching wallet.
+- Public wallet resolution returned the matching normalized address and provenance.
+- dao.sarl deep link returned HTTP 308 to walletface.org, preserving path and both
+  `q` / `page` parameters. Browser navigation reached the filtered participant view.
+- www.walletface.org/avatar returned HTTP 308 to walletface.org/avatar.
+- robots.txt and sitemap.xml returned the new primary domain.
+- GitHub CI, Web CI and Product checks succeeded for the deployed source commit.
+  [Product run](https://github.com/CryptographyBloke/Face/actions/runs/41166593905).
+- [Final live screenshot](docs/screenshots/wallet-face-live-v04-final.jpg).
+
+The remote Preview retained deployment protection; its build/logs were inspected. Browser
+flow checks used the managed local preview and public production domain. No protected-preview
+access token, share link or security setting was introduced.
 Vercel native writes remain disabled. No production database, paid service or access-protection
 change is part of this release.
 
