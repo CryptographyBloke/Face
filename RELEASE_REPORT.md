@@ -18,7 +18,7 @@ Primary domain: https://walletface.org.
 
 ## Automated evidence
 
-- Backend/security/SQLite/HTTP suite: 19 passed.
+- Backend/security/SQLite/HTTP suite: 20 tests, including exact-host redirect configuration.
 - Frontend/SDK/provider suite: 23 passed, including original publisher envelope regression,
   shared wallet state, account changes, logout restoration, navigation, collections,
   participant filters and read-only capability gates.
@@ -41,11 +41,23 @@ Responsive checks use real iframe CSS viewports at 1440, 1024, 768 and 375; the 
 visually scaled to 85% for capture within the available browser. Connected screenshots use a
 visibly labeled fixture that cannot sign. See docs/UI_RESEARCH.md for the exact setup.
 
-Screenshots and final production observations are appended after rollout.
+Screenshots: [index](docs/screenshots/README.md).
+Escape closes the mobile drawer; real participant search returned the single matching wallet
+and linked to its public profile. Theme switching, language selection and local following
+were exercised in the browser. Checked frame document clientWidth equals scrollWidth.
 
 ## Deployment
 
-Preview/production IDs and commit/PR links are recorded after the deployment completes.
+Preview: `dpl_5KQjiKVU3bbMuU4HpwKCwSUTtskS`, READY; build completed in about 32 seconds.
+Initial 0.4 Production: `dpl_93GCizrSn4mFWRrbPc2aRPktZtkF`, READY, rebuilt from that Preview.
+Source: `a3c9150b1c26d0703a4abf7fb2419268ba2e5ba7`.
+PR: https://github.com/CryptographyBloke/Face/pull/3 (base: 0.3 feature branch).
+The existing Vercel project was renamed by the owner to `walletface`; its ID is unchanged.
+Public browser checks confirmed the new homepage and `/v1/spaces/yam.eth/summary` on
+walletface.org after production alias assignment. Canonical-host redirects are the following
+release step, after that successful new-domain check.
+The Aave community entry was corrected to `aavedao.eth` after a real summary API response
+confirmed its current metadata. SDK caller cancellation is combined with a 30-second timeout.
 Vercel native writes remain disabled. No production database, paid service or access-protection
 change is part of this release.
 

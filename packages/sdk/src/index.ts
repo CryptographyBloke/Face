@@ -112,7 +112,9 @@ export class FaceClient {
     const r = await this.fetcher(this.baseUrl.replace(/\/$/, "") + path, {
       cache: "no-store",
       ...options,
-      signal: options.signal || AbortSignal.timeout(30000),
+      signal: options.signal
+        ? AbortSignal.any([options.signal, AbortSignal.timeout(30000)])
+        : AbortSignal.timeout(30000),
     });
     const body = await r.json();
     if (!r.ok)

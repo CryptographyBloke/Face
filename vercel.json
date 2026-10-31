@@ -3,6 +3,20 @@
   "buildCommand": "npm run build",
   "outputDirectory": "web/dist",
   "framework": null,
+  "redirects": [
+    {
+      "source": "/:path*",
+      "has": [{ "type": "host", "value": "dao.sarl" }],
+      "destination": "https://walletface.org/:path*",
+      "permanent": true
+    },
+    {
+      "source": "/:path*",
+      "has": [{ "type": "host", "value": "www.walletface.org" }],
+      "destination": "https://walletface.org/:path*",
+      "permanent": true
+    }
+  ],
   "functions": { "api/index.mjs": { "maxDuration": 60 } },
   "rewrites": [
     { "source": "/v1/:path*", "destination": "/api?_route=v1/:path*" },

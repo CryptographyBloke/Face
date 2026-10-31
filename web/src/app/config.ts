@@ -1,6 +1,6 @@
 export const SITE_URL = "https://walletface.org";
 export const GITHUB_URL = "https://github.com/CryptographyBloke/Face";
-export const CURATED_SPACES = ["yam.eth", "ens.eth", "aave.eth"];
+export const CURATED_SPACES = ["yam.eth", "ens.eth", "aavedao.eth"];
 export const spacePath = (id: string) => `/spaces/${encodeURIComponent(id)}`;
 export const profilePath = (address: string) =>
   `/u/${encodeURIComponent(address)}`;
