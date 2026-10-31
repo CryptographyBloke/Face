@@ -4,4 +4,4 @@
 User-agent: *
 Allow: /
 
-# There are currently no private or administrative routes exposed by this site.
+Sitemap: https://walletface.org/sitemap.xml

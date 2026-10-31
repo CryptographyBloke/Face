@@ -1,0 +1,1 @@
+{"name":"@wallet-face/sdk","version":"0.4.0","type":"module","private":true,"files":["dist"],"scripts":{"build":"tsc -p tsconfig.json"},"exports":{".":{"types":"./dist/index.d.ts","import":"./dist/index.js"},"./react":{"types":"./dist/react.d.ts","import":"./dist/react.js"}},"peerDependencies":{"react":">=18"}}

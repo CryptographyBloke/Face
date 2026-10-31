@@ -1,14 +1,42 @@
 # Wallet Face — Product Milestones
 
-> Status updated: 2026-10-29
+> Status updated: 2026-10-31
+
+## 0.4 progress / 0.4 进展
+
+Unified application shell and wallet state, new home/discovery/following/recent pages,
+four Space sections, searchable/sortable/paginated participation, refreshed wallet profiles,
+avatar progress, bilingual themes and developer/pilot entrances are implemented on
+`feature/snapshot-inspired-ui-v04`. Current primary domain: <https://walletface.org>.
+Dependency advisories from 0.3 have been patched and regression-tested.
+
+下一阶段：真实手机钱包和签名发布测试、首个社区方自有网站接入、持久化试点后端与恢复演练。
+随后再按实际使用情况增加邀请、组织管理、API 计费与服务运营。
+
+## 0.3 progress (read-only production release)
+
+Implemented on `feature/face-spaces-mvp`: public profile routes, bounded real Snapshot Space
+imports, a versioned resolver API, typed SDK/React component, three first-party integration
+examples, native EOA-signed claims with SQLite persistence, fresh Snapshot-admin checks,
+branding, role labels and revocable organization badges. The original avatar flow remains.
+
+Local/backend checks and real read-only Hub smoke tests are available. Vercel preview mode
+is explicitly read-only; a writable production backend is not provisioned. Native write
+logic is locally tested; only the read-only frontend/API release is live on `dao.sarl`
+as of 2026-10-29. See `RELEASE_REPORT.md`, `DEPLOYMENT.md` and `SECURITY.md`.
+
+Still open: invitations, bulk exports, Safe/EIP-1271, mobile-wallet/WalletConnect validation,
+shared serverless persistence, distributed limits, partner adoption and paid operations.
 
 ## Current state — public prototype
 
-The production site is available at <https://dao.sarl>. The app supports wallet connection, JPG/PNG upload to IPFS, gasless Snapshot Profile signing, profile read-back, bilingual UI, logout, local preview, gateway fallback, and links to compatible services. ENS synchronization is optional.
+The production primary domain is <https://walletface.org>. The app supports wallet connection, JPG/PNG upload to IPFS, gasless Snapshot Profile signing, profile read-back, bilingual UI, logout, local preview, gateway fallback, and links to compatible services. ENS synchronization is optional.
 
-The web client is static and has no custom account database, resolver API, organization workspace, billing, or moderation dashboard. It depends on browser wallets, Pineapple, Snapshot, and public IPFS gateways.
+Production uses the read-only resolver/community API. Persistent
+native writes, billing and full organization onboarding are still not enabled. External wallet,
+Pineapple, Snapshot and IPFS availability remain dependencies.
 
-There is no universal avatar registry: third-party applications need to integrate Snapshot, ENS, Stamp, IPFS, or a future resolver API before they can display these avatars.
+Third-party applications display avatars through Snapshot, ENS, Stamp, IPFS or the Face resolver API.
 
 ## Roadmap
 
@@ -20,17 +48,17 @@ There is no universal avatar registry: third-party applications need to integrat
 | M3 — Community pilot | Branded member pages, invite/import flow, roles/badges, moderation and export | Two or three pilot communities |
 | M4 — Commercial version | API keys, usage dashboard, billing, support, monitoring and operational policies | First recurring organizational customers |
 
-Targets are proposals, not achieved results. Individual avatar upload should remain free; possible paid value is organization tooling, resolver infrastructure, or white-label deployments.
+Roadmap targets guide upcoming work. Individual avatar upload stays free; paid services focus on organization tooling, resolver infrastructure and branded deployments.
 
 ## Immediate priorities
 
 1. Recruit testers and measure end-to-end upload and profile-read reliability.
-2. Build a read-only resolver prototype and integrate it into several independent demo apps before adding a new registry contract.
-3. Validate demand with community pilots before adding workspaces or billing.
+2. Validate the implemented resolver/SDK in a partner-controlled website, using the three included examples as integration starting points.
+3. Provision and verify a durable staging backend before inviting real users to claim profiles, then validate community demand before adding billing.
 
 ## Product principles
 
 - Keep wallet keys in the user's wallet; never add key custody.
-- Keep Snapshot and ENS as compatibility adapters rather than hard requirements.
-- Do not claim that every website will display the avatar automatically.
+- Keep Snapshot and ENS integrations optional and modular.
+- Document supported integrations and make adding a new integration straightforward.
 - Avoid a custom registry contract until real integrations demonstrate the need.
