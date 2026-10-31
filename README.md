@@ -1,118 +1,121 @@
 # Wallet Face / 钱包头像
 
-## 0.3 upgrade branch / 0.3 升级分支
+[Open Wallet Face / 打开网站](https://walletface.org) · [Source / 源码](https://github.com/CryptographyBloke/Face) · [Roadmap / 路线图](MILESTONES.md)
 
-This branch adds public wallet profiles, bounded Snapshot public-participant directories,
-a resolver API, a TypeScript/React SDK, and a locally persistent signed-claims/admin MVP.
-The read-only release is now live at `dao.sarl` (2026-10-29). Vercel deployments are intentionally read-only;
-native claims/admin writes require the persistent Node 24 + SQLite server.
+## v0.4 — wallet identity and communities / 钱包身份与社区
 
-本分支新增公开钱包资料、Snapshot 公开治理参与者目录、Resolver API、TypeScript/React
-SDK，以及使用本地持久化数据库的签名认领和管理员 MVP。只读版本已于 2026-10-29 上线 dao.sarl。
-Vercel 部署保持只读；认领、角色和徽章写入须使用持久化 Node 24 + SQLite 后端。
+Connect a wallet, publish an avatar, discover public Snapshot communities and explore wallet
+profiles. The new application shell brings a single account session, community following,
+recent spaces, bilingual navigation and light/dark themes to every page.
+
+连接钱包、发布头像、探索 Snapshot 公开社区、查看钱包资料。新版提供统一钱包状态、
+社区收藏、最近访问、中英文切换与深浅色主题。
+
+| Route / 路由 | Feature / 功能 |
+|---|---|
+| `/` | Home, wallet identity, followed/recent shortcuts / 首页、钱包身份和社区快捷入口 |
+| `/avatar` | JPG/PNG → IPFS → gasless Snapshot signature / 头像上传与签名发布 |
+| `/spaces`, `/followed` | Discovery, search, local following / 探索、搜索与本地收藏 |
+| `/spaces/:id` | Overview, participants, activity, about / 社区概览、参与者、活动、介绍 |
+| `/u/:address`, `/profile` | Public or connected wallet profile / 公开资料与我的资料 |
+| `/developers`, `/examples/:kind` | API, SDK and integrations / 开发文档与集成示例 |
+| `/communities` | Community pilot entry / 社区试点入口 |
+
+The frontend adapts navigation and community patterns studied in Snapshot's MIT-licensed
+source into independent React components. See [UI research](docs/UI_RESEARCH.md) and
+[third-party notices](THIRD_PARTY_NOTICES.md).
+
+界面参考 Snapshot 开源项目的导航、社区结构与交互模式，以独立 React 组件实现。
+来源、具体改造与许可证保存在以上文档中。
+
+## Run / 运行
+
+Node.js 24+:
 
 ```bash
+git clone https://github.com/CryptographyBloke/Face.git
+cd Face
+git checkout feature/snapshot-inspired-ui-v04
 npm ci
 npm --prefix web ci
 npm run build
 npm start
+# http://localhost:8787
 ```
 
-Open / 打开 `http://localhost:8787`. No paid API key is required. Optional configuration:
-copy `.env.example` to `.env.local`, then use `npm run dev` to load it.
+The single Node process serves the SPA and API. Local native profile/admin writes use SQLite.
+For read-only operation, set `FACE_READ_ONLY=true`. Optional settings are in `.env.example`;
+`npm run dev` loads `.env.local`.
 
-Documentation / 文档：
-[Architecture](ARCHITECTURE.md) · [API](API.md) · [Security](SECURITY.md) ·
-[Deployment / rollback](DEPLOYMENT.md) · [Commercial pilot](COMMERCIAL_PILOT.md).
+一个 Node 进程同时提供页面和 API。本地原生资料与管理写入使用 SQLite；
+只读运行设置 `FACE_READ_ONLY=true`。环境变量示例见 `.env.example`。
 
-Validation / 验证：`npm test`, `npm --prefix web test`,
-`npm --prefix packages/sdk run build`, `npm run build`, `npm run test:protocol`,
-and optional real read-only `npm run smoke`.
+For frontend hot reload / 前端热更新：run `npm run dev:api` plus `npm --prefix web run dev`,
+with API `APP_ORIGIN=http://localhost:5173`.
 
-An open-source wallet-avatar publishing tool. Connect a wallet, upload an image, sign a profile update, and let compatible applications resolve the avatar by wallet address. ENS is optional.
+## Publishing and resolution / 发布与解析
 
-一个开源的钱包头像发布工具：连接钱包、上传图片、签名发布资料，让兼容应用通过钱包地址解析头像。ENS 不是必需条件。
+1. EIP-1193 connects the browser to an authorized wallet; keys stay in the wallet.
+2. Pineapple uploads a JPG/PNG image (up to 1 MB) to IPFS.
+3. The wallet signs the original Snapshot Profile EIP-712 message.
+4. Snapshot Sequencer accepts the signed envelope; Hub and compatible services resolve it.
+5. Existing ENS names can optionally synchronize the same avatar URI through a separate
+   mainnet transaction.
 
-- Live site / 在线网站: <https://dao.sarl>
-- Source / 源码: <https://github.com/CryptographyBloke/Face>
-- Roadmap / 里程碑: [MILESTONES.md](./MILESTONES.md)
+1. 浏览器通过 EIP-1193 连接钱包，私钥由钱包保管。
+2. Pineapple 将最大 1 MB 的 JPG/PNG 上传到 IPFS。
+3. 钱包签署 Snapshot Profile 结构化消息。
+4. Snapshot Sequencer 接收签名资料，Hub 和兼容服务提供解析。
+5. 已有 ENS 名称可额外同步头像记录，该步骤可能需要主网 Gas。
 
-## How it works / 工作原理
+The API resolves native → Snapshot → optional ENS sources and returns source metadata.
+Applications display avatars when they support those sources or integrate the Face SDK.
+Snapshot publication remains available on the read-only Vercel deployment; native
+claims, branding, roles and badges require a durable backend.
 
-1. The browser connects to a wallet through EIP-1193; the private key stays in the wallet.
-2. The user selects a JPG or PNG image (up to 1 MB). Pineapple uploads it to IPFS and returns an `ipfs://CID` URI.
-3. The wallet signs a Snapshot `Profile` message using EIP-712. It contains the wallet address, timestamp, and avatar URI.
-4. The browser submits the signed message to the Snapshot Sequencer. Snapshot Hub provides profile reads through GraphQL.
-5. Compatible services can resolve the profile and image. An optional ENS adapter can write the same URI to an existing ENS resolver; that step may require a mainnet transaction and Gas.
+API 按原生资料 → Snapshot → 可选 ENS 解析，并返回来源。网站通过兼容资料源或接入 SDK
+显示头像。Vercel 提供只读 API，浏览器仍可发布 Snapshot 头像；原生认领、品牌、角色与徽章
+需要持久化后端。
 
-1. 浏览器通过 EIP-1193 连接钱包，私钥留在钱包中。
-2. 用户选择 JPG 或 PNG 图片（最大 1 MB）；Pineapple 将图片上传到 IPFS 并返回 `ipfs://CID`。
-3. 钱包用 EIP-712 签署 Snapshot `Profile` 消息，消息包含钱包地址、时间戳和头像 URI。
-4. 浏览器把签名消息提交给 Snapshot Sequencer；读取资料时使用 Snapshot Hub 的 GraphQL 接口。
-5. 兼容服务可以解析资料和图片。可选的 ENS 适配器可将同一 URI 写入已有 ENS Resolver；这一步可能需要在主网上确认交易并支付 Gas。
+## Code / 代码
 
-Snapshot 发布是链下签名流程，不需要链上交易或 Gas。图片与头像资料是公开的。IPFS CID 可以定位内容，但文件能否长期读取仍取决于 pinning 服务和网关。
-
-Snapshot publication is an off-chain signature flow and does not require an on-chain transaction or Gas. Images and profiles are public. An IPFS CID identifies content, but long-term availability still depends on pinning and gateways.
-
-## Code map / 代码结构
-
-| Path | Responsibility |
+| Path | Responsibility / 职责 |
 |---|---|
-| `web/src/App.tsx` | UI, wallet/session state, and the connect → upload → publish → preview flow |
-| `web/src/wallet.ts` | EIP-1193 connection, silent session restoration, and logout |
-| `web/src/storage.ts` | File validation, Pineapple upload, CID handling, and gateway fallback |
-| `web/src/snapshot.ts` | Snapshot Profile EIP-712 signing, publication, and GraphQL reads |
-| `web/src/ens.ts` | Optional ENS avatar-record compatibility |
-| `web/src/styles.css` | Responsive interface styling |
+| `web/src/app/` | Shell, global wallet/preferences/collections, request cache / 应用框架与全局状态 |
+| `web/src/product/`, `web/src/ui/` | Routes and reusable UI / 页面与公共组件 |
+| `web/src/App.tsx` | Avatar publishing flow / 头像发布 |
+| `web/src/wallet.ts`, `storage.ts`, `snapshot.ts`, `ens.ts` | Wallet and publishing adapters / 钱包与发布适配器 |
+| `web/src/product.css` | Design tokens and responsive layout / 设计变量与响应式样式 |
+| `server/`, `api/` | Persistent Node backend and read-only Vercel adapter / 两种后端 |
+| `packages/sdk/`, `examples/` | Typed client, React avatar and integration examples / SDK 与集成示例 |
+| `src/` | Retained legacy ENS/DNS CLI / 早期命令行工具 |
 
-## Compatibility and limits / 兼容性与边界
+Wallet restoration calls `eth_accounts`; a cookie is unnecessary. Logout clears application
+state and records the choice in session storage, including wallets that cannot revoke permissions.
+Following/recent spaces, language and theme stay in browser storage.
 
-Compatible applications display avatars through their Snapshot, Stamp, ENS or IPFS integrations. Developers can also use the Face resolver API and React component.
+刷新通过 `eth_accounts` 恢复连接，无需 Cookie。退出后记录本标签页的退出状态。
+收藏、最近访问、语言与主题保存在浏览器。
 
-兼容应用通过 Snapshot、Stamp、ENS 或 IPFS 接口显示头像。开发者也可接入 Face Resolver API 和 React 组件。
-
-The avatar publisher runs in the browser. The API adds profile resolution and optional SQLite persistence. Wallets hold the private keys; Pineapple, Snapshot and public IPFS gateways handle publishing and retrieval.
-
-浏览器协调头像发布，API 提供资料解析与可选 SQLite 持久化。钱包保管私钥，Pineapple、Snapshot 和公共 IPFS 网关负责发布与读取。
-
-## Repository / 仓库结构
-
-`web/` contains the current avatar application. `src/` contains the retained legacy Cloudflare/ENS DNS bootstrap CLI; it is not required to run the avatar website.
-
-`web/` 是当前头像应用；`src/` 保留了早期的 Cloudflare/ENS DNS bootstrap 命令行工具，运行头像网站不需要它。
-
-## Run locally / 本地运行
+## Checks / 检查
 
 ```bash
-cd web
-npm ci
-npm run dev
-```
-
-Build and run the Snapshot signing-format check / 构建并检查 Snapshot 签名格式：
-
-```bash
+npm test
+npm --prefix web test
+npm --prefix packages/sdk run build
 npm run build
 npm run test:protocol
+npm audit
+npm --prefix web audit
+# Optional live read-only integration:
+npm run smoke
 ```
 
-## Legacy CLI example / 旧版 CLI 示例
-
-```bash
-node src/cli.mjs setup --domain example.com --address 0x...
-```
-
-## Security / 安全
-
-- The app never requests a seed phrase or private key.
-- Wallet signatures and optional transactions require explicit wallet approval.
-- Logging out clears local app state. IPFS and Snapshot retain their public records.
-
-- 应用不会索要助记词或私钥。
-- 钱包签名和可选链上交易都需要用户在钱包中明确确认。
-- 退出登录清除本地应用状态，IPFS 和 Snapshot 保留对应公开记录。
+[Architecture / 架构](ARCHITECTURE.md) · [API](API.md) ·
+[Security / 安全](SECURITY.md) · [Deployment / 部署与回滚](DEPLOYMENT.md) ·
+[Release evidence / 验证记录](RELEASE_REPORT.md) · [Commercial pilots / 商业试点](COMMERCIAL_PILOT.md)
 
 ## License / 许可证
 
-MIT
+MIT. Snapshot research attribution and the upstream MIT notice are in
+[THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md).

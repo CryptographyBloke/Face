@@ -3,7 +3,7 @@ import { createApi } from "../server/app.mjs";
 // Preview is deliberately read-only; no ephemeral database is used.
 const api = createApi({
   snapshot: new Snapshot(),
-  origin: process.env.APP_ORIGIN || "http://localhost:5173",
+  origin: process.env.APP_ORIGIN || "https://walletface.org",
 });
 function handle(request) {
   const u = new URL(request.url);

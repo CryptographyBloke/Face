@@ -20,12 +20,14 @@ This directory contains the React + TypeScript client for wallet connection, ima
 
 ## Source map / 源码导航
 
-- `src/App.tsx`: React state and the main user journey.
+- `src/App.tsx`: avatar publishing journey.
+- `src/app/`: shared shell, account session, preferences, collections and request cache.
+- `src/product/`, `src/ui/`: routed pages and reusable components.
 - `src/wallet.ts`: wallet connect/restore/logout and provider events.
 - `src/storage.ts`: file validation, upload receipt parsing, and URI resolution.
 - `src/snapshot.ts`: EIP-712 typed-data signing and Snapshot API calls.
 - `src/ens.ts`: optional resolver lookup and `avatar` text-record transaction.
-- `src/styles.css`: layout and responsive styling.
+- `src/product.css`: design tokens, layout and responsive styling.
 
 ## Configuration / 配置
 
@@ -40,6 +42,7 @@ VITE_SNAPSHOT_API_URL
 VITE_ENS_RPC_URL
 VITE_IPFS_GATEWAY
 VITE_ARWEAVE_GATEWAY
+VITE_FACE_API_URL
 ```
 
 ## Verification / 检查

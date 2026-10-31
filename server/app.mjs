@@ -73,7 +73,7 @@ export function createApi({
       if (!write && url.pathname === "/health")
         return json({
           ok: true,
-          version: "0.3.0",
+          version: "0.4.0",
           mode: store ? "persistent" : "read-only",
           supportedChains: [1],
         });
@@ -109,6 +109,17 @@ export function createApi({
         parts.length <= 4
       ) {
         const id = spaceId(parts[2]);
+        if (parts[3] === "summary") {
+          const space = await snapshot.space(id);
+          return json({
+            space,
+            provenance: {
+              source: "snapshot",
+              sourceUrl: "https://snapshot.box/#/" + encodeURIComponent(id),
+              fetchedAt: new Date(now()).toISOString(),
+            },
+          });
+        }
         const d = await snapshot.directory(id);
         const claim = store?.get("space", id);
         const official =
@@ -133,11 +144,27 @@ export function createApi({
           };
         });
         if (parts[3] === "members") {
+          const sort = url.searchParams.get("sort") || "recent";
+          if (!["recent", "votes", "address"].includes(sort))
+            throw new ApiError(
+              422,
+              "INVALID_SORT",
+              "Use recent, votes or address sorting",
+            );
           const search = (url.searchParams.get("search") || "")
             .slice(0, 100)
             .toLowerCase();
           const selected = participants.filter((p) =>
             (p.address + " " + (p.name || "")).toLowerCase().includes(search),
+          );
+          selected.sort((a, b) =>
+            sort === "votes"
+              ? b.publicVotes - a.publicVotes ||
+                a.address.localeCompare(b.address)
+              : sort === "address"
+                ? a.address.localeCompare(b.address)
+                : (b.lastVotedAt || 0) - (a.lastVotedAt || 0) ||
+                  a.address.localeCompare(b.address),
           );
           return json({
             kind: "public_governance_participants",

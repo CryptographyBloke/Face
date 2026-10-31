@@ -1,10 +1,14 @@
 import { useState } from "react";
-import { authorize, route, api, useLoad } from "./shared";
-export default function Manage({ id, zh }: { id: string; zh: boolean }) {
-  const mode = useLoad(
-    () => api.request<{ mode: string }>("/health"),
-    "health",
-  );
+import { Link, useParams } from "react-router-dom";
+import { authorize, route } from "./shared";
+import { usePreferences } from "../app/Preferences";
+import { useWallet } from "../app/WalletProvider";
+import { useCapabilities } from "../app/resource";
+export default function Manage() {
+  const { spaceId: id = "" } = useParams();
+  const { zh } = usePreferences();
+  const { connect } = useWallet();
+  const mode = useCapabilities();
   const [name, setName] = useState("");
   const [about, setAbout] = useState("");
   const [recipient, setRecipient] = useState("");
@@ -17,7 +21,10 @@ export default function Manage({ id, zh }: { id: string; zh: boolean }) {
     setBusy(true);
     setNotice("");
     try {
-      await authorize(action, payload);
+      if (!mode.canWrite)
+        throw new Error("Community management requires a persistent backend");
+      const wallet = await connect();
+      await authorize(action, payload, wallet.address, wallet);
       setNotice(
         zh
           ? "已通过管理员校验并保存"
@@ -29,18 +36,16 @@ export default function Manage({ id, zh }: { id: string; zh: boolean }) {
       setBusy(false);
     }
   };
-  if (mode.data?.mode === "read-only")
+  if (!mode.canWrite)
     return (
       <section className="panel">
-        <h1>
-          {zh ? "社区管理" : "Community administration"}
-        </h1>
+        <h1>{zh ? "社区管理" : "Community administration"}</h1>
         <p>
           {zh
             ? "当前为浏览模式。连接持久化后端后可管理社区。"
             : "Browsing mode. Connect a persistent backend to manage this community."}
         </p>
-        <a href={route(id)}>{zh ? "返回社区" : "Back to space"}</a>
+        <Link to={route(id)}>{zh ? "返回社区" : "Back to space"}</Link>
       </section>
     );
   return (
@@ -54,11 +59,11 @@ export default function Manage({ id, zh }: { id: string; zh: boolean }) {
           : "Sign with an EOA wallet in the current Snapshot admins list to save community settings."}
       </p>
       <p>
-        <a href={route(id)}>
+        <Link to={route(id)}>
           {zh
             ? "查看公开参与者与已认领资料"
             : "View public participants and claimed profiles"}
-        </a>
+        </Link>
       </p>
       <label>
         {zh ? "组织名称" : "Organization name"}

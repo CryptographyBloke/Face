@@ -23,9 +23,11 @@ test("HTTP SPA deep links and complete signed claim → resolve → hide workflo
   await new Promise((r) => server.listen(0, "127.0.0.1", r));
   const base = "http://127.0.0.1:" + server.address().port;
   try {
-    const deep = await fetch(base + "/spaces/yam.eth");
-    assert.equal(deep.status, 200);
-    assert.match(await deep.text(), /Wallet Face fixture/);
+    for (const path of ["/", "/avatar", "/followed", "/spaces/yam.eth", "/spaces/yam.eth/participants", "/profile", "/u/"+account.address, "/developers"]) {
+      const deep = await fetch(base + path);
+      assert.equal(deep.status, 200, path);
+      assert.match(await deep.text(), /Wallet Face fixture/);
+    }
     const post = (path, body) =>
       fetch(base + path, {
         method: "POST",

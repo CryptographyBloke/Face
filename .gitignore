@@ -5,6 +5,7 @@ node_modules/
 web/dist/
 web/tsconfig.tsbuildinfo
 web/.openai/
+web/.vitest/
 .DS_Store
 node_modules/
 .env

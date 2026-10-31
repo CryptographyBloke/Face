@@ -10,8 +10,12 @@ test("Vercel Web Request adapter rewrites health and keeps writes disabled", asy
   const post = await POST(
     new Request("https://preview.example/api?_route=v1/challenge", {
       method: "POST",
-      headers: { Origin: "http://localhost:5173" },
+      headers: { Origin: "https://walletface.org" },
     }),
   );
   assert.equal(post.status, 503);
+  const oldOrigin = await POST(new Request("https://walletface.org/api?_route=v1/challenge", {
+    method: "POST", headers: {Origin:"https://dao.sarl"}
+  }));
+  assert.equal(oldOrigin.status,403);
 });

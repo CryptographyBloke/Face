@@ -1,471 +1,428 @@
-import { useEffect, useState } from 'react'
-import type { Address } from 'viem'
-import { publishEnsAvatar } from './ens'
-import { connectWallet, disconnectWallet, restoreWallet, type AppWalletClient } from './wallet'
-import { publishSnapshotAvatar, readSnapshotAvatar } from './snapshot'
-import { resolveAvatarUri, resolveAvatarUris, uploadAvatar, validateAvatarFile } from './storage'
-
-type Step = 'idle' | 'restoring' | 'connecting' | 'disconnecting' | 'uploading' | 'signing' | 'publishing' | 'done'
-type Language = 'zh' | 'en'
-
-const translations = {
-  zh: {
-    brand: 'Wallet Face · 钱包头像',
-    language: '界面语言',
-    title: '你的钱包，你的头像。',
-    lead: '连接钱包，选择图片，一次发布到兼容的头像资料层。',
-    noAvatar: '还没有头像',
-    avatarPreview: '钱包头像预览',
-    connect: '连接钱包',
-    restoring: '恢复钱包连接…',
-    connecting: '连接中…',
-    logout: '退出登录',
-    loggingOut: '退出中…',
-    loggedOut: '已退出本网站。部分钱包仍可能保留授权，请按需在钱包中撤销。',
-    walletConnected: '钱包已连接。',
-    currentAvatarReady: '已读取当前钱包头像。',
-    chooseAnother: '更换图片',
-    upload: '上传头像',
-    publish: '发布头像',
-    chooseImage: '选择图片',
-    working: '处理中…',
-    openShare: '打开可分享头像链接',
-    uploading: '正在上传图片…',
-    sign: '请在钱包中签名；不会消耗 Gas。',
-    syncing: '如果可用，正在同步兼容性更广的 ENS 头像记录…',
-    ensSyncedAddress: 'ENS 头像已同步到钱包地址。',
-    ensSyncedName: (name: string) => `ENS 头像已同步到 ${name}。`,
-    ensSkipped: 'Snapshot 已完成；跳过 ENS 同步。',
-    avatarPublished: (ensNotice: string) =>
-      `头像已发布。支持 Snapshot 和 Stamp 的应用可以通过钱包地址读取。${ensNotice}`,
-    noEns: '无需设置 ENS。Snapshot 发布无需 Gas；如果已有 ENS 名称，可额外同步一次头像记录。',
-    github: 'GitHub 源码',
-    tryElsewhere: '在其他应用中试用头像',
-    snapshot: '打开 Snapshot',
-    stamp: '打开 Stamp',
-    ipfsImage: '打开 IPFS 图片',
-    connectFirst: '请先连接钱包。',
-    chooseFirst: '请先选择头像。',
-    invalidType: '请选择 JPG 或 PNG 图片。',
-    tooLarge: '图片太大，请控制在 1 MB 以内。',
-    noWallet: '未找到浏览器钱包，请安装 MetaMask、Rabby 或其他 EIP-1193 钱包。',
-    noAccount: '钱包没有返回账户。',
-  },
-  en: {
-    brand: 'Wallet Face · Wallet Avatar',
-    language: 'Interface language',
-    title: 'Your wallet. Your avatar.',
-    lead: 'Connect a wallet, choose an image, and publish it across compatible profile layers.',
-    noAvatar: 'No avatar yet',
-    avatarPreview: 'Wallet avatar preview',
-    connect: 'Connect wallet',
-    restoring: 'Restoring wallet…',
-    connecting: 'Connecting…',
-    logout: 'Logout',
-    loggingOut: 'Logging out…',
-    loggedOut: 'You are logged out of this site. Some wallets may keep the permission; revoke it in the wallet if needed.',
-    walletConnected: 'Wallet connected.',
-    currentAvatarReady: 'Your current wallet avatar is ready.',
-    chooseAnother: 'Choose another image',
-    upload: 'Upload avatar',
-    publish: 'Publish avatar',
-    chooseImage: 'Choose an image',
-    working: 'Working…',
-    openShare: 'Open shareable avatar URL',
-    uploading: 'Uploading the image…',
-    sign: 'Sign once in your wallet. This does not spend gas.',
-    syncing: 'Syncing the widely-supported ENS avatar record if available…',
-    ensSyncedAddress: 'ENS avatar synced to the wallet address.',
-    ensSyncedName: (name: string) => `ENS avatar synced for ${name}.`,
-    ensSkipped: 'Snapshot is ready; ENS sync was skipped.',
-    avatarPublished: (ensNotice: string) =>
-      `Avatar published. Snapshot and Stamp-compatible apps can resolve it from your wallet address.${ensNotice}`,
-    noEns: 'No ENS setup required. Snapshot is gasless; an existing ENS name may add one optional transaction.',
-    github: 'GitHub source',
-    tryElsewhere: 'Try the avatar elsewhere',
-    snapshot: 'Open Snapshot',
-    stamp: 'Open Stamp',
-    ipfsImage: 'Open IPFS image',
-    connectFirst: 'Connect your wallet first.',
-    chooseFirst: 'Choose an avatar first.',
-    invalidType: 'Please choose a JPG or PNG image.',
-    tooLarge: 'Image is too large. Keep it under 1 MB.',
-    noWallet: 'No browser wallet found. Install MetaMask, Rabby, or another EIP-1193 wallet.',
-    noAccount: 'Wallet did not return an account.',
-  },
-} as const
-
-const GITHUB_URL = 'https://github.com/CryptographyBloke/Face'
-
-function detectLanguage(): Language {
-  try {
-    const saved = window.localStorage.getItem('hnudao-avatar-language')
-    if (saved === 'zh' || saved === 'en') return saved
-    return navigator.language.toLowerCase().startsWith('zh') ? 'zh' : 'en'
-  } catch {
-    return 'zh'
-  }
-}
-
-function shortAddress(address?: string) {
-  if (!address) return ''
-  return `${address.slice(0, 6)}…${address.slice(-4)}`
-}
-
-function errorText(cause: unknown, language: Language) {
-  const raw = cause instanceof Error ? cause.message : String(cause)
-  if (language === 'en') return raw
-  if (raw === 'Please choose a JPG or PNG image.') return translations.zh.invalidType
-  if (raw === 'Image is too large. Keep it under 1 MB.') return translations.zh.tooLarge
-  if (raw.startsWith('No browser wallet found.')) return translations.zh.noWallet
-  if (raw === 'Wallet did not return an account.') return translations.zh.noAccount
-  return raw
-}
-
-type AvatarImageProps = {
-  sources: string[]
-  alt: string
-  emptyLabel: string
-}
-
-function AvatarImage({ sources, alt, emptyLabel }: AvatarImageProps) {
-  const sourceKey = sources.join('|')
-  const [sourceIndex, setSourceIndex] = useState(0)
-  const [failed, setFailed] = useState(false)
-
-  useEffect(() => {
-    setSourceIndex(0)
-    setFailed(false)
-  }, [sourceKey])
-
-  const source = sources[sourceIndex]
-  if (!source || failed) {
-    return <div className="avatar empty" aria-label={emptyLabel}>+</div>
-  }
-
-  return (
+import { useEffect, useRef, useState } from "react";
+import { Link } from "react-router-dom";
+import { publishEnsAvatar } from "./ens";
+import { publishSnapshotAvatar, readSnapshotAvatar } from "./snapshot";
+import { resolveAvatarUris, uploadAvatar, validateAvatarFile } from "./storage";
+import { usePreferences } from "./app/Preferences";
+import { useWallet } from "./app/WalletProvider";
+import { profilePath, shareUrl } from "./app/config";
+import { WalletButton } from "./app/AppShell";
+import { Avatar } from "./ui/Avatar";
+import { Icon } from "./ui/Icon";
+import { Badge, CopyButton, PageHeader } from "./ui/primitives";
+type Step = "idle" | "uploading" | "signing" | "publishing" | "done";
+function PreviewImage({ sources }: { sources: string[] }) {
+  const key = sources.join("|");
+  const [failed, setFailed] = useState({ key: "", index: 0 });
+  const index = failed.key === key ? failed.index : 0;
+  return sources[index] ? (
     <img
-      className="avatar"
-      key={source}
-      src={source}
-      alt={alt}
-      onError={() => {
-        if (sourceIndex + 1 < sources.length) setSourceIndex(sourceIndex + 1)
-        else setFailed(true)
-      }}
+      src={sources[index]}
+      alt="Avatar preview"
+      onError={() => setFailed({ key, index: index + 1 })}
     />
-  )
+  ) : (
+    <Icon name="image" size={42} />
+  );
 }
-
-export default function App({locale,onLocaleChange}:{locale?:Language;onLocaleChange?:(lang:Language)=>void}={}) {
-  const [language, setLanguage] = useState<Language>(detectLanguage)
-  const [address, setAddress] = useState<Address>()
-  const [walletClient, setWalletClient] = useState<AppWalletClient>()
-  const [avatarURI, setAvatarURI] = useState<string | null>(null)
-  const [preview, setPreview] = useState<string | null>(null)
-  const [selectedFile, setSelectedFile] = useState<File | null>(null)
-  const [step, setStep] = useState<Step>('restoring')
-  const [error, setError] = useState<string | null>(null)
-  const [notice, setNotice] = useState('')
-
-  const t = translations[language]
-  useEffect(()=>{if(locale)setLanguage(locale)},[locale])
-  const connected = Boolean(address && walletClient)
-  const imageSources = [
-    ...(preview ? [preview] : []),
-    ...resolveAvatarUris(avatarURI),
-  ]
-  const shareUrl = address ? `https://cdn.stamp.fyi/avatar/${address}?s=512` : null
-  const snapshotUrl = address ? `https://snapshot.box/#/profile/${address}` : null
-  const ipfsUrl = resolveAvatarUri(avatarURI)
-  const busy = !['idle', 'done'].includes(step)
-
+export default function App() {
+  const { t, zh } = usePreferences();
+  const { wallet, refreshAvatar, publishedAvatar } = useWallet();
+  const [file, setFile] = useState<File | null>(null),
+    [preview, setPreview] = useState(""),
+    [uri, setUri] = useState<string | null>(null);
+  const [step, setStep] = useState<Step>("idle"),
+    [error, setError] = useState(""),
+    [notice, setNotice] = useState("");
+  const [syncEns, setSyncEns] = useState(false);
+  const input = useRef<HTMLInputElement>(null),
+    currentAddress = useRef(wallet?.address);
+  currentAddress.current = wallet?.address;
+  const address = wallet?.address;
+  const busy = ["uploading", "signing", "publishing"].includes(step);
   useEffect(() => {
-    document.documentElement.lang = language === 'zh' ? 'zh-CN' : 'en'
+    setFile(null);
+    setPreview("");
+    setUri(null);
+    setError("");
+    setNotice("");
+    setStep("idle");
+    if (!address) return;
+    const controller = new AbortController();
+    void readSnapshotAvatar(address, controller.signal)
+      .then((value) => {
+        if (!controller.signal.aborted) setUri((current) => current || value);
+      })
+      .catch(() => {});
+    return () => controller.abort();
+  }, [address]);
+  useEffect(
+    () => () => {
+      if (preview) URL.revokeObjectURL(preview);
+    },
+    [preview],
+  );
+  const choose = (next?: File) => {
+    if (!next) return;
+    setError("");
+    setNotice("");
     try {
-      window.localStorage.setItem('hnudao-avatar-language', language)
-    } catch {
-      // Language selection still works when local storage is unavailable.
+      validateAvatarFile(next);
+      setFile(next);
+      setPreview(URL.createObjectURL(next));
+      setStep("idle");
+    } catch (cause) {
+      setFile(null);
+      setPreview("");
+      setStep("idle");
+      const text = (cause as Error).message;
+      setError(
+        zh
+          ? text.includes("JPG")
+            ? "请选择 JPG 或 PNG 图片。"
+            : text.includes("1 MB")
+              ? "图片太大，请控制在 1 MB 以内。"
+              : text
+          : text,
+      );
     }
-  }, [language])
-
-  useEffect(() => {
-    let active = true
-    const provider = window.ethereum
-
-    const clearWalletState = () => {
-      if (!active) return
-      setAddress(undefined)
-      setWalletClient(undefined)
-      setAvatarURI(null)
-      setPreview(null)
-      setSelectedFile(null)
-    }
-
-    const restore = async () => {
-      try {
-        const restoredWallet = await restoreWallet()
-        if (!active) return
-
-        if (!restoredWallet) {
-          setStep('idle')
-          return
-        }
-
-        setAddress(restoredWallet.address)
-        setWalletClient(restoredWallet.walletClient)
-
+  };
+  const publish = async () => {
+    if (!wallet || !file) return;
+    const publishingWallet = wallet;
+    const selected = file;
+    const stillCurrent = () =>
+      currentAddress.current?.toLowerCase() ===
+      publishingWallet.address.toLowerCase();
+    const assertCurrent = async () => {
+      const accounts = (await window.ethereum?.request({
+        method: "eth_accounts",
+      })) as string[] | undefined;
+      if (
+        !stillCurrent() ||
+        accounts?.[0]?.toLowerCase() !== publishingWallet.address.toLowerCase()
+      )
+        throw new Error(
+          t(
+            "钱包已切换，请重新选择图片。",
+            "Wallet changed. Choose your image again.",
+          ),
+        );
+    };
+    setError("");
+    setNotice("");
+    setStep("uploading");
+    try {
+      const uploaded = await uploadAvatar(selected);
+      await assertCurrent();
+      await publishSnapshotAvatar(
+        publishingWallet.walletClient,
+        publishingWallet.address,
+        uploaded,
+        async (stage) => {
+          await assertCurrent();
+          setStep(stage);
+        },
+      );
+      let ensNotice = "";
+      if (syncEns) {
         try {
-          const current = await readSnapshotAvatar(restoredWallet.address)
-          if (!active) return
-          setAvatarURI(current)
+          await assertCurrent();
+          const result = await publishEnsAvatar(
+            publishingWallet.address,
+            uploaded,
+          );
+          ensNotice = result.updated
+            ? t("ENS 头像已同步。", "ENS avatar synchronized.")
+            : t(
+                "可在已有 ENS 名称中设置头像记录。",
+                "Set an avatar record on an existing ENS name.",
+              );
         } catch {
-          // A profile read failure must not erase the restored wallet session.
+          ensNotice = t(
+            "Snapshot 已发布，可稍后重试 ENS 同步。",
+            "Snapshot is published. You can retry ENS synchronization later.",
+          );
         }
-      } catch {
-        // Silent restoration is best-effort. The user can still connect manually.
-      } finally {
-        if (active) setStep('idle')
       }
-    }
-
-    void restore()
-
-    const handleAccountsChanged = async () => {
-      try {
-        const nextWallet = await restoreWallet()
-        if (!active) return
-        if (!nextWallet) {
-          clearWalletState()
-          setStep('idle')
-          return
-        }
-
-        setAddress(nextWallet.address)
-        setWalletClient(nextWallet.walletClient)
-        setAvatarURI(null)
-        setPreview(null)
-        setSelectedFile(null)
-
-        try {
-          setAvatarURI(await readSnapshotAvatar(nextWallet.address))
-        } catch {
-          // Keep the new wallet connected even when Snapshot is unavailable.
-        }
-      } catch {
-        clearWalletState()
-        setStep('idle')
-      }
-    }
-
-    const handleProviderDisconnect = () => {
-      clearWalletState()
-      setStep('idle')
-    }
-
-    provider?.on?.('accountsChanged', handleAccountsChanged)
-    provider?.on?.('disconnect', handleProviderDisconnect)
-
-    return () => {
-      active = false
-      provider?.removeListener?.('accountsChanged', handleAccountsChanged)
-      provider?.removeListener?.('disconnect', handleProviderDisconnect)
-    }
-  }, [])
-
-  useEffect(() => {
-    return () => {
-      if (preview?.startsWith('blob:')) URL.revokeObjectURL(preview)
-    }
-  }, [preview])
-
-  const handleConnect = async () => {
-    setError(null)
-    setNotice('')
-    setStep('connecting')
-    try {
-      const connectedWallet = await connectWallet()
-      setAddress(connectedWallet.address)
-      setWalletClient(connectedWallet.walletClient)
-
-      try {
-        const current = await readSnapshotAvatar(connectedWallet.address)
-        setAvatarURI(current)
-        if (current) setNotice(t.currentAvatarReady)
-        else setNotice(t.walletConnected)
-      } catch (cause) {
-        setNotice(`${t.walletConnected} ${errorText(cause, language)}`)
-      }
-      setStep('idle')
+      if (!stillCurrent()) return;
+      setUri(uploaded);
+      setFile(null);
+      setStep("done");
+      setNotice(
+        t("头像已发布。", "Avatar published.") +
+          (ensNotice ? " " + ensNotice : ""),
+      );
+      refreshAvatar(uploaded, publishingWallet.address);
     } catch (cause) {
-      setError(errorText(cause, language))
-      setStep('idle')
-    }
-  }
-
-  const handleFile = async (file?: File) => {
-    if (!file) return
-    setError(null)
-    try {
-      validateAvatarFile(file)
-      setSelectedFile(file)
-      setPreview(URL.createObjectURL(file))
-      setStep('idle')
-    } catch (cause) {
-      setError(errorText(cause, language))
-    }
-  }
-
-  const handleLogout = async () => {
-    setError(null)
-    setNotice('')
-    setStep('disconnecting')
-    await disconnectWallet()
-    setAddress(undefined)
-    setWalletClient(undefined)
-    setAvatarURI(null)
-    setPreview(null)
-    setSelectedFile(null)
-    setStep('idle')
-    setNotice(t.loggedOut)
-  }
-
-  const handlePublish = async () => {
-    if (!address || !walletClient) return setError(t.connectFirst)
-    if (!selectedFile) return setError(t.chooseFirst)
-
-    setError(null)
-    setNotice('')
-    try {
-      setStep('uploading')
-      setNotice(t.uploading)
-      const uploadedURI = await uploadAvatar(selectedFile)
-
-      setStep('signing')
-      setNotice(t.sign)
-      setStep('publishing')
-      await publishSnapshotAvatar(walletClient, address, uploadedURI)
-
-      let ensNotice = ''
-      try {
-        setNotice(t.syncing)
-        const ens = await publishEnsAvatar(address, uploadedURI)
-        if (ens.updated) ensNotice = ` ${ens.direct ? t.ensSyncedAddress : t.ensSyncedName(ens.name)}`
-      } catch {
-        ensNotice = ` ${t.ensSkipped}`
+      if (stillCurrent()) {
+        setError((cause as Error).message);
+        setStep("idle");
       }
-
-      setAvatarURI(uploadedURI)
-      // Keep the local object URL on screen until the user chooses another
-      // image. This avoids a blank avatar while the IPFS gateway propagates.
-      setSelectedFile(null)
-      setStep('done')
-      setNotice(t.avatarPublished(ensNotice))
-    } catch (cause) {
-      setError(errorText(cause, language))
-      setStep('idle')
     }
-  }
-
+  };
+  const override =
+    publishedAvatar && publishedAvatar.address === address
+      ? publishedAvatar.uri
+      : null;
+  const sources = preview ? [preview] : resolveAvatarUris(override || uri);
+  const labels = [
+    t("选择图片", "Choose an image"),
+    t("上传到 IPFS", "Upload to IPFS"),
+    t("钱包签名", "Wallet signature"),
+    t("发布资料", "Publish profile"),
+  ];
+  const stageIndex =
+    step === "uploading"
+      ? 1
+      : step === "signing"
+        ? 2
+        : step === "publishing"
+          ? 3
+          : step === "done"
+            ? 4
+            : 0;
   return (
-    <main className="shell">
-      <section className="card">
-        <div className="cardHeader">
-          <div className="brand">{t.brand}</div>
-          <label className="languageSelect">
-            <span className="srOnly">{t.language}</span>
-            <select
-              value={language}
-              onChange={(event) => {setLanguage(event.target.value as Language);onLocaleChange?.(event.target.value as Language)}}
-              aria-label={t.language}
-            >
-              <option value="zh">中文</option>
-              <option value="en">English</option>
-            </select>
-          </label>
-        </div>
-
-        <h1>{t.title}</h1>
-        <p className="lead">{t.lead}</p>
-
-        <div className="avatarWrap">
-          <AvatarImage sources={imageSources} alt={t.avatarPreview} emptyLabel={t.noAvatar} />
-        </div>
-
-        {!connected ? (
-          <button className="primary" onClick={handleConnect} disabled={busy}>
-            {step === 'restoring' ? t.restoring : step === 'connecting' ? t.connecting : t.connect}
-          </button>
-        ) : (
-          <>
-            <div className="accountRow">
-              <div className="walletPill">{shortAddress(address)}</div>
-              <button className="logout" onClick={handleLogout} disabled={busy}>
-                {step === 'disconnecting' ? t.loggingOut : t.logout}
-              </button>
+    <div className="page-stack">
+      <PageHeader
+        eyebrow="YOUR IDENTITY"
+        title={t("设置钱包头像", "Set your wallet avatar")}
+        description={t(
+          "选择图片，签名发布，在兼容应用中使用。",
+          "Choose an image, sign and use your avatar in compatible apps.",
+        )}
+        actions={
+          <Badge tone="success">{t("免费 · 免 Gas", "Free · Gasless")}</Badge>
+        }
+      />
+      <div className="publisher-grid">
+        <section className="panel publisher-panel">
+          <ol className="publish-steps">
+            {labels.map((label, i) => (
+              <li
+                key={i}
+                className={
+                  stageIndex > i
+                    ? "complete"
+                    : stageIndex === i
+                      ? "current"
+                      : ""
+                }
+              >
+                <span>
+                  {stageIndex > i ? <Icon name="check" size={13} /> : i + 1}
+                </span>
+                {label}
+              </li>
+            ))}
+          </ol>
+          <div className="publisher-preview">
+            <div className="preview-ring">
+              <PreviewImage sources={sources} />
             </div>
-
-            <label className="upload">
-              <input
-                type="file"
-                accept="image/png,image/jpeg"
-                onClick={(event) => {
-                  // Allow choosing the same file again after a failed attempt.
-                  event.currentTarget.value = ''
+            <h2>
+              {step === "done"
+                ? t(
+                    "准备好与大家见面了。",
+                    "Ready to put a face to your wallet.",
+                  )
+                : t("给你的钱包，一张新面孔。", "A new face for your wallet.")}
+            </h2>
+            <p>{t("JPG 或 PNG · 最大 1 MB", "JPG or PNG · Up to 1 MB")}</p>
+          </div>
+          {wallet ? (
+            <>
+              <label className="upload-drop">
+                <input
+                  ref={input}
+                  type="file"
+                  accept="image/png,image/jpeg"
+                  disabled={busy}
+                  onClick={(e) => {
+                    e.currentTarget.value = "";
+                  }}
+                  onChange={(e) => choose(e.target.files?.[0])}
+                />
+                <Icon name="image" size={24} />
+                <strong>
+                  {preview
+                    ? t("更换图片", "Choose another image")
+                    : t("选择头像图片", "Choose your avatar")}
+                </strong>
+                <span>
+                  {file?.name ||
+                    t("点击选择 JPG 或 PNG", "Select a JPG or PNG file")}
+                </span>
+              </label>
+              <label className="checkbox-row">
+                <input
+                  type="checkbox"
+                  checked={syncEns}
+                  onChange={(e) => setSyncEns(e.target.checked)}
+                  disabled={busy}
+                />
+                <span>
+                  {t(
+                    "同时同步已有 ENS 头像（可选，可能需要 Gas）",
+                    "Also sync an existing ENS avatar (optional, may require gas)",
+                  )}
+                </span>
+              </label>
+              <button
+                className="primary full-width"
+                onClick={() => {
+                  void publish();
                 }}
-                onChange={(event) => { void handleFile(event.target.files?.[0]) }}
-                disabled={busy}
+                disabled={busy || !file}
+              >
+                {busy ? (
+                  <>
+                    <span className="spinner" />
+                    {step === "uploading"
+                      ? t("正在上传图片…", "Uploading image…")
+                      : step === "signing"
+                        ? t("等待钱包签名…", "Waiting for your signature…")
+                        : t("正在发布资料…", "Publishing profile…")}
+                  </>
+                ) : (
+                  <>
+                    <Icon name="image" size={18} />
+                    {t("发布头像", "Publish avatar")}
+                  </>
+                )}
+              </button>
+            </>
+          ) : (
+            <div className="publisher-connect">
+              <p>
+                {t(
+                  "连接钱包，开始设置你的头像。",
+                  "Connect your wallet to set an avatar.",
+                )}
+              </p>
+              <WalletButton />
+            </div>
+          )}
+          {notice && (
+            <div className="success-state" role="status">
+              <Icon name="check" />
+              {notice}
+            </div>
+          )}
+          {error && (
+            <div className="error-state" role="alert">
+              <Icon name="info" />
+              <span>{error}</span>
+              {file && (
+                <button
+                  disabled={busy}
+                  onClick={() => {
+                    void publish();
+                  }}
+                >
+                  {t("重试", "Retry")}
+                </button>
+              )}
+            </div>
+          )}
+          {uri && <code className="uri">{uri}</code>}
+          {step === "done" && address && (
+            <div className="actions">
+              <Link className="button primary" to={profilePath(address)}>
+                {t("打开我的公开资料", "Open my public profile")}
+                <Icon name="arrow" size={16} />
+              </Link>
+              <CopyButton
+                value={shareUrl(profilePath(address))}
+                label={t("复制资料链接", "Copy profile link")}
               />
-              <span>{preview ? t.chooseAnother : t.upload}</span>
-            </label>
-
-            <button className="primary" onClick={handlePublish} disabled={busy || !selectedFile}>
-              {busy ? t.working : selectedFile ? t.publish : t.chooseImage}
-            </button>
-          </>
-        )}
-
-        {avatarURI && (
-          <p className="uri" title={avatarURI}>
-            {avatarURI}
-          </p>
-        )}
-        {avatarURI && address && (
-          <div className="externalApps">
-            <a href={'/u/'+address}>{language==='zh'?'打开我的公开资料':'Open my public profile'}</a>
-            <p className="externalAppsTitle">{t.tryElsewhere}</p>
-            <div className="externalLinks">
-              {snapshotUrl && (
-                <a className="externalLink" href={snapshotUrl} target="_blank" rel="noreferrer">
-                  {t.snapshot}
+            </div>
+          )}
+        </section>
+        <aside className="page-stack">
+          <section className="panel publisher-info">
+            <div className="feature-icon">
+              <Icon name="wallet" size={24} />
+            </div>
+            <h2>{t("由你的钱包掌握", "Owned by your wallet")}</h2>
+            <p>
+              {t(
+                "用钱包签署 Snapshot Profile，头像通过 IPFS 保存。",
+                "Sign a Snapshot Profile with your wallet. Your image is stored on IPFS.",
+              )}
+            </p>
+            <div className="info-row">
+              <Icon name="check" size={17} />
+              {t("Snapshot 发布免 Gas", "Gasless Snapshot publishing")}
+            </div>
+            <div className="info-row">
+              <Icon name="check" size={17} />
+              {t("可选 ENS 同步", "Optional ENS synchronization")}
+            </div>
+            <div className="info-row">
+              <Icon name="check" size={17} />
+              {t("可分享的钱包资料页", "Shareable wallet profile")}
+            </div>
+          </section>
+          {address && (
+            <section className="panel">
+              <div className="section-heading">
+                <h3>{t("当前钱包", "Current wallet")}</h3>
+              </div>
+              <div className="wallet-row">
+                <Avatar
+                  uri={override || uri}
+                  seed={address}
+                  name={address}
+                  size={40}
+                />
+                <code className="break-address">{address}</code>
+              </div>
+              <Link className="text-link" to={profilePath(address)}>
+                {t("查看钱包资料", "View wallet profile")}
+                <Icon name="arrow" size={15} />
+              </Link>
+            </section>
+          )}
+          <section className="panel">
+            <h3>{t("在其他应用中查看", "Open in compatible apps")}</h3>
+            <div className="source-links">
+              <a
+                href={
+                  address
+                    ? `https://snapshot.box/#/profile/${address}`
+                    : "https://snapshot.box/"
+                }
+                target="_blank"
+                rel="noreferrer"
+              >
+                Snapshot
+                <Icon name="external" size={14} />
+              </a>
+              {address && (
+                <a
+                  href={`https://cdn.stamp.fyi/avatar/${address}?s=512`}
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  Stamp
+                  <Icon name="external" size={14} />
                 </a>
               )}
-              {shareUrl && (
-                <a className="externalLink" href={shareUrl} target="_blank" rel="noreferrer">
-                  {t.stamp}
-                </a>
-              )}
-              {ipfsUrl && (
-                <a className="externalLink" href={ipfsUrl} target="_blank" rel="noreferrer">
-                  {t.ipfsImage}
+              {uri && (
+                <a
+                  href={resolveAvatarUris(uri)[0]}
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  IPFS
+                  <Icon name="external" size={14} />
                 </a>
               )}
             </div>
-          </div>
-        )}
-        {notice && <p className="notice">{notice}</p>}
-        {error && <p className="error">{error}</p>}
-
-        <p className="fine">{t.noEns}</p>
-
-        <footer className="siteFooter">
-          <div className="footerLinks">
-            <a href={GITHUB_URL} target="_blank" rel="noreferrer">
-              {t.github}
-            </a>
-          </div>
-        </footer>
-      </section>
-    </main>
-  )
+          </section>
+        </aside>
+      </div>
+    </div>
+  );
 }

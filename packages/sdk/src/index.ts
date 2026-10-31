@@ -56,6 +56,10 @@ export interface Space {
   }[];
   provenance: Provenance;
 }
+export interface SpaceSummary {
+  space: Space["space"];
+  provenance: { source: "snapshot"; sourceUrl: string; fetchedAt: string };
+}
 export interface Participant {
   address: string;
   publicVotes: number;
@@ -115,15 +119,19 @@ export class FaceClient {
       throw new Error(body.error?.message || `Face API HTTP ${r.status}`);
     return body as T;
   }
-  async resolveProfile({
-    address,
-    chainId = 1,
-  }: {
-    address: string;
-    chainId?: number;
-  }): Promise<Profile> {
+  async resolveProfile(
+    {
+      address,
+      chainId = 1,
+    }: {
+      address: string;
+      chainId?: number;
+    },
+    options: RequestInit = {},
+  ): Promise<Profile> {
     const p = await this.request<Profile>(
       `/v1/profile/${chainId}/${validateAddress(address)}`,
+      options,
     );
     if (
       p.chainId !== 1 ||
@@ -132,21 +140,51 @@ export class FaceClient {
       typeof p.provenance?.profileClaimVerified !== "boolean"
     )
       throw new Error("Invalid Face profile response");
+    const https = (value: unknown) => {
+      if (typeof value !== "string") return false;
+      try {
+        const u = new URL(value);
+        return u.protocol === "https:" && !u.username && !u.password;
+      } catch {
+        return false;
+      }
+    };
+    if (
+      !p.avatar.urls.every(https) ||
+      !Array.isArray(p.profile?.links) ||
+      !p.profile.links.every(https)
+    )
+      throw new Error("Unsafe Face profile URL");
     return p;
   }
-  space(id: string) {
+  summary(id: string, options: RequestInit = {}) {
+    return this.request<SpaceSummary>(
+      `/v1/spaces/${encodeURIComponent(validateSpace(id))}/summary`,
+      options,
+    );
+  }
+  space(id: string, options: RequestInit = {}) {
     return this.request<Space>(
       `/v1/spaces/${encodeURIComponent(validateSpace(id))}`,
+      options,
     );
   }
-  directory(id: string, page = 0, search = "") {
+  directory(
+    id: string,
+    page = 0,
+    search = "",
+    options: RequestInit = {},
+    sort = "recent",
+  ) {
     return this.request<Directory>(
-      `/v1/spaces/${encodeURIComponent(validateSpace(id))}/members?page=${page}&search=${encodeURIComponent(search)}`,
+      `/v1/spaces/${encodeURIComponent(validateSpace(id))}/members?page=${page}&search=${encodeURIComponent(search)}&sort=${encodeURIComponent(sort)}`,
+      options,
     );
   }
-  activity(id: string) {
+  activity(id: string, options: RequestInit = {}) {
     return this.request<Activity>(
       `/v1/spaces/${encodeURIComponent(validateSpace(id))}/activity`,
+      options,
     );
   }
 }
