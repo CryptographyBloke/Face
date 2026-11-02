@@ -321,9 +321,13 @@ it("discovers EIP-6963 wallets and connects the wallet the user selected", async
   const trigger = await screen.findByRole("button", { name: "Connect wallet" });
   await waitFor(() => expect(trigger.hasAttribute("disabled")).toBe(false));
   fireEvent.click(trigger);
-  fireEvent.click(
-    await screen.findByRole("button", { name: /Binance Wallet/ }),
+  const binanceButton = await screen.findByRole("button", {
+    name: /Binance Wallet/,
+  });
+  await waitFor(() =>
+    expect(binanceButton.hasAttribute("disabled")).toBe(false),
   );
+  fireEvent.click(binanceButton);
   const account = await screen.findByLabelText("Wallet account");
   fireEvent.click(account);
   expect(await screen.findByText("Binance Wallet")).toBeTruthy();
@@ -347,6 +351,15 @@ it("lists common wallet brands with bundled logos and detection state", async ()
   ).toBeTruthy();
   expect(screen.getByText("Binance Wallet")).toBeTruthy();
   expect(screen.getByText("Solflare")).toBeTruthy();
+  const disclosures =
+    view.container.querySelectorAll<HTMLDetailsElement>(".wallet-more");
+  expect(disclosures[0].open).toBe(false);
+  fireEvent.click(screen.getByText("Show 10 more EVM wallets"));
+  expect(disclosures[0].open).toBe(true);
+  expect(screen.getByRole("button", { name: /Enkrypt/ })).toBeTruthy();
+  fireEvent.click(screen.getByText("Show 2 more Solana wallets"));
+  expect(disclosures[1].open).toBe(true);
+  expect(screen.getByRole("button", { name: /Backpack.*Solana/ })).toBeTruthy();
 });
 it("connects a Solana Wallet Standard wallet without treating it as an EVM signer", async () => {
   const registry = getWallets();

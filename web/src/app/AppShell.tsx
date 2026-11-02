@@ -30,6 +30,28 @@ import {
   type WalletBrand,
 } from "./walletCatalog";
 
+const POPULAR_EVM_WALLET_IDS = new Set([
+  "metamask",
+  "okx",
+  "binance",
+  "coinbase",
+  "rabby",
+  "trust",
+]);
+const POPULAR_SOLANA_WALLET_IDS = new Set(["phantom", "solflare"]);
+const POPULAR_EVM_WALLETS = EVM_WALLET_BRANDS.filter((brand) =>
+  POPULAR_EVM_WALLET_IDS.has(brand.id),
+);
+const MORE_EVM_WALLETS = EVM_WALLET_BRANDS.filter(
+  (brand) => !POPULAR_EVM_WALLET_IDS.has(brand.id),
+);
+const POPULAR_SOLANA_WALLETS = SOLANA_WALLET_BRANDS.filter((brand) =>
+  POPULAR_SOLANA_WALLET_IDS.has(brand.id),
+);
+const MORE_SOLANA_WALLETS = SOLANA_WALLET_BRANDS.filter(
+  (brand) => !POPULAR_SOLANA_WALLET_IDS.has(brand.id),
+);
+
 function WalletChoice({
   name,
   network,
@@ -146,6 +168,43 @@ export function WalletButton() {
       extraSolanaOptions.push(candidate);
     }
   }
+  const renderEvmChoice = (brand: WalletBrand) => {
+    const option = evmBrandOptions.get(brand.id);
+    return (
+      <WalletChoice
+        key={brand.id}
+        name={option?.name || brand.name}
+        network={t("Ethereum 与兼容网络", "Ethereum / EVM")}
+        brand={brand}
+        icon={option?.icon}
+        detected={!!option}
+        detectedLabel={t("可连接", "Detected")}
+        missingLabel={t("未检测到", "Not detected")}
+        disabled={status === "connecting"}
+        onClick={option ? () => connectEvm(option.id) : undefined}
+      />
+    );
+  };
+  const renderSolanaChoice = (brand: WalletBrand) => {
+    const candidate = solanaBrandOptions.get(brand.id);
+    return (
+      <WalletChoice
+        key={brand.id}
+        name={candidate?.name || brand.name}
+        network={t("Solana 钱包", "Solana")}
+        brand={brand}
+        icon={candidate?.icon}
+        detected={!!candidate}
+        detectedLabel={t("可连接", "Detected")}
+        missingLabel={t("未检测到", "Not detected")}
+        disabled={status === "connecting"}
+        onClick={candidate ? () => connectSol(candidate) : undefined}
+      />
+    );
+  };
+  const moreEvmCount = MORE_EVM_WALLETS.length + extraEvmOptions.length;
+  const moreSolanaCount =
+    MORE_SOLANA_WALLETS.length + extraSolanaOptions.length;
   const accountMenu = wallet ? (
     <details
       ref={ref}
@@ -279,81 +338,78 @@ export function WalletButton() {
         >
           <p className="wallet-picker-intro">
             {t(
-              "常见钱包都会列在这里。“可连接”表示已在此浏览器检测到；其他钱包安装后刷新页面即可连接。",
-              "Popular wallets are listed here. “Detected” wallets can connect now; install another wallet in this browser and refresh to connect it.",
+              "常用钱包直接显示；展开“更多钱包”可查看其他选项。只有已检测到的钱包可以连接。",
+              "Popular wallets appear first. Expand “more wallets” to see the rest. Only detected wallets can connect.",
             )}
           </p>
           <section className="wallet-picker-section">
-            <h3>{t("Ethereum 与 EVM 网络", "Ethereum & EVM networks")}</h3>
+            <h3>
+              {t(
+                "常用钱包 · Ethereum 与 EVM",
+                "Popular wallets · Ethereum & EVM",
+              )}
+            </h3>
             <div className="wallet-choice-list">
-              {EVM_WALLET_BRANDS.map((brand) => {
-                const option = evmBrandOptions.get(brand.id);
-                return (
-                  <WalletChoice
-                    key={brand.id}
-                    name={option?.name || brand.name}
-                    network={t("Ethereum 与兼容网络", "Ethereum / EVM")}
-                    brand={brand}
-                    icon={option?.icon}
-                    detected={!!option}
-                    detectedLabel={t("可连接", "Detected")}
-                    missingLabel={t("未检测到", "Not detected")}
-                    disabled={status === "connecting"}
-                    onClick={option ? () => connectEvm(option.id) : undefined}
-                  />
-                );
-              })}
-              {extraEvmOptions.map((option) => (
-                <WalletChoice
-                  key={option.id}
-                  name={option.name}
-                  network={t("Ethereum 与兼容网络", "Ethereum / EVM")}
-                  icon={option.icon}
-                  detected
-                  detectedLabel={t("可连接", "Detected")}
-                  missingLabel={t("未检测到", "Not detected")}
-                  disabled={status === "connecting"}
-                  onClick={() => connectEvm(option.id)}
-                />
-              ))}
+              {POPULAR_EVM_WALLETS.map(renderEvmChoice)}
             </div>
+            {moreEvmCount > 0 && (
+              <details className="wallet-more">
+                <summary>
+                  {t(
+                    `展开其他 EVM 钱包（${moreEvmCount}）`,
+                    `Show ${moreEvmCount} more EVM wallet${moreEvmCount === 1 ? "" : "s"}`,
+                  )}
+                </summary>
+                <div className="wallet-choice-list wallet-more-list">
+                  {MORE_EVM_WALLETS.map(renderEvmChoice)}
+                  {extraEvmOptions.map((option) => (
+                    <WalletChoice
+                      key={option.id}
+                      name={option.name}
+                      network={t("Ethereum 与兼容网络", "Ethereum / EVM")}
+                      icon={option.icon}
+                      detected
+                      detectedLabel={t("可连接", "Detected")}
+                      missingLabel={t("未检测到", "Not detected")}
+                      disabled={status === "connecting"}
+                      onClick={() => connectEvm(option.id)}
+                    />
+                  ))}
+                </div>
+              </details>
+            )}
           </section>
           <section className="wallet-picker-section">
-            <h3>{t("Solana 网络", "Solana network")}</h3>
+            <h3>{t("常用 Solana 钱包", "Popular Solana wallets")}</h3>
             <div className="wallet-choice-list">
-              {SOLANA_WALLET_BRANDS.map((brand) => {
-                const candidate = solanaBrandOptions.get(brand.id);
-                return (
-                  <WalletChoice
-                    key={brand.id}
-                    name={candidate?.name || brand.name}
-                    network={t("Solana 钱包", "Solana")}
-                    brand={brand}
-                    icon={candidate?.icon}
-                    detected={!!candidate}
-                    detectedLabel={t("可连接", "Detected")}
-                    missingLabel={t("未检测到", "Not detected")}
-                    disabled={status === "connecting"}
-                    onClick={
-                      candidate ? () => connectSol(candidate) : undefined
-                    }
-                  />
-                );
-              })}
-              {extraSolanaOptions.map((candidate, index) => (
-                <WalletChoice
-                  key={`${candidate.name}-${index}`}
-                  name={candidate.name}
-                  network={t("Solana 钱包", "Solana")}
-                  icon={candidate.icon}
-                  detected
-                  detectedLabel={t("可连接", "Detected")}
-                  missingLabel={t("未检测到", "Not detected")}
-                  disabled={status === "connecting"}
-                  onClick={() => connectSol(candidate)}
-                />
-              ))}
+              {POPULAR_SOLANA_WALLETS.map(renderSolanaChoice)}
             </div>
+            {moreSolanaCount > 0 && (
+              <details className="wallet-more">
+                <summary>
+                  {t(
+                    `展开其他 Solana 钱包（${moreSolanaCount}）`,
+                    `Show ${moreSolanaCount} more Solana wallet${moreSolanaCount === 1 ? "" : "s"}`,
+                  )}
+                </summary>
+                <div className="wallet-choice-list wallet-more-list">
+                  {MORE_SOLANA_WALLETS.map(renderSolanaChoice)}
+                  {extraSolanaOptions.map((candidate, index) => (
+                    <WalletChoice
+                      key={`${candidate.name}-${index}`}
+                      name={candidate.name}
+                      network={t("Solana 钱包", "Solana")}
+                      icon={candidate.icon}
+                      detected
+                      detectedLabel={t("可连接", "Detected")}
+                      missingLabel={t("未检测到", "Not detected")}
+                      disabled={status === "connecting"}
+                      onClick={() => connectSol(candidate)}
+                    />
+                  ))}
+                </div>
+              </details>
+            )}
           </section>
           {(connectionError || error) && (
             <p className="wallet-picker-error" role="alert">
