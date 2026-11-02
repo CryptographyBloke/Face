@@ -336,12 +336,6 @@ export function WalletButton() {
             setConnectionError("");
           }}
         >
-          <p className="wallet-picker-intro">
-            {t(
-              "常用钱包直接显示；展开“更多钱包”可查看其他选项。只有已检测到的钱包可以连接。",
-              "Popular wallets appear first. Expand “more wallets” to see the rest. Only detected wallets can connect.",
-            )}
-          </p>
           <section className="wallet-picker-section">
             <h3>
               {t(
