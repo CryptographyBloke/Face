@@ -544,6 +544,7 @@ img {
 }
 .wallet-choice:disabled {
   cursor: default;
+  opacity: 1;
 }
 .wallet-choice-copy {
   display: grid;
@@ -601,6 +602,9 @@ img {
   font-weight: 650;
 }
 .wallet-choice.is-unavailable {
+  color: var(--text);
+}
+.wallet-choice.is-unavailable .wallet-choice-copy small {
   color: var(--muted);
 }
 .wallet-choice.is-unavailable .wallet-choice-status {
