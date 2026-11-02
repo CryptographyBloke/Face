@@ -329,6 +329,25 @@ it("discovers EIP-6963 wallets and connects the wallet the user selected", async
   expect(await screen.findByText("Binance Wallet")).toBeTruthy();
   expect(request).toHaveBeenCalledWith({ method: "eth_requestAccounts" });
 });
+it("lists common wallet brands with bundled logos and detection state", async () => {
+  const view = renderApp("/developers");
+  const trigger = await screen.findByRole("button", { name: "Connect wallet" });
+  await waitFor(() => expect(trigger.hasAttribute("disabled")).toBe(false));
+  fireEvent.click(trigger);
+
+  const metamask = await screen.findByRole("button", { name: /MetaMask/ });
+  const okx = screen.getByRole("button", { name: /OKX Wallet/ });
+  expect(metamask.hasAttribute("disabled")).toBe(false);
+  expect(okx.hasAttribute("disabled")).toBe(true);
+  expect(
+    view.container.querySelector('[data-wallet-brand="metamask"]'),
+  ).toBeTruthy();
+  expect(
+    view.container.querySelector('[data-wallet-brand="okx"]'),
+  ).toBeTruthy();
+  expect(screen.getByText("Binance Wallet")).toBeTruthy();
+  expect(screen.getByText("Solflare")).toBeTruthy();
+});
 it("connects a Solana Wallet Standard wallet without treating it as an EVM signer", async () => {
   const registry = getWallets();
   const address = "So11111111111111111111111111111111111111112";
@@ -354,7 +373,9 @@ it("connects a Solana Wallet Standard wallet without treating it as an EVM signe
     });
     await waitFor(() => expect(trigger.hasAttribute("disabled")).toBe(false));
     fireEvent.click(trigger);
-    fireEvent.click(await screen.findByRole("button", { name: /Phantom/ }));
+    fireEvent.click(
+      await screen.findByRole("button", { name: /Phantom.*Solana/ }),
+    );
     fireEvent.click(await screen.findByLabelText("Solana wallet account"));
     expect(await screen.findByText(address)).toBeTruthy();
     expect(

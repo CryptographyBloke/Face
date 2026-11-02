@@ -521,15 +521,19 @@ img {
 }
 .wallet-choice-list {
   display: grid;
-  gap: 8px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 9px;
 }
 .wallet-choice {
-  display: flex;
+  display: grid;
+  grid-template-columns: 36px minmax(0, 1fr);
+  grid-template-rows: auto auto;
   align-items: center;
-  gap: 12px;
+  column-gap: 10px;
+  row-gap: 2px;
   width: 100%;
-  min-height: 62px;
-  padding: 10px 12px;
+  min-height: 68px;
+  padding: 9px 10px;
   text-align: left;
   background: var(--panel);
   border: 1px solid var(--line);
@@ -538,13 +542,22 @@ img {
 .wallet-choice:hover:not(:disabled) {
   background: var(--soft);
 }
-.wallet-choice > span:nth-child(2) {
+.wallet-choice:disabled {
+  cursor: default;
+}
+.wallet-choice-copy {
   display: grid;
-  gap: 3px;
-  flex: 1;
+  gap: 2px;
+  min-width: 0;
+  align-content: center;
+}
+.wallet-choice-copy strong {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 .wallet-choice strong {
-  font-size: 13px;
+  font-size: 12px;
 }
 .wallet-choice small,
 .wallet-empty,
@@ -554,19 +567,44 @@ img {
   line-height: 1.55;
 }
 .wallet-choice-icon {
-  width: 34px;
-  height: 34px;
+  width: 36px;
+  height: 36px;
+  grid-row: 1 / span 2;
   display: grid;
   place-items: center;
   border: 1px solid var(--line);
   border-radius: 9px;
   overflow: hidden;
   color: var(--muted);
+  background: var(--panel);
 }
 .wallet-choice-icon img {
-  width: 100%;
-  height: 100%;
+  width: 30px;
+  height: 30px;
   object-fit: contain;
+}
+.wallet-choice-logo {
+  display: block;
+  width: 30px;
+  height: 30px;
+}
+.wallet-choice-status {
+  grid-column: 2;
+  justify-self: start;
+  color: var(--muted);
+  font-size: 9px;
+  line-height: 1.3;
+  white-space: nowrap;
+}
+.wallet-choice.is-detected .wallet-choice-status {
+  color: var(--brand);
+  font-weight: 650;
+}
+.wallet-choice.is-unavailable {
+  color: var(--muted);
+}
+.wallet-choice.is-unavailable .wallet-choice-status {
+  opacity: 0.82;
 }
 .wallet-empty {
   margin: 0;
@@ -2648,6 +2686,9 @@ img {
   }
 }
 @media (max-width: 430px) {
+  .wallet-choice-list {
+    grid-template-columns: minmax(0, 1fr);
+  }
   .space-grid {
     grid-template-columns: 1fr;
   }
