@@ -8,6 +8,11 @@ Connect a wallet, publish an avatar, discover public Snapshot communities and ex
 profiles. The new application shell brings a single account session, community following,
 recent spaces, bilingual navigation and light/dark themes to every page.
 
+The connection picker discovers installed EVM wallets (including OKX Wallet, Binance Wallet,
+MetaMask, Coinbase Wallet, Rabby, Bitget and other EIP-6963/EIP-1193 providers) and Solana
+Wallet Standard wallets such as Phantom, Solflare and Backpack. Solana accounts can connect
+and display their address; Snapshot avatar signing currently uses an Ethereum/EVM account.
+
 连接钱包、发布头像、探索 Snapshot 公开社区、查看钱包资料。新版提供统一钱包状态、
 社区收藏、最近访问、中英文切换与深浅色主题。
 
@@ -55,7 +60,8 @@ with API `APP_ORIGIN=http://localhost:5173`.
 
 ## Publishing and resolution / 发布与解析
 
-1. EIP-1193 connects the browser to an authorized wallet; keys stay in the wallet.
+1. EIP-6963 discovers installed EVM providers; EIP-1193 connects the selected wallet and keys
+   stay in the wallet.
 2. Pineapple uploads a JPG/PNG image (up to 1 MB) to IPFS.
 3. The wallet signs the original Snapshot Profile EIP-712 message.
 4. Snapshot Sequencer accepts the signed envelope; Hub and compatible services resolve it.
@@ -96,6 +102,10 @@ Following/recent spaces, language and theme stay in browser storage.
 
 刷新通过 `eth_accounts` 恢复连接，无需 Cookie。退出后记录本标签页的退出状态。
 收藏、最近访问、语言与主题保存在浏览器。
+
+钱包选择器通过 EIP-6963 发现 OKX Wallet、Binance Wallet、MetaMask、Coinbase Wallet、Rabby、
+Bitget 等 EVM 钱包，并通过 Solana Wallet Standard 发现 Phantom、Solflare、Backpack 等钱包。
+Solana 账户可连接并显示地址；Snapshot 头像签名当前仍使用 Ethereum/EVM 钱包。
 
 ## Checks / 检查
 

@@ -95,7 +95,7 @@ export default function App() {
       currentAddress.current?.toLowerCase() ===
       publishingWallet.address.toLowerCase();
     const assertCurrent = async () => {
-      const accounts = (await window.ethereum?.request({
+      const accounts = (await publishingWallet.provider.request({
         method: "eth_accounts",
       })) as string[] | undefined;
       if (
@@ -131,6 +131,7 @@ export default function App() {
           const result = await publishEnsAvatar(
             publishingWallet.address,
             uploaded,
+            publishingWallet.provider,
           );
           ensNotice = result.updated
             ? t("ENS 头像已同步。", "ENS avatar synchronized.")

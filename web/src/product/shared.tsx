@@ -9,15 +9,16 @@ export async function authorize(
   expectedAddress?: string,
   session?: ConnectedWallet,
 ) {
-  const { address, walletClient } = session || (await connectWallet());
+  const { address, walletClient, provider } =
+    session || (await connectWallet());
   if (
     expectedAddress &&
     expectedAddress.toLowerCase() !== address.toLowerCase()
   )
     throw new Error("Wallet account changed; reconnect the profile owner");
-  const walletChain = await window.ethereum!.request({ method: "eth_chainId" });
+  const walletChain = await provider.request({ method: "eth_chainId" });
   if (walletChain !== "0x1")
-    await window.ethereum!.request({
+    await provider.request({
       method: "wallet_switchEthereumChain",
       params: [{ chainId: "0x1" }],
     });

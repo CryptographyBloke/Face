@@ -1,66 +1,68 @@
-import {
-  createWalletClient,
-  custom,
-  getAddress,
-  type Address,
-} from 'viem'
+import { createWalletClient, custom, getAddress, type Address } from "viem";
+import { discoverEvmWallets, type EvmWalletOption } from "./wallets";
 
-function createConnectedWallet(account: string) {
-  const address = getAddress(account)
+function createConnectedWallet(account: string, option: EvmWalletOption) {
+  const address = getAddress(account);
   const walletClient = createWalletClient({
     account: address,
-    transport: custom(window.ethereum!),
-  })
+    transport: custom(option.provider),
+  });
 
-  return { address, walletClient }
+  return {
+    address,
+    walletClient,
+    provider: option.provider,
+    providerId: option.id,
+    providerName: option.name,
+  };
 }
 
-export async function connectWallet() {
-  if (!window.ethereum) {
-    throw new Error('No browser wallet found. Install MetaMask, Rabby, or another EIP-1193 wallet.')
+async function getOption(option?: EvmWalletOption) {
+  const selected = option || (await discoverEvmWallets())[0];
+  if (!selected) {
+    throw new Error(
+      "No EVM wallet found. Install MetaMask, OKX Wallet, Binance Wallet, Rabby, or another browser wallet.",
+    );
   }
-
-  const accounts = (await window.ethereum.request({
-    method: 'eth_requestAccounts',
-  })) as string[]
-
-  if (!accounts?.[0]) throw new Error('Wallet did not return an account.')
-
-  return createConnectedWallet(accounts[0])
+  return selected;
 }
 
-/**
- * Restore an already-authorized wallet connection without opening a prompt.
- * The wallet keeps the permission; the web app only rebuilds its in-memory
- * client after a page refresh. No private key or wallet session is stored.
- */
-export async function restoreWallet() {
-  if (!window.ethereum) return null
+export async function connectWallet(option?: EvmWalletOption) {
+  const selected = await getOption(option);
+  const accounts = (await selected.provider.request({
+    method: "eth_requestAccounts",
+  })) as string[];
 
-  const accounts = (await window.ethereum.request({
-    method: 'eth_accounts',
-  })) as string[]
+  if (!accounts?.[0]) throw new Error("Wallet did not return an account.");
 
-  return accounts?.[0] ? createConnectedWallet(accounts[0]) : null
+  return createConnectedWallet(accounts[0], selected);
 }
 
-/**
- * Clear this site's wallet session and ask wallets that support EIP-2255 to
- * revoke the account permission. Many wallets do not implement revocation,
- * so the UI must still clear its local state when this request is rejected.
- */
-export async function disconnectWallet() {
-  if (!window.ethereum) return
+/** Restore an already-authorized wallet without opening a prompt. */
+export async function restoreWallet(option: EvmWalletOption) {
+  const accounts = (await option.provider.request({
+    method: "eth_accounts",
+  })) as string[];
+
+  return accounts?.[0] ? createConnectedWallet(accounts[0], option) : null;
+}
+
+/** Clear the selected provider session; local logout works for all wallets. */
+export async function disconnectWallet(provider?: EthereumProvider) {
+  if (!provider) return;
 
   try {
-    await window.ethereum.request({
-      method: 'wallet_revokePermissions',
+    await provider.request({
+      method: "wallet_revokePermissions",
       params: [{ eth_accounts: {} }],
-    })
+    });
   } catch {
-    // Local logout remains valid for wallets without revoke support.
+    // Local logout remains valid for wallets without permission revocation.
   }
 }
 
-export type AppWalletClient = Awaited<ReturnType<typeof connectWallet>>['walletClient']
-export type WalletAddress = Address
+export type AppWalletClient = Awaited<
+  ReturnType<typeof connectWallet>
+>["walletClient"];
+export type WalletAddress = Address;
+export type ConnectedWallet = Awaited<ReturnType<typeof connectWallet>>;

@@ -25,15 +25,21 @@ import { CopyButton, Modal } from "../ui/primitives";
 export function WalletButton() {
   const {
     wallet,
+    wallets,
+    solanaWallets,
+    solana,
     status,
     error,
     connect,
+    connectSolana,
+    disconnectSolana,
     disconnect,
     avatarRevision,
     publishedAvatar,
   } = useWallet();
   const { t } = usePreferences();
-  const [showError, setError] = useState(false);
+  const [showPicker, setShowPicker] = useState(false);
+  const [connectionError, setConnectionError] = useState("");
   const ref = useRef<HTMLDetailsElement>(null);
   const profile = useResource(
     "wallet:" + (wallet?.address || "") + ":" + avatarRevision,
@@ -48,113 +54,241 @@ export function WalletButton() {
     document.addEventListener("pointerdown", close);
     return () => document.removeEventListener("pointerdown", close);
   }, []);
-  if (wallet)
-    return (
-      <details
-        ref={ref}
-        className="account-menu"
-        onKeyDown={(e) => {
-          if (e.key === "Escape" && ref.current) {
-            ref.current.open = false;
-            ref.current.querySelector("summary")?.focus();
-          }
-        }}
-      >
-        <summary
-          className="wallet-button"
-          aria-label={t("钱包账户", "Wallet account")}
-        >
-          <Avatar
-            uri={
-              publishedAvatar?.address === wallet.address
-                ? publishedAvatar.uri
-                : profile.data?.avatar.uri
-            }
-            seed={wallet.address}
-            name={shortAddress(wallet.address)}
-            size={26}
-          />
-          <span>{shortAddress(wallet.address)}</span>
-          <Icon name="chevron" size={14} />
-        </summary>
-        <div className="account-popover">
-          <span className="eyebrow">{t("已连接钱包", "CONNECTED WALLET")}</span>
-          <code className="break-address">{wallet.address}</code>
-          <Link
-            to={profilePath(wallet.address)}
-            onClick={() => {
-              if (ref.current) ref.current.open = false;
-            }}
-          >
-            <Icon name="user" />
-            {t("我的资料", "My profile")}
-          </Link>
-          <Link
-            to="/avatar"
-            onClick={() => {
-              if (ref.current) ref.current.open = false;
-            }}
-          >
-            <Icon name="image" />
-            {t("设置头像", "Set avatar")}
-          </Link>
-          <CopyButton
-            value={shareUrl(profilePath(wallet.address))}
-            label={t("复制资料链接", "Copy profile link")}
-          />
-          <hr />
-          <button
-            onClick={() => {
-              if (ref.current) ref.current.open = false;
-              void disconnect();
-            }}
-          >
-            <Icon name="logout" />
-            {t("退出登录", "Log out")}
-          </button>
-        </div>
-      </details>
-    );
-  return (
-    <>
-      <button
+  const closeMenu = () => {
+    if (ref.current) ref.current.open = false;
+  };
+  const connectEvm = (walletId?: string) => {
+    setConnectionError("");
+    void connect(walletId)
+      .then(() => setShowPicker(false))
+      .catch((cause) => setConnectionError((cause as Error).message));
+  };
+  const connectSol = (candidate: (typeof solanaWallets)[number]) => {
+    setConnectionError("");
+    void connectSolana(candidate)
+      .then(() => setShowPicker(false))
+      .catch((cause) => setConnectionError((cause as Error).message));
+  };
+  const accountMenu = wallet ? (
+    <details
+      ref={ref}
+      className="account-menu"
+      onKeyDown={(e) => {
+        if (e.key === "Escape" && ref.current) {
+          ref.current.open = false;
+          ref.current.querySelector("summary")?.focus();
+        }
+      }}
+    >
+      <summary
         className="wallet-button"
-        disabled={status === "restoring" || status === "connecting"}
-        onClick={() => {
-          void connect().catch(() => setError(true));
-        }}
+        aria-label={t("钱包账户", "Wallet account")}
+      >
+        <Avatar
+          uri={
+            publishedAvatar?.address === wallet.address
+              ? publishedAvatar.uri
+              : profile.data?.avatar.uri
+          }
+          seed={wallet.address}
+          name={shortAddress(wallet.address)}
+          size={26}
+        />
+        <span>{shortAddress(wallet.address)}</span>
+        <Icon name="chevron" size={14} />
+      </summary>
+      <div className="account-popover">
+        <span className="eyebrow">{t("已连接钱包", "CONNECTED WALLET")}</span>
+        <span className="connected-wallet-name">{wallet.providerName}</span>
+        <code className="break-address">{wallet.address}</code>
+        <Link to={profilePath(wallet.address)} onClick={closeMenu}>
+          <Icon name="user" />
+          {t("我的资料", "My profile")}
+        </Link>
+        <Link to="/avatar" onClick={closeMenu}>
+          <Icon name="image" />
+          {t("设置头像", "Set avatar")}
+        </Link>
+        <CopyButton
+          value={shareUrl(profilePath(wallet.address))}
+          label={t("复制资料链接", "Copy profile link")}
+        />
+        {solana && (
+          <div className="connected-chain">
+            <span>{t("已连接 Solana 钱包", "SOLANA WALLET CONNECTED")}</span>
+            <strong>{solana.name}</strong>
+            <code>{shortAddress(solana.address)}</code>
+            <button type="button" onClick={() => void disconnectSolana()}>
+              {t("断开 Solana", "Disconnect Solana")}
+            </button>
+          </div>
+        )}
+        <button
+          type="button"
+          className="add-wallet-button"
+          onClick={() => {
+            closeMenu();
+            setShowPicker(true);
+          }}
+        >
+          <Icon name="wallet" />
+          {t("连接另一个钱包", "Connect another wallet")}
+        </button>
+        <hr />
+        <button type="button" onClick={() => void disconnect()}>
+          <Icon name="logout" />
+          {t("退出登录", "Log out")}
+        </button>
+      </div>
+    </details>
+  ) : solana ? (
+    <details ref={ref} className="account-menu">
+      <summary
+        className="wallet-button"
+        aria-label={t("Solana 钱包账户", "Solana wallet account")}
       >
         <Icon name="wallet" size={18} />
-        <span>
-          {status === "restoring"
-            ? t("恢复连接…", "Restoring…")
-            : status === "connecting"
-              ? t("连接中…", "Connecting…")
-              : t("连接钱包", "Connect wallet")}
+        <span>{shortAddress(solana.address)}</span>
+        <Icon name="chevron" size={14} />
+      </summary>
+      <div className="account-popover">
+        <span className="eyebrow">
+          {t("已连接 Solana 钱包", "SOLANA WALLET CONNECTED")}
         </span>
-      </button>
-      {showError && (
+        <strong>{solana.name}</strong>
+        <code className="break-address">{solana.address}</code>
+        <p className="wallet-capability-note">
+          {t(
+            "Solana 钱包已连接。Snapshot 头像发布目前需要 EVM 钱包。",
+            "Solana is connected. Snapshot avatar publishing currently requires an EVM wallet.",
+          )}
+        </p>
+        <button type="button" onClick={() => void disconnectSolana()}>
+          <Icon name="logout" />
+          {t("断开 Solana 钱包", "Disconnect Solana wallet")}
+        </button>
+        <button type="button" onClick={() => setShowPicker(true)}>
+          <Icon name="wallet" />
+          {t("连接 EVM 钱包", "Connect an EVM wallet")}
+        </button>
+      </div>
+    </details>
+  ) : (
+    <button
+      className="wallet-button"
+      disabled={status === "restoring" || status === "connecting"}
+      onClick={() => setShowPicker(true)}
+    >
+      <Icon name="wallet" size={18} />
+      <span>
+        {status === "restoring"
+          ? t("发现钱包…", "Finding wallets…")
+          : status === "connecting"
+            ? t("连接中…", "Connecting…")
+            : t("连接钱包", "Connect wallet")}
+      </span>
+    </button>
+  );
+  return (
+    <>
+      {accountMenu}
+      {showPicker && (
         <Modal
-          title={t("连接钱包", "Connect wallet")}
-          onClose={() => setError(false)}
+          title={t("选择钱包", "Choose a wallet")}
+          onClose={() => {
+            setShowPicker(false);
+            setConnectionError("");
+          }}
         >
-          <p role="alert">
-            {error ||
-              t(
-                "请安装或打开支持 EIP-1193 的浏览器钱包。",
-                "Install or open an EIP-1193 browser wallet.",
-              )}
+          <p className="wallet-picker-intro">
+            {t(
+              "自动识别浏览器中已安装的钱包。",
+              "Wallet Face detects compatible wallets installed in your browser.",
+            )}
           </p>
-          <button
-            className="primary"
-            onClick={() => {
-              void connect()
-                .then(() => setError(false))
-                .catch(() => {});
-            }}
-          >
-            {t("重试", "Try again")}
-          </button>
+          <section className="wallet-picker-section">
+            <h3>{t("Ethereum 与 EVM 网络", "Ethereum & EVM networks")}</h3>
+            {wallets.length ? (
+              <div className="wallet-choice-list">
+                {wallets.map((option) => (
+                  <button
+                    type="button"
+                    className="wallet-choice"
+                    key={option.id}
+                    disabled={status === "connecting"}
+                    onClick={() => connectEvm(option.id)}
+                  >
+                    <span className="wallet-choice-icon">
+                      {option.icon ? (
+                        <img src={option.icon} alt="" />
+                      ) : (
+                        <Icon name="wallet" size={20} />
+                      )}
+                    </span>
+                    <span>
+                      <strong>{option.name}</strong>
+                      <small>
+                        {t(
+                          "Ethereum 及兼容网络",
+                          "Ethereum and compatible chains",
+                        )}
+                      </small>
+                    </span>
+                    <Icon name="chevron" size={15} />
+                  </button>
+                ))}
+              </div>
+            ) : (
+              <p className="wallet-empty">
+                {t(
+                  "未检测到 EVM 钱包。可安装 MetaMask、OKX Wallet、Binance Wallet、Rabby、Coinbase Wallet 或 Bitget Wallet。",
+                  "No EVM wallet detected. Install MetaMask, OKX Wallet, Binance Wallet, Rabby, Coinbase Wallet, or Bitget Wallet.",
+                )}
+              </p>
+            )}
+          </section>
+          <section className="wallet-picker-section">
+            <h3>{t("Solana 网络", "Solana network")}</h3>
+            {solanaWallets.length ? (
+              <div className="wallet-choice-list">
+                {solanaWallets.map((candidate, index) => (
+                  <button
+                    type="button"
+                    className="wallet-choice"
+                    key={`${candidate.name}-${index}`}
+                    onClick={() => connectSol(candidate)}
+                  >
+                    <span className="wallet-choice-icon">
+                      <img src={candidate.icon} alt="" />
+                    </span>
+                    <span>
+                      <strong>{candidate.name}</strong>
+                      <small>{t("Solana 钱包", "Solana wallet")}</small>
+                    </span>
+                    <Icon name="chevron" size={15} />
+                  </button>
+                ))}
+              </div>
+            ) : (
+              <p className="wallet-empty">
+                {t(
+                  "未检测到 Solana 钱包。可安装 Phantom、Solflare、Backpack 或其他 Wallet Standard 钱包。",
+                  "No Solana wallet detected. Install Phantom, Solflare, Backpack, or another Wallet Standard wallet.",
+                )}
+              </p>
+            )}
+          </section>
+          {(connectionError || error) && (
+            <p className="wallet-picker-error" role="alert">
+              {connectionError || error}
+            </p>
+          )}
+          <p className="wallet-capability-note">
+            {t(
+              "Snapshot 头像签名使用 Ethereum；Solana 钱包可连接并显示地址，发布能力将按各链协议逐步接入。",
+              "Snapshot avatar signatures use Ethereum. Solana wallets can connect and display an address; publishing can be added per chain protocol.",
+            )}
+          </p>
         </Modal>
       )}
     </>

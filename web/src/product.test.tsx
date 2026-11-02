@@ -16,6 +16,8 @@ import { DirectoryList } from "./product/DirectoryList";
 import { clearResourceCache } from "./app/resource";
 import { useWallet } from "./app/WalletProvider";
 import { Modal } from "./ui/primitives";
+import { getWallets } from "@wallet-standard/app";
+import type { Wallet as StandardWallet } from "@wallet-standard/base";
 vi.mock("@snapshot-labs/pineapple", () => ({
   upload: async () => ({ cid: "QmTestImage" }),
 }));
@@ -166,6 +168,7 @@ beforeEach(() => {
                 ? Promise.reject(new Error("Unsupported"))
                 : "0x" + "11".repeat(65),
       ),
+      isMetaMask: true,
       on: vi.fn((event: string, callback: (...args: unknown[]) => void) => {
         (listeners[event] ||= []).push(callback);
       }),
@@ -201,17 +204,18 @@ function renderPublisher() {
     </MemoryRouter>,
   );
 }
+async function connectDefaultWallet(language: "en" | "zh" = "en") {
+  const trigger = await screen.findByRole("button", {
+    name: language === "zh" ? "连接钱包" : "Connect wallet",
+  });
+  await waitFor(() => expect(trigger.hasAttribute("disabled")).toBe(false));
+  fireEvent.click(trigger);
+  fireEvent.click(await screen.findByRole("button", { name: /MetaMask/ }));
+}
 describe("original avatar publisher regression", () => {
   it("connects, validates, uploads, signs and exposes the profile link", async () => {
     const view = renderPublisher();
-    await waitFor(() =>
-      expect(
-        screen
-          .getByRole("button", { name: "Connect wallet" })
-          .hasAttribute("disabled"),
-      ).toBe(false),
-    );
-    fireEvent.click(screen.getByRole("button", { name: "Connect wallet" }));
+    await connectDefaultWallet();
     const file = await screen.findByText("Choose your avatar");
     expect(file).toBeTruthy();
     fireEvent.change(view.container.querySelector("input[type=file]")!, {
@@ -238,7 +242,7 @@ describe("original avatar publisher regression", () => {
   it("renders Chinese and rejects unsupported or oversized files before upload", async () => {
     localStorage.setItem("wallet-face-language", "zh");
     const view = renderPublisher();
-    fireEvent.click(await screen.findByRole("button", { name: "连接钱包" }));
+    await connectDefaultWallet("zh");
     await screen.findByText("选择头像图片");
     const input = view.container.querySelector("input[type=file]")!;
     fireEvent.change(input, {
@@ -269,9 +273,7 @@ describe("original avatar publisher regression", () => {
         : original(args),
     );
     const view = renderPublisher();
-    fireEvent.click(
-      await screen.findByRole("button", { name: "Connect wallet" }),
-    );
+    await connectDefaultWallet();
     await screen.findByText("Choose your avatar");
     fireEvent.change(view.container.querySelector("input[type=file]")!, {
       target: { files: [new File(["x"], "x.png", { type: "image/png" })] },
@@ -283,6 +285,86 @@ describe("original avatar publisher regression", () => {
     });
     expect(await screen.findByText("Avatar published.")).toBeTruthy();
   });
+});
+it("discovers EIP-6963 wallets and connects the wallet the user selected", async () => {
+  const request = vi.fn(async ({ method }: { method: string }) =>
+    method === "eth_requestAccounts"
+      ? [other]
+      : method === "eth_accounts"
+        ? []
+        : "0x1",
+  );
+  const binance = {
+    request,
+    on: vi.fn(),
+    removeListener: vi.fn(),
+  };
+  const announce = () =>
+    window.dispatchEvent(
+      new CustomEvent("eip6963:announceProvider", {
+        detail: {
+          info: {
+            uuid: "binance-wallet-test",
+            name: "Binance Wallet",
+            icon: "data:image/svg+xml;base64,PHN2Zy8+",
+            rdns: "com.binance.wallet",
+          },
+          provider: binance,
+        },
+      }),
+    );
+  const announceAfterRequest = () => window.setTimeout(announce, 250);
+  window.addEventListener("eip6963:requestProvider", announceAfterRequest, {
+    once: true,
+  });
+  renderApp("/developers");
+  const trigger = await screen.findByRole("button", { name: "Connect wallet" });
+  await waitFor(() => expect(trigger.hasAttribute("disabled")).toBe(false));
+  fireEvent.click(trigger);
+  fireEvent.click(
+    await screen.findByRole("button", { name: /Binance Wallet/ }),
+  );
+  const account = await screen.findByLabelText("Wallet account");
+  fireEvent.click(account);
+  expect(await screen.findByText("Binance Wallet")).toBeTruthy();
+  expect(request).toHaveBeenCalledWith({ method: "eth_requestAccounts" });
+});
+it("connects a Solana Wallet Standard wallet without treating it as an EVM signer", async () => {
+  const registry = getWallets();
+  const address = "So11111111111111111111111111111111111111112";
+  const wallet = {
+    version: "1.0.0",
+    name: "Phantom",
+    icon: "data:image/png;base64,AA==",
+    chains: ["solana:mainnet"],
+    features: {
+      "standard:connect": {
+        version: "1.0.0",
+        connect: vi.fn(async () => ({ accounts: [{ address }] })),
+      },
+      "standard:disconnect": { version: "1.0.0", disconnect: vi.fn() },
+    },
+    accounts: [],
+  } as unknown as StandardWallet;
+  const unregister = registry.register(wallet);
+  try {
+    renderApp("/developers");
+    const trigger = await screen.findByRole("button", {
+      name: "Connect wallet",
+    });
+    await waitFor(() => expect(trigger.hasAttribute("disabled")).toBe(false));
+    fireEvent.click(trigger);
+    fireEvent.click(await screen.findByRole("button", { name: /Phantom/ }));
+    fireEvent.click(await screen.findByLabelText("Solana wallet account"));
+    expect(await screen.findByText(address)).toBeTruthy();
+    expect(
+      await screen.findByText(
+        "Solana is connected. Snapshot avatar publishing currently requires an EVM wallet.",
+      ),
+    ).toBeTruthy();
+  } finally {
+    unregister();
+  }
 });
 it("community directory labels participation and actual issued records", () => {
   render(
@@ -378,9 +460,12 @@ it("client navigation supports back, forward and deep profile links", async () =
 it("one wallet connection is shared across routes", async () => {
   renderApp("/avatar");
   const main = await screen.findByRole("main");
-  fireEvent.click(
-    await within(main).findByRole("button", { name: "Connect wallet" }),
-  );
+  const connect = await within(main).findByRole("button", {
+    name: "Connect wallet",
+  });
+  await waitFor(() => expect(connect.hasAttribute("disabled")).toBe(false));
+  fireEvent.click(connect);
+  fireEvent.click(await screen.findByRole("button", { name: /MetaMask/ }));
   await screen.findByText("Choose your avatar");
   fireEvent.click(
     within(main).getByRole("link", { name: /View wallet profile/ }),
@@ -417,7 +502,7 @@ it("logout remains effective on refresh when permission revocation is unsupporte
   accounts = [addr];
   const view = renderApp("/developers");
   await screen.findByText("Integration examples");
-  fireEvent.click(screen.getByLabelText("Wallet account"));
+  fireEvent.click(await screen.findByLabelText("Wallet account"));
   fireEvent.click(screen.getByRole("button", { name: "Log out" }));
   await waitFor(() =>
     expect(sessionStorage.getItem("wallet-face:logged-out")).toBe("1"),
@@ -475,13 +560,27 @@ it("Space overview preserves source, scan range and section navigation", async (
 });
 it("global search scopes names to the current Space participants", async () => {
   renderApp("/spaces/yam.eth");
-  await screen.findByRole("heading",{name:"Yam"});
-  const search=screen.getByRole("textbox",{name:"Search Wallet Face"});
-  expect(search.getAttribute("placeholder")).toBe("Search participants or wallet");
-  fireEvent.change(search,{target:{value:"Alice"}});
+  await screen.findByRole("heading", { name: "Yam" });
+  const search = screen.getByRole("textbox", { name: "Search Wallet Face" });
+  expect(search.getAttribute("placeholder")).toBe(
+    "Search participants or wallet",
+  );
+  fireEvent.change(search, { target: { value: "Alice" } });
   fireEvent.submit(search.closest("form")!);
-  expect(await screen.findByRole("heading",{name:"Public governance participants"})).toBeTruthy();
-  await waitFor(()=>expect(vi.mocked(fetch).mock.calls.some(([url])=>String(url).includes("page=0&search=Alice"))).toBe(true));
+  expect(
+    await screen.findByRole("heading", {
+      name: "Public governance participants",
+    }),
+  ).toBeTruthy();
+  await waitFor(() =>
+    expect(
+      vi
+        .mocked(fetch)
+        .mock.calls.some(([url]) =>
+          String(url).includes("page=0&search=Alice"),
+        ),
+    ).toBe(true),
+  );
 });
 it("participant search, pagination and sorting use URL-backed API parameters", async () => {
   renderApp("/spaces/yam.eth/participants");

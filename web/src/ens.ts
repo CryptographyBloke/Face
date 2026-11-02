@@ -9,7 +9,8 @@ import {
 import { mainnet } from 'viem/chains'
 import { getEnsName, getEnsResolver, namehash } from 'viem/ens'
 
-const ensRpcUrl = import.meta.env.VITE_ENS_RPC_URL || 'https://cloudflare-eth.com'
+const ensRpcUrl =
+  import.meta.env.VITE_ENS_RPC_URL || 'https://cloudflare-eth.com'
 
 const publicClient = createPublicClient({
   chain: mainnet,
@@ -43,6 +44,7 @@ type EnsAvatarResult =
 export async function publishEnsAvatar(
   address: Address,
   avatarURI: string,
+  provider: EthereumProvider,
 ): Promise<EnsAvatarResult> {
   const primaryName = await getEnsName(publicClient, { address })
   const reverseName = `${address.slice(2).toLowerCase()}.addr.reverse`
@@ -50,12 +52,13 @@ export async function publishEnsAvatar(
 
   const resolverAddress = await getEnsResolver(publicClient, { name })
   if (!resolverAddress || resolverAddress === zeroAddress) {
-    return { updated: false, reason: primaryName ? 'no-resolver' : 'no-ens-record' }
+    return {
+      updated: false,
+      reason: primaryName ? 'no-resolver' : 'no-ens-record',
+    }
   }
 
-  if (!window.ethereum) return { updated: false, reason: 'no-ens-record' }
-
-  await window.ethereum.request({
+  await provider.request({
     method: 'wallet_switchEthereumChain',
     params: [{ chainId: '0x1' }],
   })
@@ -63,7 +66,7 @@ export async function publishEnsAvatar(
   const ensWalletClient = createWalletClient({
     account: address,
     chain: mainnet,
-    transport: custom(window.ethereum),
+    transport: custom(provider),
   })
 
   const hash = await ensWalletClient.writeContract({
