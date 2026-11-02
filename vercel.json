@@ -15,6 +15,12 @@
       "has": [{ "type": "host", "value": "www.walletface.org" }],
       "destination": "https://walletface.org/:path*",
       "permanent": true
+    },
+    {
+      "source": "/",
+      "has": [{ "type": "host", "value": "www.walletface.org" }],
+      "destination": "https://walletface.org/",
+      "permanent": true
     }
   ],
   "functions": { "api/index.mjs": { "maxDuration": 60 } },
