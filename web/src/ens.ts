@@ -9,7 +9,7 @@ import {
 import { mainnet } from 'viem/chains'
 import { getEnsName, getEnsResolver, namehash } from 'viem/ens'
 
-const ensRpcUrl = import.meta.env.VITE_ENS_RPC_URL || 'https://cloudflare-eth.com'
+const ensRpcUrl = import.meta.env.VITE_ENS_RPC_URL || 'https://ethereum-rpc.publicnode.com'
 
 const publicClient = createPublicClient({
   chain: mainnet,

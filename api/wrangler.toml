@@ -1,0 +1,43 @@
+name = "wallet-face-api"
+main = "src/index.ts"
+compatibility_date = "2025-09-01"
+compatibility_flags = ["nodejs_compat"]
+
+# Serve the API on its own subdomain, for example:
+# routes = [{ pattern = "api.dao.sarl", custom_domain = true }]
+
+[vars]
+# Where the web app lives (used for Stripe redirects and sign-in messages).
+APP_URL = "https://dao.sarl"
+SNAPSHOT_HUB_URL = "https://hub.snapshot.org/graphql"
+ETH_RPC_URL = "https://ethereum-rpc.publicnode.com"
+# Comma-separated IPFS gateways, tried in order when serving images.
+IPFS_GATEWAYS = "https://ipfs.io/ipfs/,https://dweb.link/ipfs/,https://w3s.link/ipfs/"
+ARWEAVE_GATEWAY = "https://arweave.net/"
+
+# Secrets (set with `wrangler secret put`):
+#   SESSION_SECRET          required for wallet sign-in and the dashboard
+#   STRIPE_SECRET_KEY       optional, enables paid plans
+#   STRIPE_WEBHOOK_SECRET   optional, required with STRIPE_SECRET_KEY
+#   STRIPE_PRICE_PRO        Stripe price id for the Pro plan
+#   STRIPE_PRICE_BUSINESS   Stripe price id for the Business plan
+
+[[d1_databases]]
+binding = "DB"
+database_name = "wallet-face"
+# Create with `npx wrangler d1 create wallet-face` and paste the id here.
+database_id = "00000000-0000-0000-0000-000000000000"
+migrations_dir = "migrations"
+
+# Per-minute burst limit for anonymous callers (keyed by IP) and API keys.
+[[ratelimits]]
+name = "RATE_LIMITER"
+namespace_id = "1001"
+simple = { limit = 60, period = 60 }
+
+# Higher per-minute limit for image cache misses, so pages listing many
+# wallets still load. Cached images are served without counting.
+[[ratelimits]]
+name = "IMAGE_RATE_LIMITER"
+namespace_id = "1002"
+simple = { limit = 600, period = 60 }

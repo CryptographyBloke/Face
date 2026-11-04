@@ -8,7 +8,7 @@ This directory contains the static React + TypeScript client. It coordinates the
 
 1. Connect an EIP-1193 wallet. On refresh, `eth_accounts` silently restores an already-authorized account without storing wallet credentials in a cookie.
 2. Choose a JPG/PNG image under 1 MB. The UI creates a local object-URL preview immediately.
-3. Upload the image through Pineapple and receive an `ipfs://CID` URI.
+3. Crop/compress in the browser, then upload the image through Pineapple and receive an `ipfs://CID` URI.
 4. Sign the Snapshot `Profile` typed message with EIP-712 and submit the signed envelope to the Snapshot Sequencer.
 5. Read the profile from Snapshot Hub GraphQL and resolve the CID through public IPFS gateways. ENS synchronization is a separate optional path.
 
@@ -20,12 +20,15 @@ This directory contains the static React + TypeScript client. It coordinates the
 
 ## Source map / 源码导航
 
-- `src/App.tsx`: React state and the main user journey.
-- `src/wallet.ts`: wallet connect/restore/logout and provider events.
-- `src/storage.ts`: file validation, upload receipt parsing, and URI resolution.
-- `src/snapshot.ts`: EIP-712 typed-data signing and Snapshot API calls.
-- `src/ens.ts`: optional resolver lookup and `avatar` text-record transaction.
-- `src/styles.css`: layout and responsive styling.
+- `src/App.tsx`: providers and hash routes (`#/`, `#/u/:id`, `#/developers`, `#/pricing`, `#/dashboard`).
+- `src/pages/*`: page components. `src/components/Studio.tsx` is the publish flow.
+- `src/useWallet.tsx`: wallet context (connect, silent restore, account changes, logout).
+- `src/image.ts`: square crop, resize to 512 px, and compression under 1 MB.
+- `src/storage.ts`: Pineapple upload and multi-gateway URI resolution.
+- `src/snapshot.ts`: EIP-712 profile signing and Snapshot API calls.
+- `src/ens.ts`: optional ENS `avatar` text-record transaction (lazy-loaded).
+- `src/api.ts`: Wallet Face API client, wallet sign-in, and session storage.
+- `src/i18n.tsx`: English and Chinese text.
 
 ## Configuration / 配置
 
@@ -34,6 +37,7 @@ Public defaults are configured in the source. To override them, define these Vit
 源码中提供了公开服务默认值。如需覆盖，可在 `.env.local` 中配置：
 
 ```text
+VITE_API_URL            (default https://api.dao.sarl)
 VITE_PINEAPPLE_URL
 VITE_SNAPSHOT_SEQUENCER_URL
 VITE_SNAPSHOT_API_URL

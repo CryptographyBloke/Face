@@ -1,0 +1,24 @@
+{
+  "name": "wallet-face-api",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "description": "Wallet Face resolver API: address-to-avatar lookups, image proxy, API keys, plans and billing.",
+  "scripts": {
+    "dev": "wrangler dev",
+    "deploy": "wrangler deploy",
+    "db:migrate:local": "wrangler d1 migrations apply wallet-face --local",
+    "db:migrate:remote": "wrangler d1 migrations apply wallet-face --remote",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "viem": "^2.37.6"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.0",
+    "typescript": "^5.9.2",
+    "vitest": "^3.2.4",
+    "wrangler": "^4.40.0"
+  }
+}

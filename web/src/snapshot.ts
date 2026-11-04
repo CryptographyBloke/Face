@@ -45,6 +45,7 @@ export async function publishSnapshotAvatar(
   walletClient: AppWalletClient,
   address: Address,
   avatarURI: string,
+  onSigned?: () => void,
 ) {
   if (avatarURI.length > 256) throw new Error('The avatar URI is too long for a Snapshot profile.')
 
@@ -62,6 +63,7 @@ export async function publishSnapshotAvatar(
     primaryType: 'Profile',
     message,
   })
+  onSigned?.()
 
   // Keep the JSON envelope compatible with snapshot.js, which serializes the
   // uint64 timestamp as a regular JSON number.

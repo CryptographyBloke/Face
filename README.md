@@ -1,88 +1,89 @@
 # Wallet Face / 钱包头像
 
-An open-source wallet-avatar publishing tool. Connect a wallet, upload an image, sign a profile update, and let compatible applications resolve the avatar by wallet address. ENS is optional.
+**One avatar for every wallet.** People publish a profile picture to their Ethereum address with one gasless signature. Apps show any wallet's avatar with a single image URL, and use the paid API for JSON, batch lookups and higher limits.
 
-一个开源的钱包头像发布工具：连接钱包、上传图片、签名发布资料，让兼容应用通过钱包地址解析头像。ENS 不是必需条件。
+**一个头像，所有应用通用。** 用户通过一次免 Gas 签名把头像绑定到以太坊地址；应用只需一个图片链接即可显示任意钱包的头像，需要 JSON、批量查询和更高额度时可使用付费 API。
 
 - Live site / 在线网站: <https://dao.sarl>
-- Source / 源码: <https://github.com/CryptographyBloke/Face>
+- API: `https://api.dao.sarl` (see [api/README.md](./api/README.md))
 - Roadmap / 里程碑: [MILESTONES.md](./MILESTONES.md)
+
+## Business model / 商业模式
+
+| | Who | Price |
+|---|---|---|
+| Publishing an avatar | Wallet owners | Always free |
+| Image URLs (`/image`) | Any app | Free, edge-cached |
+| JSON + batch API | Apps and services | Free 10K/month · Pro $19 (1M) · Business $99 (10M) |
+| White-label / custom deployments | DAOs, wallets, communities | Contact |
+
+发布头像永久免费；图片链接免费；JSON 与批量 API 按月计费；白标部署按需洽谈。
+
+## Repository / 仓库结构
+
+| Path | What it is |
+|---|---|
+| [`web/`](./web) | React app: avatar studio, public profiles, developer docs, pricing, dashboard (EN / 中文) |
+| [`api/`](./api) | Cloudflare Worker + D1: resolver, image proxy, wallet sign-in, API keys, quotas, Stripe billing |
+| [`sdk/`](./sdk) | Dependency-free JavaScript client (`avatarImageUrl`, `getAvatar`, `getAvatars`) |
+| `src/`, `test/` | Legacy Cloudflare/ENS DNS bootstrap CLI (not needed for the product) |
 
 ## How it works / 工作原理
 
 1. The browser connects to a wallet through EIP-1193; the private key stays in the wallet.
-2. The user selects a JPG or PNG image (up to 1 MB). Pineapple uploads it to IPFS and returns an `ipfs://CID` URI.
-3. The wallet signs a Snapshot `Profile` message using EIP-712. It contains the wallet address, timestamp, and avatar URI.
-4. The browser submits the signed message to the Snapshot Sequencer. Snapshot Hub provides profile reads through GraphQL.
-5. Compatible services can resolve the profile and image. An optional ENS adapter can write the same URI to an existing ENS resolver; that step may require a mainnet transaction and Gas.
+2. The image is cropped to a square and compressed in the browser (512×512, under 1 MB), then uploaded to IPFS via Pineapple.
+3. The wallet signs a Snapshot `Profile` message (EIP-712) containing the avatar URI. It is gasless, and the signed message goes to the Snapshot sequencer.
+4. The Wallet Face API resolves any address or ENS name from Snapshot, falling back to ENS. It serves the image through several IPFS gateways with edge caching, or an identicon when there is no avatar.
+5. Optionally, the user also writes the URI to their ENS `avatar` record (a mainnet transaction that costs gas).
 
 1. 浏览器通过 EIP-1193 连接钱包，私钥留在钱包中。
-2. 用户选择 JPG 或 PNG 图片（最大 1 MB）；Pineapple 将图片上传到 IPFS 并返回 `ipfs://CID`。
-3. 钱包用 EIP-712 签署 Snapshot `Profile` 消息，消息包含钱包地址、时间戳和头像 URI。
-4. 浏览器把签名消息提交给 Snapshot Sequencer；读取资料时使用 Snapshot Hub 的 GraphQL 接口。
-5. 兼容服务可以解析资料和图片。可选的 ENS 适配器可将同一 URI 写入已有 ENS Resolver；这一步可能需要在主网上确认交易并支付 Gas。
-
-Snapshot 发布是链下签名流程，不需要链上交易或 Gas。图片与头像资料是公开的。IPFS CID 可以定位内容，但文件能否长期读取仍取决于 pinning 服务和网关。
-
-Snapshot publication is an off-chain signature flow and does not require an on-chain transaction or Gas. Images and profiles are public. An IPFS CID identifies content, but long-term availability still depends on pinning and gateways.
-
-## Code map / 代码结构
-
-| Path | Responsibility |
-|---|---|
-| `web/src/App.tsx` | UI, wallet/session state, and the connect → upload → publish → preview flow |
-| `web/src/wallet.ts` | EIP-1193 connection, silent session restoration, and logout |
-| `web/src/storage.ts` | File validation, Pineapple upload, CID handling, and gateway fallback |
-| `web/src/snapshot.ts` | Snapshot Profile EIP-712 signing, publication, and GraphQL reads |
-| `web/src/ens.ts` | Optional ENS avatar-record compatibility |
-| `web/src/styles.css` | Responsive interface styling |
-
-## Compatibility and limits / 兼容性与边界
-
-There is no universal avatar registry. Snapshot, Stamp, ENS-aware, or IPFS-aware apps can display the avatar only if they choose to support the corresponding source. This project does not make arbitrary websites automatically adopt a new avatar source.
-
-不存在能强制所有网站统一读取头像的注册表。Snapshot、Stamp、ENS 或 IPFS 兼容应用需要主动支持相应来源；本项目无法让任意网站自动采用新的头像来源。
-
-The web app is a static browser client with no custom user database or server-side key custody. It relies on the wallet, Pineapple, Snapshot, and public IPFS gateways.
-
-网页是静态浏览器客户端，没有自建用户数据库或服务端密钥托管；运行依赖钱包、Pineapple、Snapshot 和公共 IPFS 网关。
-
-## Repository / 仓库结构
-
-`web/` contains the current avatar application. `src/` contains the retained legacy Cloudflare/ENS DNS bootstrap CLI; it is not required to run the avatar website.
-
-`web/` 是当前头像应用；`src/` 保留了早期的 Cloudflare/ENS DNS bootstrap 命令行工具，运行头像网站不需要它。
+2. 图片在浏览器中裁剪为正方形并压缩（512×512，小于 1 MB），通过 Pineapple 上传至 IPFS。
+3. 钱包用 EIP-712 签署包含头像 URI 的 Snapshot `Profile` 消息（免 Gas），并提交到 Snapshot Sequencer。
+4. Wallet Face API 从 Snapshot（回退到 ENS）解析任意地址或 ENS 名称，经多个 IPFS 网关回退和边缘缓存提供图片；没有头像时返回生成图案。
+5. 可选：把同一 URI 写入 ENS `avatar` 记录（主网交易，需要 Gas）。
 
 ## Run locally / 本地运行
 
 ```bash
-cd web
-npm ci
-npm run dev
+cd api && npm install && cp .dev.vars.example .dev.vars && npm run db:migrate:local && npm run dev
 ```
-
-Build and run the Snapshot signing-format check / 构建并检查 Snapshot 签名格式：
 
 ```bash
-npm run build
-npm run test:protocol
+cd web && npm ci && VITE_API_URL=http://127.0.0.1:8787 npm run dev
 ```
 
-## Legacy CLI example / 旧版 CLI 示例
+Checks / 检查:
 
 ```bash
-node src/cli.mjs setup --domain example.com --address 0x...
+cd api && npm run typecheck && npm test
 ```
+
+```bash
+cd web && npm run test:protocol && npm run build
+```
+
+```bash
+cd sdk && npm test
+```
+
+## Deploy / 部署
+
+- **Web**: build `web/` and host `web/dist` on any static host (Cloudflare Pages, GitHub Pages, …). Set `VITE_API_URL` at build time if the API isn't at `https://api.dao.sarl`.
+- **API**: follow [api/README.md](./api/README.md). The **Deploy API** GitHub workflow (manual) deploys it once the `CLOUDFLARE_API_TOKEN` secret is set.
+
+## Compatibility and limits / 兼容性与边界
+
+There is no universal avatar registry. Snapshot, Stamp and ENS-aware apps read these avatars natively; any other app has to integrate the API or the image URL. 不存在能强制所有网站统一读取头像的注册表；其他应用需要接入 API 或图片链接。
 
 ## Security / 安全
 
-- The app never requests a seed phrase or private key.
-- Wallet signatures and optional transactions require explicit wallet approval.
-- Logging out clears local app state; it does not delete public IPFS or Snapshot data.
+- The app never asks for a seed phrase or private key; sign-in is a message signature.
+- API keys are stored hashed and are shown only once. Payments go through Stripe; no funds are held.
+- Images and profiles are public. Logging out clears local state but does not delete IPFS or Snapshot data.
 
-- 应用不会索要助记词或私钥。
-- 钱包签名和可选链上交易都需要用户在钱包中明确确认。
-- 退出登录只清除本地应用状态，不会删除已经公开的 IPFS 或 Snapshot 数据。
+- 应用不会索要助记词或私钥；登录只是消息签名。
+- API 密钥只保存哈希值，仅显示一次；付款由 Stripe 处理，不托管资金。
+- 头像和资料是公开的；退出登录不会删除 IPFS 或 Snapshot 上的数据。
 
 ## License / 许可证
 
