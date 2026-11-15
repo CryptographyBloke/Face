@@ -128,3 +128,5 @@ The owner authorized promotion after acceptance; production migration approval r
 Kill switches: FACE_AI_ENABLED=false, FACE_PLATFORM_ENABLED=false; redeploy. Original avatar publication remains independent.
 
 Release A configuration: `FACE_IDENTITY_ENABLED`, optional isolated `FACE_IDENTITY_DATABASE_URL`, migration 005, optional trusted `ENS_RPC_URL`/`BASE_SEPOLIA_RPC_URL`. Preview acceptance is gated by `FACE_IDENTITY_VERIFY_ON_BUILD` and an isolated database name. [Release A deployment details](docs/AGENT_IDENTITY_RELEASE_A.md).
+
+Release B: additive migration 006, `FACE_X402_ENABLED`, `FACE_X402_RECEIVER`, optional trusted `BASE_SEPOLIA_RPC_URL`, Preview-only `FACE_PAYMENTS_VERIFY_ON_BUILD`. Public facilitator supports Base Sepolia; mainnet activation remains disabled pending funded testnet acceptance. [Release B operations](docs/X402_RECEIVE_RELEASE_B.md).

@@ -76,6 +76,7 @@ export default function Workspace() {
       {data && (
         <>
           <div className="platform-links">
+            <Link to="/payments">{t("支付测试网", "Payments testnet")}</Link>
             <Link to="/my-agents">{t("我的 Agents", "My Agents")}</Link>
             <Link to="/reports/new">
               {t("保存治理报告", "Save governance report")}

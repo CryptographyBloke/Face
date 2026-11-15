@@ -127,3 +127,5 @@ POST `/v1/mcp` is the public read-only MCP endpoint; supported tools are listed 
 There are no private MCP tools, arbitrary URL/GraphQL operations or automatic financial actions.
 
 Release A adds versioned personal-Agent evidence and signed association actions. See [exact routes and evidence semantics](docs/AGENT_IDENTITY_RELEASE_A.md). Existing mutation namespaces and free profile/governance APIs are preserved.
+
+Release B adds optional testnet-only `/v1/payments/status`, `/report`, `/receipts` and `/receipts/:id`. The report uses x402 v2 PAYMENT-REQUIRED / PAYMENT-SIGNATURE / PAYMENT-RESPONSE. [Exact price, authorization and receipt semantics](docs/X402_RECEIVE_RELEASE_B.md). Free endpoints retain their existing contract.

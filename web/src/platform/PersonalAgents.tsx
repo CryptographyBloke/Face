@@ -103,6 +103,9 @@ export default function MyAgents() {
           {t("连接 Agent", "Connect Agent")}
         </Link>
       </header>
+      <Link to="/payments">
+        {t("支付与结算记录", "Payments and receipts")} →
+      </Link>
       <WalletSession />
       {error && <p role="alert">{error}</p>}
       {loaded && !items.length && (

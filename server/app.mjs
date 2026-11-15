@@ -1,3 +1,4 @@
+import { createPaymentApi } from "./payments/api.mjs";
 import { createPublicMcp } from "./mcp/server.mjs";
 import { createPlatformApi } from "./platform/api.mjs";
 import { createAgentApi } from "./ai/chat.mjs";
@@ -15,6 +16,7 @@ export function createApi({
   now = () => Date.now(),
   agentOptions = {},
   platformOptions = {},
+  paymentOptions = {},
 }) {
   const agent = createAgentApi({
     snapshot,
@@ -25,6 +27,7 @@ export function createApi({
   });
   const platform = createPlatformApi({ snapshot, origin, ...platformOptions });
   const mcp = createPublicMcp({ snapshot, store, ens, origin });
+  const payments = createPaymentApi({ snapshot, origin, ...paymentOptions });
   const buckets = new Map();
   return async (request, clientIp = "local") => {
     const url = new URL(request.url);
@@ -55,6 +58,8 @@ export function createApi({
           "Request limit exceeded. Retry later.",
         );
       }
+      if (url.pathname.startsWith("/v1/payments/"))
+        return payments(request, clientIp);
       if (request.method === "OPTIONS") {
         if (requestOrigin !== origin)
           throw new ApiError(403, "ORIGIN", "Origin not allowed");
