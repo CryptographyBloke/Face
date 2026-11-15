@@ -106,3 +106,10 @@ Two real Snapshot Spaces and four real browser iframe viewports were checked. Ev
 Live model execution is off: API key/shared quota store/beta key activation is pending. Controlled SDK/provider tests
 are distinct from the real Snapshot data path. No model charges, paid resources, production migration or registry contract.
 Agent identity schemas and v0.6–v1.0 dependencies are in [the roadmap](docs/AGENT_IDENTITY_ROADMAP.md).
+
+Verified implementation commit: `198ac563a9b5d52b21b38114b4d142691495c768`.
+PR: https://github.com/CryptographyBloke/Face/pull/4 .
+READY Preview: https://walletface-nsj5vbky3-dao-vote.vercel.app (`dpl_GrjvSxPPDxhFGPqHbmTHrBwQnSud`).
+Remote `/ai`, Agent status and ENS data returned HTTP 200 through authenticated platform access.
+Direct Preview browser access requires Vercel login; local browser evidence is distinguished from that limit in the test report.
+Preview provider config is prepared for the owner’s NewAPI example, with AI execution disabled. Production remains on `3f505dc3`.

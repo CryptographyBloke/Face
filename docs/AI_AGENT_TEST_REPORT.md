@@ -75,3 +75,23 @@ Actual wallet extension signing, mobile wallets and ENS mainnet writes still req
 Native writable production persistence remains disabled. Agent Profile v1 is a schema/resolver contract, with no live ownership verification.
 
 Preview deployment state and exact release commit/PR are recorded in RELEASE_REPORT.md and the delivery message.
+
+## Verified Vercel Preview / 已验证预览
+
+Implementation commit: `198ac563a9b5d52b21b38114b4d142691495c768`.
+PR: https://github.com/CryptographyBloke/Face/pull/4 (base: green v0.4 branch).
+Preview: https://walletface-nsj5vbky3-dao-vote.vercel.app .
+Deployment `dpl_GrjvSxPPDxhFGPqHbmTHrBwQnSud` reached READY; build completed in 42 seconds.
+Authenticated deployment fetches returned HTTP 200 for `/ai`, `/v1/ai/status` and `/v1/spaces/ens.eth`.
+The live Preview API returned the same ENS 50/500 scan, 390 included public votes, 110 omitted private votes and 128 wallets.
+The shipped JS asset name matches the locally tested production build. The deployed status accurately reported AI disabled.
+Browser navigation to the Preview reached Vercel Login; authenticated Preview browser journeys remain unverified.
+Browser flow/viewport evidence above comes from the same implementation running locally. Deployment Protection was retained.
+Authenticated read checks used the platform connector’s temporary deployment access, with no public share token included in deliverables.
+
+Preview-only config now records provider `newapi`, the owner’s example base URL/model and explicit HTTP opt-in;
+`FACE_AI_ENABLED=false`. The project has no persistent Git repository connection, so branch-scoped environment writes were rejected;
+the five non-secret variables were applied to Preview only. Manual deployments use an exact Git commit.
+Production environment variables and domain assignment were unchanged. No NewAPI key or quota credential was created.
+The account has an existing Neon Free integration with no connected Vercel project in its inventory; no redundant database was provisioned.
+A subsequent documentation commit/rebuild records this validation and picks up those Preview variables.
