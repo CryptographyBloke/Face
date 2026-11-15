@@ -90,3 +90,42 @@ git diff --check
 
 Optional real upstream integration: `npm run smoke`.
 Responsive methodology and reference sources: docs/UI_RESEARCH.md.
+
+
+## v0.5 Preview and AI activation / 预览与 AI 激活
+
+Build from `feature/face-ai-agent-v05` at repository root using existing vercel.json; Vercel Preview only.
+Keep rootDirectory empty, install `npm ci && npm --prefix web ci`, build `npm run build`, output `web/dist`.
+Do not apply the alternative main branch web-only project override. No custom domains or production settings change.
+
+Public tools need no AI secret. To activate a restricted beta, configure Preview-only variables in Vercel:
+`FACE_AI_ENABLED=true`, `FACE_AI_PROVIDER=newapi`, `NEWAPI_BASE_URL=https://your-host/v1`,
+`NEWAPI_API_KEY`, `NEWAPI_MODEL` (exact model name), `FACE_AI_BETA_TOKEN` (32+ characters),
+`UPSTASH_REDIS_REST_URL`, `UPSTASH_REDIS_REST_TOKEN`, with an existing shared Redis instance. NewAPI uses its own server-side key.
+Optional Gateway mode uses `FACE_AI_PROVIDER=gateway`, `AI_GATEWAY_MODEL` and a Gateway key or Vercel OIDC.
+Choose the exact model and review current pricing before activation. Enter provider secrets through the dashboard, never chat or client VITE variables.
+Reuse an existing quota store after inspecting its ownership and capacity. No service is purchased by this release.
+`GET /v1/ai/status` reports missing configuration. Never enable AI using only per-instance counters.
+
+Default beta quota is five requests/day globally, three/IP/hour and 1M conservatively reserved tokens/day.
+Each model request reserves 200K tokens and is limited to four steps, 800 output tokens/step and six tools.
+These are execution limits, not a provider monetary cap. Keep owner-controlled beta access until billing-level caps and live quota tests are verified.
+Kill switch: set `FACE_AI_ENABLED=false` and redeploy. Existing avatar publication and free data tools remain available.
+The single api/index.mjs handler preserves request bodies/signals and derives only the AI route origin from the Vercel Request URL.
+Native EIP-712 mutations retain their separate configured origin and stay disabled on Vercel.
+
+For local QA use `APP_ORIGIN` matching the browser origin and `FACE_READ_ONLY=true`.
+`npm --prefix web run build:qa` includes the existing `/__qa` iframe viewport harness; production `npm run build` excludes it.
+Preview authentication remains as configured. Use existing Vercel account access; do not disable protection for testing.
+
+NewAPI activation order: set endpoint/model/key in **Preview**; confirm `/v1/ai/status` missing names;
+configure the shared quota store and owner beta key; enable FACE_AI_ENABLED; redeploy; run one real tool-calling
+request and verify NewAPI token usage/channel charges. Model text-only streaming does not establish tool compatibility.
+Set a per-key NewAPI quota and restrict allowed models in its console before any broader rollout. No quota is raised automatically.
+
+Owner-selected NewAPI example: `NEWAPI_BASE_URL=http://82.156.218.54/v1`,
+`NEWAPI_MODEL=gpt-6.1-sol`. HTTP requires explicit `NEWAPI_ALLOW_HTTP=true`.
+HTTP transports the bearer key without TLS; use the provider’s HTTPS entry when available.
+The implementation is server-side JavaScript ESM through AI SDK, matching the existing `.mjs` API.
+The React UI remains TypeScript. cURL is for diagnostics; all languages call the same API.
+The configured example has not been called with a live key. Its pricing depends on the owner’s NewAPI plan/channel.

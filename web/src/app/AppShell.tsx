@@ -511,6 +511,7 @@ function Navigation({
     [
       { to: "/", icon: "home", label: t("首页", "Home"), end: true },
       { to: "/spaces", icon: "globe", label: t("探索", "Explore") },
+      { to: "/ai", icon: "activity", label: "Copilot" },
       { to: "/followed", icon: "star", label: t("收藏", "Following") },
       {
         to: wallet ? profilePath(wallet.address) : "/profile",
@@ -558,7 +559,7 @@ function Sidebar({ onSelect }: { onSelect?: () => void }) {
       <Link className="wordmark" to="/" onClick={onSelect}>
         <BrandMark size={35} />
         <span>
-          Wallet Face<small>IDENTITY, CONNECTED.</small>
+          Wallet Face<small>HUMANS & AI AGENTS.</small>
         </span>
       </Link>
       <Navigation onSelect={onSelect} />
@@ -611,7 +612,7 @@ function Sidebar({ onSelect }: { onSelect?: () => void }) {
         <Link to="/privacy" onClick={onSelect}>
           {t("隐私与数据", "Privacy & data")}
         </Link>
-        <small>WALLET FACE · v0.4</small>
+        <small>WALLET FACE · v0.5</small>
       </div>
     </>
   );
@@ -620,22 +621,24 @@ export function AppShell({ children }: { children: ReactNode }) {
   const { t, lang, setLang, theme, setTheme } = usePreferences();
   const location = useLocation();
   const [drawer, setDrawer] = useState(false);
-  const title = location.pathname.startsWith("/avatar")
-    ? t("设置头像", "Set avatar")
-    : location.pathname.startsWith("/spaces")
-      ? t("探索社区", "Explore communities")
-      : location.pathname.startsWith("/developers")
-        ? t("开发者", "Developers")
-        : location.pathname === "/followed"
-          ? t("收藏社区", "Following")
-          : location.pathname.startsWith("/u/") ||
-              location.pathname === "/profile"
-            ? t("钱包资料", "Wallet profile")
-            : location.pathname === "/communities"
-              ? t("社区服务", "For communities")
-              : location.pathname === "/privacy"
-                ? t("隐私与数据", "Privacy & data")
-                : t("首页", "Home");
+  const title = location.pathname.startsWith("/ai")
+    ? "Face Copilot"
+    : location.pathname.startsWith("/avatar")
+      ? t("设置头像", "Set avatar")
+      : location.pathname.startsWith("/spaces")
+        ? t("探索社区", "Explore communities")
+        : location.pathname.startsWith("/developers")
+          ? t("开发者", "Developers")
+          : location.pathname === "/followed"
+            ? t("收藏社区", "Following")
+            : location.pathname.startsWith("/u/") ||
+                location.pathname === "/profile"
+              ? t("钱包资料", "Wallet profile")
+              : location.pathname === "/communities"
+                ? t("社区服务", "For communities")
+                : location.pathname === "/privacy"
+                  ? t("隐私与数据", "Privacy & data")
+                  : t("首页", "Home");
   useEffect(() => {
     document.title = `${title} · Wallet Face`;
     document

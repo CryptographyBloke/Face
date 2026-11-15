@@ -1,3 +1,4 @@
+import { createAgentApi } from "./ai/chat.mjs";
 import { z } from "zod";
 import { address, chain, spaceId, ApiError } from "./validation.mjs";
 import { resolveProfile } from "./resolver.mjs";
@@ -10,7 +11,15 @@ export function createApi({
   origin = "http://localhost:5173",
   rateLimit = 60,
   now = () => Date.now(),
+  agentOptions = {},
 }) {
+  const agent = createAgentApi({
+    snapshot,
+    store,
+    ens,
+    origin,
+    ...agentOptions,
+  });
   const buckets = new Map();
   return async (request, clientIp = "local") => {
     const url = new URL(request.url);
@@ -55,6 +64,7 @@ export function createApi({
       }
       if (!["GET", "POST"].includes(request.method))
         throw new ApiError(405, "METHOD", "Method not allowed");
+      if (url.pathname.startsWith("/v1/ai/")) return agent(request, clientIp);
       if (write && requestOrigin !== origin)
         throw new ApiError(
           403,
@@ -73,7 +83,7 @@ export function createApi({
       if (!write && url.pathname === "/health")
         return json({
           ok: true,
-          version: "0.4.0",
+          version: "0.5.0",
           mode: store ? "persistent" : "read-only",
           supportedChains: [1],
         });

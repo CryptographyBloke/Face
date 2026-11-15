@@ -59,3 +59,17 @@ and expired on later requests; no advertising analytics is implemented.
 Do not post secrets or an exploitable production vulnerability in a public issue. Use the
 repository owner's configured private GitHub reporting channel if available; otherwise contact
 the maintainer to establish a private channel.
+
+
+## v0.5 Agent boundaries / AI 安全边界
+
+The Agent has six read-only capabilities. Its server registry has no signing, voting, transaction, profile
+or admin mutation tool. Native EIP-712 authorization and SQLite nonce transactions are unchanged.
+Model input is text-only; fixed system instructions treat all retrieved content as untrusted data.
+Zod schemas reject arbitrary URLs, GraphQL, extra properties and client-supplied system roles.
+Escaped text rendering and server-built source cards prevent retrieved/model HTML from executing.
+Semantic prompt injection can still mislead prose; capability boundaries and code-computed evidence remain enforced.
+AI execution requires a 32-character owner beta key, model provider access and shared atomic Redis reservations.
+Quotas fail closed. Conversations are page-memory only; shared Redis stores short-lived quotas and seven-day aggregate token usage.
+Provider errors are sanitized. Public data routes keep the existing bounded per-process controls; they incur no model cost.
+See [actual controls and limits](docs/AI_AGENT_ARCHITECTURE.md). No new keys, paid services or public AI access were enabled.

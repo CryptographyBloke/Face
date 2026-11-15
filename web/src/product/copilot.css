@@ -1,0 +1,296 @@
+.copilot {
+  max-width: 1050px;
+  margin: 0 auto;
+  width: 100%;
+  min-width: 0;
+}
+.copilot-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 8px 0 0;
+}
+.copilot-heading h1 {
+  font-size: 32px;
+  margin: 8px 0;
+  letter-spacing: -1px;
+}
+.copilot-heading p {
+  color: var(--muted);
+  margin-bottom: 8px;
+}
+.copilot-beta {
+  font-size: 10px;
+  letter-spacing: 1px;
+  vertical-align: middle;
+  border: 1px solid var(--line);
+  padding: 4px 6px;
+  border-radius: 5px;
+}
+.copilot-status {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  font-size: 13px;
+  color: var(--muted);
+  margin: 18px 0;
+}
+.status-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #c69c54;
+  display: inline-block;
+  flex-shrink: 0;
+}
+.status-dot.on {
+  background: #22a67a;
+}
+.copilot-context {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+.copilot-context label {
+  font-size: 12px;
+  color: var(--muted);
+  display: grid;
+  gap: 6px;
+  min-width: 0;
+}
+.copilot-context label:last-child {
+  grid-column: 1/-1;
+}
+.copilot input,
+.copilot textarea {
+  width: 100%;
+  box-sizing: border-box;
+  border: 1px solid var(--line);
+  border-radius: 9px;
+  padding: 11px;
+  background: var(--bg);
+  color: var(--text);
+  font: inherit;
+  min-width: 0;
+}
+.copilot-tools {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin: 16px 0;
+}
+.copilot-tools .button {
+  font-size: 12px;
+}
+.copilot-turn {
+  border-top: 1px solid var(--line);
+  padding: 20px 0;
+}
+.copilot-turn h2 {
+  font-size: 18px;
+  line-height: 1.5;
+  overflow-wrap: anywhere;
+}
+.copilot-answer {
+  white-space: pre-wrap;
+  line-height: 1.8;
+  overflow-wrap: anywhere;
+  margin: 18px 0;
+}
+.copilot-evidence {
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  margin: 12px 0;
+  overflow: hidden;
+}
+.copilot-evidence > header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 16px;
+  gap: 10px;
+  font-size: 12px;
+  background: var(--soft);
+}
+.evidence-data {
+  padding: 12px 16px;
+  overflow-wrap: anywhere;
+  font-size: 14px;
+}
+.evidence-data a {
+  display: block;
+  margin-top: 8px;
+}
+.copilot-evidence footer {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px 16px;
+  border-top: 1px solid var(--line);
+  padding: 10px 16px;
+  font-size: 11px;
+  color: var(--muted);
+}
+.copilot-table {
+  overflow-x: auto;
+  max-width: 100%;
+  padding: 8px 0;
+}
+.copilot-table table {
+  border-collapse: collapse;
+  width: 100%;
+  font-size: 12px;
+  text-align: left;
+}
+.copilot-table th,
+.copilot-table td {
+  padding: 10px 14px;
+  border-bottom: 1px solid var(--line);
+  white-space: nowrap;
+}
+.copilot-proposals {
+  display: grid;
+  gap: 6px;
+  margin-top: 15px;
+}
+.copilot-proposals a {
+  font-size: 13px;
+}
+.copilot-metrics {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+  margin-bottom: 12px;
+}
+.copilot-metrics > div {
+  display: grid;
+  gap: 5px;
+}
+.copilot-metrics strong {
+  font-size: 25px;
+}
+.copilot-metrics span {
+  font-size: 11px;
+  color: var(--muted);
+}
+.copilot pre {
+  overflow-x: auto;
+  max-width: 100%;
+  font-size: 11px;
+}
+.copilot details {
+  margin: 12px 0;
+}
+.copilot summary {
+  cursor: pointer;
+  color: var(--muted);
+  font-size: 12px;
+}
+.proposal-body {
+  white-space: pre-wrap;
+  max-height: 400px;
+  overflow: auto;
+}
+.copilot-composer {
+  margin-top: 18px;
+}
+.copilot-prompts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+  margin-bottom: 15px;
+}
+.copilot-prompts button {
+  font: inherit;
+  font-size: 12px;
+  text-align: left;
+  padding: 8px 10px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  color: var(--muted);
+  background: transparent;
+  cursor: pointer;
+}
+.copilot textarea {
+  resize: vertical;
+  min-height: 90px;
+  border: 0;
+  padding: 4px;
+  outline-offset: 6px;
+}
+.copilot-composer-footer {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 12px;
+}
+.copilot-composer-footer small {
+  font-size: 11px;
+  color: var(--muted);
+}
+.copilot-error {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+  background: var(--soft);
+  border-left: 3px solid #bc8054;
+  padding: 12px;
+  overflow-wrap: anywhere;
+  font-size: 13px;
+}
+.copilot-progress {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 14px 0;
+  font-size: 13px;
+}
+.copilot-discover {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+  margin: 20px 0;
+}
+.copilot-embedded h1 {
+  font-size: 26px;
+}
+.mobile-nav a {
+  min-width: 0;
+}
+@media (max-width: 600px) {
+  .copilot-heading h1 {
+    font-size: 26px;
+  }
+  .copilot-context {
+    grid-template-columns: 1fr;
+    padding: 16px;
+  }
+  .copilot-context label:last-child {
+    grid-column: auto;
+  }
+  .copilot-metrics strong {
+    font-size: 21px;
+  }
+  .copilot-tools .button {
+    flex: 1 1 40%;
+    justify-content: space-between;
+  }
+  .copilot-prompts {
+    flex-direction: column;
+  }
+  .copilot-evidence footer {
+    flex-direction: column;
+  }
+  .copilot-composer {
+    padding: 16px;
+  }
+  .copilot-composer-footer small {
+    max-width: 65%;
+  }
+  .copilot-turn h2 {
+    font-size: 16px;
+  }
+}

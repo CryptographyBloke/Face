@@ -87,3 +87,31 @@ accept `directory(id, page, search, options, sort)`; the default sort remains re
 `npm --prefix packages/sdk run build` emits JS and type declarations. `npm pack` from that
 directory prepares a package. It is intentionally private/unpublished; npm publication needs
 package-name ownership, reviewed metadata and explicit authorization.
+
+
+## Face Copilot v0.5 / 治理助手
+
+| Endpoint | Contract |
+|---|---|
+| `GET /v1/ai/status` | Available flag, data-only/restricted-beta mode, model ID, missing config names, six tools and limits |
+| `POST /v1/ai/tools/:name` | Strict tool input → `{tool,data,provenance,untrustedContent:true}`; public same-origin read-only research |
+| `POST /v1/ai/chat` | `{messages:[{role:"user" or "assistant",content}],context:{spaceId?,address?,proposalId?},language:"zh" or "en"}` → NDJSON |
+
+Chat requires `Authorization: Bearer <owner beta key>` and exact application Origin. Native mutation routes remain independent.
+Example public tool request: `POST /v1/ai/tools/getProposal` with `{spaceId:"ens.eth",proposalId:"0x…64 hex characters"}`.
+
+Tool inputs:
+- `getWalletProfile`: chainId=1, address.
+- `getSpace`: spaceId.
+- `listParticipants`: spaceId, search (address, ≤100 chars), sort (votes/recent/address), page 0–24, limit 1–20.
+- `getGovernanceActivity`: spaceId, limit 1–20, optional address/start/end (Unix seconds, [start,end)).
+- `getProposal`: spaceId, full 32-byte proposal hash.
+- `analyzeParticipation`: spaceId, up to two explicit `{start,end}` ranges.
+
+Stream events are `tool` (name/status), `evidence` (ID/validated tool result), `text` (delta),
+`done` (usage/toolCalls/metered), or `error` (safe code/message). Client must check terminal completion.
+Errors include AI_DISABLED (503), BETA_ACCESS (401), AI_QUOTA (429), QUOTA_UNAVAILABLE (503),
+VALIDATION (400), BODY_SIZE/INPUT_LIMIT (413); mid-stream MODEL_ERROR, NO_EVIDENCE, CONTEXT_LIMIT, OUTPUT_LIMIT and CANCELLED.
+A partial stream can contain useful evidence before an error; the client preserves it and offers manual retry.
+All data responses include source time and applicable scan scope. See [exact controls](docs/AI_AGENT_ARCHITECTURE.md).
+SDK types: `@wallet-face/sdk/ai`. No public Agent identity resolver endpoint or MCP server is active in v0.5.

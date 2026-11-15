@@ -13,6 +13,8 @@ import { SpacesProvider } from "./app/SpacesProvider";
 import { AppShell } from "./app/AppShell";
 import { EmptyState, LoadingSkeleton, ToastProvider } from "./ui/primitives";
 import "./product.css";
+const Copilot = lazy(() => import("./product/Copilot"));
+const Proposal = lazy(() => import("./product/ProposalPage"));
 const Home = lazy(() => import("./product/Home"));
 const Publisher = lazy(() => import("./App"));
 const Explore = lazy(() => import("./product/Explore"));
@@ -64,6 +66,11 @@ export function ProductRoutes() {
     <Routes>
       <Route element={<Layout />}>
         <Route index element={<Home />} />
+        <Route path="ai" element={<Copilot />} />
+        <Route
+          path="spaces/:spaceId/proposals/:proposalId"
+          element={<Proposal />}
+        />
         <Route path="avatar" element={<Publisher />} />
         <Route path="spaces" element={<Explore />} />
         <Route path="followed" element={<Explore collection="followed" />} />

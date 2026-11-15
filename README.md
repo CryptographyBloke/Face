@@ -2,7 +2,20 @@
 
 [Open Wallet Face / 打开网站](https://walletface.org) · [Source / 源码](https://github.com/CryptographyBloke/Face) · [Roadmap / 路线图](MILESTONES.md)
 
-## v0.4 — wallet identity and communities / 钱包身份与社区
+## v0.5 — Face Copilot / 治理助手
+
+**Wallet Face — Identity for Humans & AI Agents**
+
+Face Copilot adds real public Snapshot tools, proposal details, deterministic participation statistics,
+evidence cards and a restricted-beta streaming AI integration to the green v0.4 application.
+Public data tools work immediately. Paid model execution defaults off until model provider access,
+an owner beta key and shared Redis quotas are configured.
+
+公开数据工具、提案详情、代码计算的参与统计与证据卡片已接入；AI 模型执行通过内测开关启用。
+配置、测试状态与后续 Agent 身份规划见 [Agent architecture](docs/AI_AGENT_ARCHITECTURE.md)、
+[test report](docs/AI_AGENT_TEST_REPORT.md) 与 [identity roadmap](docs/AGENT_IDENTITY_ROADMAP.md)。
+
+### Retained v0.4 features / 保留的 v0.4 功能
 
 Connect a wallet, publish an avatar, discover public Snapshot communities and explore wallet
 profiles. The new application shell brings a single account session, community following,
@@ -19,6 +32,9 @@ and display their address; Snapshot avatar signing currently uses an Ethereum/EV
 | Route / 路由 | Feature / 功能 |
 |---|---|
 | `/` | Home, wallet identity, followed/recent shortcuts / 首页、钱包身份和社区快捷入口 |
+| `/ai` | Face Copilot, six public tools, streaming AI beta / 治理助手与公开工具 |
+| `/spaces/:id/ai` | Contextual AI Insights / 社区 AI 洞察 |
+| `/spaces/:id/proposals/:hash` | Proposal research and explanation / 提案研究与解释 |
 | `/avatar` | JPG/PNG → IPFS → gasless Snapshot signature / 头像上传与签名发布 |
 | `/spaces`, `/followed` | Discovery, search, local following / 探索、搜索与本地收藏 |
 | `/spaces/:id` | Overview, participants, activity, about / 社区概览、参与者、活动、介绍 |
@@ -40,7 +56,7 @@ Node.js 24+:
 ```bash
 git clone https://github.com/CryptographyBloke/Face.git
 cd Face
-git checkout feature/snapshot-inspired-ui-v04
+git checkout feature/face-ai-agent-v05
 npm ci
 npm --prefix web ci
 npm run build

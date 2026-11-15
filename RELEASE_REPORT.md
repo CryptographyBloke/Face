@@ -87,3 +87,22 @@ Rollback target: `dpl_4LtevLxZM7vpQchDXoRuiX8cMtCd`.
 - Partner-controlled SDK integration, pilot adoption and commercial operations.
 - China-mainland reachability requires independent regional measurement; this environment
   does not establish nationwide availability.
+
+## v0.5 Face Copilot candidate — 2026-11-15
+
+Based on the actual green production source `3f505dc3b5092d77c5f3797b5dfe5393d973b09d`, on
+`feature/face-ai-agent-v05`. The alternative `main` remains intact. Production is unchanged.
+
+Implemented: global Copilot, contextual Space AI Insights, proposal research pages, six real read-only tools,
+deterministic governance statistics, server-built evidence, Chinese/English and responsive/dark UI,
+AI SDK 7 streaming, NewAPI/Gateway provider interfaces, shared quota reservations and an explicit restricted-beta gate.
+NewAPI configuration is server-side JavaScript ESM; the owner example uses `gpt-6.1-sol` and an explicit HTTP opt-in.
+
+Tests: **42 backend + 33 frontend**, SDK build, production build, protocol checks and both dependency audits pass.
+Two real Snapshot Spaces and four real browser iframe viewports were checked. Evidence, exact scope and limitations:
+[AI test report](docs/AI_AGENT_TEST_REPORT.md), [source baseline](docs/AI_AGENT_BASELINE.md),
+[live data](docs/AI_LIVE_EVIDENCE.json), [screenshots](docs/screenshots/v05/).
+
+Live model execution is off: API key/shared quota store/beta key activation is pending. Controlled SDK/provider tests
+are distinct from the real Snapshot data path. No model charges, paid resources, production migration or registry contract.
+Agent identity schemas and v0.6–v1.0 dependencies are in [the roadmap](docs/AGENT_IDENTITY_ROADMAP.md).

@@ -1,3 +1,4 @@
+import Copilot from "./Copilot";
 import { useEffect, useState } from "react";
 import { Link, Navigate, useParams, useSearchParams } from "react-router-dom";
 import type { Activity, Provenance } from "../../../packages/sdk/src/index";
@@ -54,15 +55,17 @@ function ActivityFeed({
                 )}
               </time>
             </div>
-            <a
+            <Link
               className="proposal-title"
-              target="_blank"
-              rel="noreferrer"
-              href={`https://snapshot.box/#/${encodeURIComponent(id)}/proposal/${encodeURIComponent(item.proposal.id)}`}
+              to={
+                spacePath(id) +
+                "/proposals/" +
+                encodeURIComponent(item.proposal.id)
+              }
             >
               {item.proposal.title}
-              <Icon name="external" size={14} />
-            </a>
+              <Icon name="arrow" size={14} />
+            </Link>
           </div>
         </article>
       ))}
@@ -91,7 +94,7 @@ function SourceDetails({ provenance }: { provenance: Provenance }) {
         </p>
         <p>
           {provenance.proposalsScanned} {t("个提案", "proposals")} ·{" "}
-          {provenance.votesScanned} {t("条公开投票", "public votes")} ·{" "}
+          {provenance.votesScanned} {t("条已扫描投票", "votes scanned")} ·{" "}
           {t(
             provenance.votesComplete ? "已到数据末尾" : "扫描达到上限",
             provenance.votesComplete ? "End reached" : "Scan limit reached",
@@ -107,7 +110,7 @@ function SourceDetails({ provenance }: { provenance: Provenance }) {
 export default function SpacePage() {
   const { spaceId = "", section = "" } = useParams();
   if (!validSpaceId(spaceId)) return <InvalidSpace />;
-  if (!["", "participants", "activity", "about"].includes(section))
+  if (!["", "participants", "activity", "ai", "about"].includes(section))
     return <Navigate replace to={spacePath(spaceId)} />;
   return <SpaceView key={spaceId} id={spaceId} section={section} />;
 }
@@ -211,6 +214,9 @@ function SpaceView({ id, section }: { id: string; section: string }) {
               )}
           </p>
           <div className="space-meta">
+            <Link to={spacePath(id) + "/ai"}>
+              {t("分析这个社区", "Analyze this community")}
+            </Link>
             <a href={d.provenance.sourceUrl} target="_blank" rel="noreferrer">
               Snapshot
               <Icon name="external" size={13} />
@@ -239,6 +245,11 @@ function SpaceView({ id, section }: { id: string; section: string }) {
               active: section === "activity",
             },
             {
+              to: spacePath(id) + "/ai",
+              label: t("AI 洞察", "AI Insights"),
+              active: section === "ai",
+            },
+            {
               to: spacePath(id) + "/about",
               label: t("关于", "About"),
               active: section === "about",
@@ -246,6 +257,7 @@ function SpaceView({ id, section }: { id: string; section: string }) {
           ]}
         />
       </section>
+      {section === "ai" && <Copilot key={id} spaceId={id} embedded />}
       {section === "" && (
         <>
           <div className="metric-grid">
@@ -273,7 +285,7 @@ function SpaceView({ id, section }: { id: string; section: string }) {
               <span>{t("扫描提案", "Proposals scanned")}</span>
               <strong>{d.counts.proposalsObserved.toLocaleString()}</strong>
               <small>
-                {d.provenance.votesScanned} {t("条公开投票", "public votes")}
+                {d.provenance.votesScanned} {t("条已扫描投票", "votes scanned")}
               </small>
             </div>
           </div>
@@ -444,14 +456,12 @@ function SpaceView({ id, section }: { id: string; section: string }) {
           <h3>{t("扫描提案", "Observed proposals")}</h3>
           {d.proposals.slice(0, 8).map((p) => (
             <p key={p.id}>
-              <a
-                href={`https://snapshot.box/#/${encodeURIComponent(id)}/proposal/${p.id}`}
-                target="_blank"
-                rel="noreferrer"
+              <Link
+                to={spacePath(id) + "/proposals/" + encodeURIComponent(p.id)}
               >
                 {p.title}
-                <Icon name="external" size={13} />
-              </a>
+                <Icon name="arrow" size={13} />
+              </Link>
             </p>
           ))}
         </section>

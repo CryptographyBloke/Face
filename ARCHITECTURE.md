@@ -85,3 +85,12 @@ are preserved for portability.
 - Space administration: https://github.com/snapshot-labs/snapshot-docs/blob/master/user-guides/spaces/settings.md
 - Live `hub.snapshot.org/graphql` queries for `yam.eth`, `admins`, proposal privacy,
   votes, `created_lte`, `first`/`skip` were checked during implementation on 2026-10-29.
+
+
+## v0.5 Face Copilot / AI 架构
+
+The existing green v0.4 application remains the base. `server/ai/` adds the six read-only tools,
+strict Agent routes, AI SDK 7 streaming and shared quota reservations. `/ai`, Space AI Insights and
+proposal research reuse the app shell. `server/identity/profile.mjs` supplies a versioned future model.
+Implementation details and limits: [AI architecture](docs/AI_AGENT_ARCHITECTURE.md).
+Source comparison: [baseline report](docs/AI_AGENT_BASELINE.md). No alternative-main merge or database migration occurred.
