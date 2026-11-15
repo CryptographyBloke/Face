@@ -126,3 +126,5 @@ Cron is 03:17 UTC / 11:17 Singapore daily, at most three opted-in Spaces and one
 Production deployment requires successful corrected proposal acceptance, final Preview rendering, approved formal schema application and environment configuration.
 The owner authorized promotion after acceptance; production migration approval remains separately required by the task and automatic review.
 Kill switches: FACE_AI_ENABLED=false, FACE_PLATFORM_ENABLED=false; redeploy. Original avatar publication remains independent.
+
+Release A configuration: `FACE_IDENTITY_ENABLED`, optional isolated `FACE_IDENTITY_DATABASE_URL`, migration 005, optional trusted `ENS_RPC_URL`/`BASE_SEPOLIA_RPC_URL`. Preview acceptance is gated by `FACE_IDENTITY_VERIFY_ON_BUILD` and an isolated database name. [Release A deployment details](docs/AGENT_IDENTITY_RELEASE_A.md).

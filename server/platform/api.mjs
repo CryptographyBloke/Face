@@ -2,6 +2,7 @@ import { scheduledRefresh } from "./scheduler.mjs";
 import { createHash } from "node:crypto";
 import { GovernanceIndex } from "./indexer.mjs";
 import { z } from "zod";
+import { PersonalAgentService, identityEnabled } from "../personal/service.mjs";
 import { PlatformService, checkedAgent } from "./service.mjs";
 import { sessionActor } from "./authorization.mjs";
 import { ApiError, address, spaceId } from "../validation.mjs";
@@ -46,6 +47,7 @@ export function platformStatus(env = process.env) {
     ],
     walletApprovalRequired: true,
     chatStored: false,
+    personalAgents: identityEnabled(env),
   };
 }
 export function createPlatformApi({
@@ -79,7 +81,7 @@ export function createPlatformApi({
           "PLATFORM_DISABLED",
           "Agent platform is unavailable",
         );
-      current ||= new PlatformService({ snapshot, origin, env });
+      current ||= new PersonalAgentService({ snapshot, origin, env });
       const repo = current.repository;
       const index = new GovernanceIndex({ snapshot, db: repo.db });
       const reserve = async (kind, ip, max = 10) => {
@@ -143,6 +145,51 @@ export function createPlatformApi({
         }
       }
       if (request.method === "GET") {
+        if (
+          identityEnabled(env) &&
+          path[0] === "my-agents" &&
+          path.length === 1
+        ) {
+          const currentActor = actor();
+          const links = await repo.myAgents(currentActor);
+          return json({
+            items: await Promise.all(
+              links.map((l) =>
+                current.checkedLink(l, {
+                  id: l.agent_id,
+                  controller: l.profile_controller,
+                  name: l.name,
+                  metadata: l.metadata,
+                  revision: l.profile_revision,
+                }),
+              ),
+            ),
+          });
+        }
+        if (identityEnabled(env) && path[0] === "links" && path.length === 2) {
+          const l = await repo.link(uuid(path[1]), actor());
+          if (!l) throw new ApiError(404, "NOT_FOUND", "Association not found");
+          return json(
+            await current.checkedLink(l, {
+              id: l.agent_id,
+              controller: l.profile_controller,
+              name: l.name,
+              metadata: l.metadata,
+              revision: l.profile_revision,
+            }),
+          );
+        }
+        if (
+          identityEnabled(env) &&
+          path[0] === "agents" &&
+          path.length === 3 &&
+          path[2] === "identity"
+        ) {
+          const a = await repo.agent(uuid(path[1]), true, optionalActor());
+          if (!a) throw new ApiError(404, "NOT_FOUND", "Agent not found");
+          return json(await current.identity(a, optionalActor()));
+        }
+
         if (path[0] === "refresh" && path.length === 1)
           return json(
             await scheduledRefresh(request, {

@@ -14,6 +14,17 @@ import { SpacesProvider } from "./app/SpacesProvider";
 import { AppShell } from "./app/AppShell";
 import { EmptyState, LoadingSkeleton, ToastProvider } from "./ui/primitives";
 import "./product.css";
+const MyAgents = lazy(() => import("./platform/PersonalAgents"));
+const ConnectAgent = lazy(() =>
+  import("./platform/PersonalAgents").then((m) => ({
+    default: m.ConnectAgent,
+  })),
+);
+const AgentLinkPage = lazy(() =>
+  import("./platform/PersonalAgents").then((m) => ({
+    default: m.AgentLinkPage,
+  })),
+);
 const Agents = lazy(() => import("./platform/Agents"));
 const AgentProfile = lazy(() =>
   import("./platform/Agents").then((m) => ({ default: m.AgentProfile })),
@@ -95,6 +106,9 @@ export function ProductRoutes() {
         <Route index element={<Home />} />
         <Route path="ai" element={<Copilot />} />
         <Route path="agents" element={<Agents />} />
+        <Route path="my-agents" element={<MyAgents />} />
+        <Route path="my-agents/connect" element={<ConnectAgent />} />
+        <Route path="my-agents/links/:id" element={<AgentLinkPage />} />
         <Route path="agents/new" element={<AgentEditor />} />
         <Route path="agents/:id" element={<AgentProfile />} />
         <Route path="agents/:id/edit" element={<AgentEditor />} />

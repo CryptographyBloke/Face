@@ -1,3 +1,4 @@
+import { personalAgentFields } from "../personal/schemas.mjs";
 import { z } from "zod";
 const id = z.string().uuid(),
   addr = z.string().regex(/^0x[0-9a-fA-F]{40}$/),
@@ -16,6 +17,7 @@ const endpoint = z
   .object({ protocol: z.enum(["https", "mcp", "a2a"]), url: https })
   .strict();
 const agentFields = {
+  ...personalAgentFields,
   id,
   name: text(100).min(1),
   description: text(2000),
@@ -70,10 +72,28 @@ export const actionContent = {
 };
 export const platformSchemas = {
   "session.create": z.object({ purpose: z.literal("workspace.read") }).strict(),
-  "agent.register": z.object(agentFields).strict(),
+  "agent.register": z
+    .object(agentFields)
+    .strict()
+    .refine(
+      (p) =>
+        !p.localOnly || (!p.endpoints.length && !(p.services || []).length),
+      {
+        message:
+          "Local-only profiles cannot declare public endpoints or services",
+      },
+    ),
   "agent.update": z
     .object({ ...agentFields, revision: z.number().int().positive() })
-    .strict(),
+    .strict()
+    .refine(
+      (p) =>
+        !p.localOnly || (!p.endpoints.length && !(p.services || []).length),
+      {
+        message:
+          "Local-only profiles cannot declare public endpoints or services",
+      },
+    ),
   "report.save": z
     .object({
       id,

@@ -26,8 +26,15 @@ const coreKeys = [
   "registry",
   "organizations",
   "published",
+  "agentController",
+  "services",
+  "registration",
+  "localOnly",
 ];
-const core = (p) => Object.fromEntries(coreKeys.map((k) => [k, p[k]]));
+const core = (p) =>
+  Object.fromEntries(
+    coreKeys.filter((k) => Object.hasOwn(p, k)).map((k) => [k, p[k]]),
+  );
 export async function checkedAgent(record) {
   const proof = record.proof?.metadataProof || record.proof;
   let controllerVerified = false,

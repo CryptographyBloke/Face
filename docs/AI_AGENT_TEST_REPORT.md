@@ -1,7 +1,7 @@
 # Agent platform acceptance / Agent 平台验收
 
 2026-11-15 · branch `feature/face-ai-agent-v05`. Baseline green v0.4: `3f505dc3b5092d77c5f3797b5dfe5393d973b09d`.
-Production promotion is pending the formal database migration approval. Existing SQLite authorization is unchanged.
+Production was promoted after explicit owner approval; see [production acceptance](V05_PRODUCTION_ACCEPTANCE.md). Existing SQLite authorization is unchanged.
 
 ## Automated checks
 
@@ -66,8 +66,8 @@ no unattended signature was requested from a user wallet. Live upstream faults w
 
 ## Release gates
 
-The production database schema application was rejected by automatic approval review as a consequential production migration requiring owner confirmation.
-Corrective proposal regression passed. Formal schema application and production deployment await the exact migration approval.
+The initial production schema request was blocked pending specific authorization; the owner subsequently approved it and migrations 001–004 succeeded.
+Corrective proposal regression and formal deployment passed; subsequent real production model/MCP checks are in V05_PRODUCTION_ACCEPTANCE.md.
 Calendar input uses explicit validated YYYY-MM-DD UTC dates; impossible calendar dates are rejected before querying.
 Final `38a78d1` Preview browser comparison: 2026-10-01 to 2026-11-01 yielded 86 observed public votes / 64 wallets; comparison to the observed September subset yielded +86 / +64. Coverage remained partial.
 Private workspace sign-in boundaries, Agent draft form, internal action preparation and all four viewport widths were inspected.

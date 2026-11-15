@@ -125,3 +125,5 @@ Strict payload schemas: `server/platform/schemas.mjs`. Actions: session.create, 
 POST `index/:space` requires an authenticated current Snapshot administrator; refreshes one public page. GET `refresh` requires the configured cron secret.
 POST `/v1/mcp` is the public read-only MCP endpoint; supported tools are listed in [platform architecture](docs/PLATFORM_ARCHITECTURE.md).
 There are no private MCP tools, arbitrary URL/GraphQL operations or automatic financial actions.
+
+Release A adds versioned personal-Agent evidence and signed association actions. See [exact routes and evidence semantics](docs/AGENT_IDENTITY_RELEASE_A.md). Existing mutation namespaces and free profile/governance APIs are preserved.

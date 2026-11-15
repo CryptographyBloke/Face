@@ -4,6 +4,7 @@ import { MemoryRouter } from "react-router-dom";
 import { PreferencesProvider } from "./app/Preferences";
 import { SignedAction, PlatformSession } from "./platform/client";
 import Agents from "./platform/Agents";
+import { ConnectAgent } from "./platform/PersonalAgents";
 import Analytics from "./platform/Analytics";
 const wallet = vi.hoisted(() => ({
   address: "0x1111111111111111111111111111111111111111",
@@ -212,5 +213,34 @@ describe("Wallet authorized Agent platform", () => {
     fireEvent.click(screen.getByRole("button", { name: "Load analytics" }));
     await screen.findByText("Use a valid YYYY-MM-DD date.");
     expect(fetch).not.toHaveBeenCalled();
+  });
+  it("loads a personal Agent and requires separate review before an association signature", async () => {
+    const id = "123e4567-e89b-42d3-a456-426614174000";
+    const fetch = vi
+      .spyOn(globalThis, "fetch")
+      .mockResolvedValue(
+        Response.json({
+          id,
+          name: "Local research helper",
+          controller: wallet.address,
+          revision: 1,
+          metadata: {
+            description: "Local integration",
+            endpoints: [],
+            agentController: wallet.address,
+          },
+        }),
+      );
+    mount(<ConnectAgent />);
+    fireEvent.change(screen.getByLabelText("Existing Wallet Face Agent ID"), {
+      target: { value: id },
+    });
+    fireEvent.click(screen.getByRole("button", { name: "Load Agent" }));
+    await screen.findByText("Local research helper");
+    expect(
+      screen.getByRole("button", { name: "Review and sign association" }),
+    ).toBeTruthy();
+    expect(wallet.walletClient.signTypedData).not.toHaveBeenCalled();
+    expect(fetch).toHaveBeenCalledTimes(1);
   });
 });
