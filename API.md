@@ -114,4 +114,14 @@ Errors include AI_DISABLED (503), BETA_ACCESS (401), AI_QUOTA (429), QUOTA_UNAVA
 VALIDATION (400), BODY_SIZE/INPUT_LIMIT (413); mid-stream MODEL_ERROR, NO_EVIDENCE, CONTEXT_LIMIT, OUTPUT_LIMIT and CANCELLED.
 A partial stream can contain useful evidence before an error; the client preserves it and offers manual retry.
 All data responses include source time and applicable scan scope. See [exact controls](docs/AI_AGENT_ARCHITECTURE.md).
-SDK types: `@wallet-face/sdk/ai`. No public Agent identity resolver endpoint or MCP server is active in v0.5.
+SDK types: `@wallet-face/sdk/ai`. Published Agent records and read-only MCP are implemented in the platform preview.
+
+## Platform API / 平台接口
+
+All routes start `/v1/platform`. GET: `status`, `agents?q=`, `agents/:uuid`, `agents/:uuid/card`, `reports/:uuid`, `organizations/:space`, `analytics/:space?start=&end=&compareStart=&compareEnd=`.
+Wallet read session required for private `workspace`, `actions/:uuid`, `audit/:target`; private reports/Agent records return only to the owner.
+POST `challenge`: `{actor,action,payload}` → `{typedData,payload,endpointControl?}`. POST `execute`: `{nonce,signature,payload}`.
+Strict payload schemas: `server/platform/schemas.mjs`. Actions: session.create, agent.register/update/verify.endpoint/verify.registry, report.save, organization.configure, action.prepare/approve/execute/cancel.
+POST `index/:space` requires an authenticated current Snapshot administrator; refreshes one public page. GET `refresh` requires the configured cron secret.
+POST `/v1/mcp` is the public read-only MCP endpoint; supported tools are listed in [platform architecture](docs/PLATFORM_ARCHITECTURE.md).
+There are no private MCP tools, arbitrary URL/GraphQL operations or automatic financial actions.

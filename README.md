@@ -9,7 +9,7 @@
 Face Copilot adds real public Snapshot tools, proposal details, deterministic participation statistics,
 evidence cards and a restricted-beta streaming AI integration to the green v0.4 application.
 Public data tools work immediately. Paid model execution defaults off until model provider access,
-an owner beta key and shared Redis quotas are configured.
+an owner beta key and shared PostgreSQL (or Redis) quotas are configured.
 
 公开数据工具、提案详情、代码计算的参与统计与证据卡片已接入；AI 模型执行通过内测开关启用。
 配置、测试状态与后续 Agent 身份规划见 [Agent architecture](docs/AI_AGENT_ARCHITECTURE.md)、
@@ -145,3 +145,10 @@ npm run smoke
 
 MIT. Snapshot research attribution and the upstream MIT notice are in
 [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md).
+
+## Durable platform preview / 持久化平台预览
+
+Agent profiles, signed private reports, organization workspaces, historical indexing, reviewed internal actions and read-only MCP are implemented.
+Routes: `/agents`, `/workspaces`, `/analytics`, `/organizations`, `/reports/new`, `/actions/new`; MCP: `/v1/mcp`.
+See [implemented platform](docs/PLATFORM_ARCHITECTURE.md) and [verified acceptance](docs/AI_AGENT_TEST_REPORT.md).
+Formal database migration and production promotion await owner approval; existing wallet/avatar publication is preserved.

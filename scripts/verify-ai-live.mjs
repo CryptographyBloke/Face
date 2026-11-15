@@ -11,18 +11,29 @@ const handler = createAgentApi({
   origin: "https://activation-test.invalid",
 });
 const checks = [];
-for (const [language, spaceId, prompt] of [
-  [
-    "zh",
-    "ens.eth",
-    "请调用工具，简要说明这个社区在本次扫描中观察到多少条公开投票和多少个参与钱包，并标注证据。",
-  ],
-  [
-    "en",
-    "yam.eth",
-    "Use the tools to report the observed public vote count and unique wallet count in this scan, citing evidence.",
-  ],
-]) {
+const cases =
+  process.env.FACE_AI_VERIFY_CASE === "proposal"
+    ? [
+        [
+          "en",
+          "ens.eth",
+          "Use getProposal to explain this proposal briefly, including the voting window in UTC, choices and current public result. Cite evidence.",
+          "0x5bc7802637848e22f47e23615d3dcb2649e10b5feed5033a974eb556cdf3627a",
+        ],
+      ]
+    : [
+        [
+          "zh",
+          "ens.eth",
+          "请调用工具，简要说明这个社区在本次扫描中观察到多少条公开投票和多少个参与钱包，并标注证据。",
+        ],
+        [
+          "en",
+          "yam.eth",
+          "Use the tools to report the observed public vote count and unique wallet count in this scan, citing evidence.",
+        ],
+      ];
+for (const [language, spaceId, prompt, proposalId] of cases) {
   const response = await handler(
     new Request("https://activation-test.invalid/v1/ai/chat", {
       method: "POST",
@@ -33,7 +44,7 @@ for (const [language, spaceId, prompt] of [
       },
       body: JSON.stringify({
         messages: [{ role: "user", content: prompt }],
-        context: { spaceId },
+        context: { spaceId, ...(proposalId ? { proposalId } : {}) },
         language,
       }),
     }),
@@ -62,10 +73,19 @@ for (const [language, spaceId, prompt] of [
     .join("");
   const done = events.find((e) => e.type === "done");
   const error = events.find((e) => e.type === "error");
+  const proposal = evidence.find((e) => e.result.tool === "getProposal")?.result
+    .data;
+  const proposalDatesCorrect =
+    !proposalId ||
+    (!!proposal &&
+      text.includes(proposal.startUtc.slice(0, 10)) &&
+      text.includes(proposal.endUtc.slice(0, 10)));
   checks.push({
     language,
     spaceId,
-    success: !!done && evidence.length > 0 && !!text && !error,
+    proposalDatesCorrect,
+    success:
+      !!done && evidence.length > 0 && !!text && !error && proposalDatesCorrect,
     usage: done?.usage,
     toolCalls: done?.toolCalls,
     metered: done?.metered,

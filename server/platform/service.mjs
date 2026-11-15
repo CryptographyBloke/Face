@@ -62,11 +62,18 @@ export async function checkedAgent(record) {
   } catch {}
   return {
     ...record,
+    schemaVersion: 1,
     controllerVerification: {
       verified: controllerVerified,
       metadataSignatureVerified,
       checkedAt: new Date().toISOString(),
-      authorizedAt: record.updated_at,
+      authorizedAt: proof?.verifiedAt || null,
+      authorizationExpiresAt: proof?.typedData?.message?.expiresAt
+        ? new Date(
+            Number(proof.typedData.message.expiresAt) * 1000,
+          ).toISOString()
+        : null,
+      recordUpdatedAt: record.updated_at,
     },
     verificationSemantics:
       "EOA control at signed authorization time; organization entries are self-declared",
@@ -197,6 +204,7 @@ export class PlatformService {
         typedData: typed,
         signature,
         signedPayload: payload,
+        verifiedAt: proof.verifiedAt,
       };
       const previous =
         action === "agent.update"

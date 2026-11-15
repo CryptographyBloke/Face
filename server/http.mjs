@@ -21,7 +21,9 @@ export function createNodeHandler(
         let size = 0;
         for await (const chunk of req) {
           size += chunk.length;
-          if (size > 16384) {
+          if (
+            size > (url.pathname.startsWith("/v1/platform/") ? 32768 : 16384)
+          ) {
             res.writeHead(413, { "Content-Type": "application/json" });
             res.end(
               '{"error":{"code":"BODY_SIZE","message":"Request too large"}}',

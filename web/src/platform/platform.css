@@ -26,9 +26,9 @@
   width: 100%;
   min-width: 0;
   padding: 12px;
-  border: 1px solid var(--border);
+  border: 1px solid var(--line);
   border-radius: 10px;
-  background: var(--surface);
+  background: var(--panel);
   color: var(--text);
   font: inherit;
 }
@@ -44,7 +44,7 @@ dialog pre {
   overflow-wrap: anywhere;
   font-size: 12px;
   line-height: 1.6;
-  background: var(--background);
+  background: var(--soft);
   padding: 16px;
   border-radius: 10px;
 }
@@ -83,7 +83,7 @@ dialog pre {
 .platform-page th {
   text-align: left;
   padding: 10px 4px;
-  border-bottom: 1px solid var(--border);
+  border-bottom: 1px solid var(--line);
 }
 .platform-table {
   max-width: 100%;

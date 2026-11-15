@@ -1,97 +1,71 @@
-# v0.5 validation / 验证记录
+# Agent platform acceptance / Agent 平台验收
 
-Date: 2026-11-15. Baseline: `3f505dc3b5092d77c5f3797b5dfe5393d973b09d`.
-Feature branch: `feature/face-ai-agent-v05`. Production remains the green v0.4 deployment.
+2026-11-15 · branch `feature/face-ai-agent-v05`. Baseline green v0.4: `3f505dc3b5092d77c5f3797b5dfe5393d973b09d`.
+Production promotion is pending the formal database migration approval. Existing SQLite authorization is unchanged.
 
-## Automated checks / 自动化检查
+## Automated checks
 
-| Check | Result |
+| Check | Verified result |
 |---|---|
-| `npm test` | 42 passed (20 retained backend checks + 22 Agent/provider/security checks) |
-| `npm --prefix web test` | 33 passed (26 retained + 7 Copilot UI checks) |
-| `npm --prefix packages/sdk run build` | Passed; AI contracts exported |
-| `npm run build` | TypeScript + production Vite build passed; existing large shell chunk warning remains |
-| `npm run test:protocol` | Passed; Snapshot EIP-712 domain/envelope and upload contract checks |
-| `npm audit` / `npm --prefix web audit` | Zero vulnerabilities in both trees |
-| `git diff --check` | Passed |
+| `npm test` | 51 passed |
+| `npm --prefix web test` | 38 passed |
+| SDK build, TypeScript/Vite production build | Passed |
+| `npm run test:protocol` | Passed; existing Snapshot avatar signing contract |
+| Root and web `npm audit` | Zero vulnerabilities |
 
-Coverage includes strict schemas, arbitrary URL/GraphQL rejection, read-only allowlist, wrong origin,
-beta auth, oversized bodies/history/context/output, tool budget, deterministic arithmetic/ranges,
-source attribution, scan incompleteness, missing/malformed proposal content, Space binding,
-private score suppression, provider failure/cancellation, malformed streams and quota-store failure.
-The serverless adapter preserves POST bodies/signals and keeps native write origins separate.
-Existing signature/replay/SQLite transaction and avatar publication regressions remain covered.
-The prior UI assertion calling all 500 scanned votes public was corrected to “votes scanned”.
+Tests cover read-only AI tools, schema/body/context/output budgets, source metadata, partial datasets, private ballot/score omission,
+model failures/cancellation, controlled prompt injection, zh/en UI, wallet approval review, chain rejection, EIP-712 origins,
+nonce replay, altered payloads, Agent signature checks, SSRF/DNS rejection, private sessions, indexing and database quota calls.
+The real MCP SDK v2 client discovers exactly five read-only tools and invokes the actual tool adapter.
+Controlled model tests exercise the installed AI SDK and NewAPI SSE adapter; these are separate from the live checks below.
 
-AI SDK MockLanguageModelV4 tests exercise the real SDK multi-step stream with actual structured tools,
-including Chinese and English. A separate controlled HTTP test runs the **actual NewAPI provider adapter**
-through two OpenAI-compatible SSE responses: model tool call → code-computed result → final text and usage.
-It verifies endpoint, bearer header, max_tokens, stream_options.include_usage, six tool definitions and aggregated usage.
-Model error internals are excluded from client streams. Prompt-injection tests establish data isolation,
-fixed capability sets and escaped rendering; they do not claim semantic immunity of free-form model prose.
+## Live NewAPI and Snapshot
 
-## Real data / 真实数据
+[Model report](AI_MODEL_LIVE_REPORT.json): two real NewAPI tool-calling generations, ENS Chinese and Yam English, **23,597 tokens**.
+Actual browser generations added ENS Chinese participation analysis (**11,774 tokens**) and English proposal explanation (**12,062 tokens**).
+The initial English proposal explanation converted a Unix timestamp to the wrong month. This failed acceptance.
+The reader now supplies `startUtc`, `endUtc`, `createdUtc` and `votingWindowUTC`; system policy requires copying these values.
+The corrective live regression result is recorded separately before the release candidate is approved.
 
-`npm run smoke:ai` runs all six tools against the official Snapshot Hub for **ens.eth and yam.eth**.
-Reproducible output: [AI_LIVE_EVIDENCE.json](AI_LIVE_EVIDENCE.json).
-Retrieved at 2026-11-15 16:05 Singapore time (08:05 UTC); current data can change.
+| Space | Bounded proposals/votes | Private omitted | Public votes | Observed wallets |
+|---|---:|---:|---:|---:|
+| ENS | 50 / 500 | 110 | 390 | 128 |
+| Yam | 50 / 500 | 0 | 500 | 102 |
 
-| Space | Proposals scanned | Votes scanned | Private omitted | Public votes included | Unique public wallets |
-|---|---:|---:|---:|---:|---:|
-| ENS | 50 | 500 | 110 | 390 | 128 |
-| Yam | 50 | 500 | 0 | 500 | 102 |
+These are scan observations, not complete historical rankings. Raw tools: [live evidence](AI_LIVE_EVIDENCE.json).
+No monetary charge is inferred from token counts: NewAPI channel pricing/ledger is unavailable. Observed usage so far is **47,433 tokens** before the corrective regression.
 
-Both scans reached configured bounds. These figures describe the observed scan, not all historical DAO activity.
-Real proposal readers returned ENS “[7.3] [Social] Governor Nexus Update” and Yam “YIP-210 Finalizing YIP-114 and implementing a rebalancing framework.”
-The live Hub returned a numeric proposal snapshot block; schema support was corrected and regression-tested.
-Profile resolution used actual wallets from each observed participant set.
+## Real PostgreSQL
 
-## Browser / 浏览器
+[Database report](PLATFORM_LIVE_REPORT.json), protected Preview build `bdd5181`:
 
-Real Chromium rendering through the existing QA-only iframe viewport harness:
-1440, 1024, 768 and 375 CSS-pixel viewports. Document clientWidth equals scrollWidth at each size;
-15 pixels are occupied by the vertical scrollbar. Screenshots: [v05 folder](screenshots/v05/).
-The responsive harness and signing-disabled wallet fixture are excluded from production builds.
+- Real signed private Agent create and metadata signature verification; public lookup withholds private record.
+- Replaying an authorization fails. Four concurrent submissions consume one nonce exactly once.
+- Preparation → approval → execution applies an internal announcement and three audit events atomically. Skipping approval fails.
+- Twelve concurrent quota reservations: five accepted, seven rejected.
+- Real Snapshot index pages: ENS 100 public votes / 66 wallets; Yam 100 / 46. Both partial.
 
-Verified public-data journeys: Space AI Insights context/navigation → actual ENS governance statistics and source card;
-Space overview → real proposal link → title, choices, scores, timing, privacy state and source;
-global Copilot → public wallet → claim state/source/time → wallet profile link.
-Chinese interface and dark theme render with the existing app shell. Mobile keeps Copilot in bottom navigation.
-Source cards point to server-built official Snapshot URLs. Copy/export controls are present.
-Missing AI credentials visibly show data-only status with model submission disabled.
-Timeout/error/retry/cancellation/rate-limit behaviors are covered by controlled backend and React tests;
-no live provider fault injection was performed without credentials.
+Synthetic test wallets are generated in memory. Organization authority in the workflow test uses an explicit controlled Snapshot admin fixture.
+No real DAO administrator was impersonated and no real user wallet signed during automated testing.
+Test records remain isolated in the Preview database. Production database is separate and currently empty.
 
-## Activation gates / 待激活验证
+## Browser acceptance
 
-**Live model calls: not run. Observed AI spend: $0.** NewAPI endpoint/model were supplied as configuration examples;
-the API key is absent. No full AI prose answer or production model quality claim is made.
-NewAPI costs depend on that instance’s channel/model pricing. Optional Gateway catalog estimates are separate, in the architecture document.
+Live Edge rendering against https://walletface-7n0698h4m-dao-vote.vercel.app, without disabling deployment protection:
 
-Shared Redis quota integration is implemented and controlled-transport tested; no live Redis service or billing resource was provisioned.
-Before enabling model execution: set the server-only NewAPI key, configure a shared quota store and owner beta key,
-then run one real multi-tool request, verify usage/charges, cancellation and shared-instance quota enforcement.
-Actual wallet extension signing, mobile wallets and ENS mainnet writes still require owner-controlled wallets, as in v0.4.
-Native writable production persistence remains disabled. Agent Profile v1 is a schema/resolver contract, with no live ownership verification.
+- Explore → ENS → AI Insights → real model/tool response → official Snapshot source opened.
+- Global Copilot → actual public wallet → profile source/claim state/time → wallet profile.
+- Actual ENS proposal page → title, public choices/scores, timing → real English model explanation; date issue found as above.
+- Agent directory empty state → registration form; mobile navigation exposes Agent/Workspace entries.
+- Widths 1440 / 1024 / 768 / 375: no document horizontal overflow. Chinese, English and dark theme inspected.
 
-Preview deployment state and exact release commit/PR are recorded in RELEASE_REPORT.md and the delivery message.
+[Screenshots](screenshots/platform/) accompany the earlier [v0.5 screenshots](screenshots/v05/).
+Full-page capture timed out once; viewport captures succeeded. New platform wallet signing is covered by deterministic UI tests and real database signature tests;
+no unattended signature was requested from a user wallet. Live upstream faults were not induced; timeout/rate-limit/malformed response recovery uses controlled tests.
 
-## Verified Vercel Preview / 已验证预览
+## Release gates
 
-Implementation commit: `198ac563a9b5d52b21b38114b4d142691495c768`.
-PR: https://github.com/CryptographyBloke/Face/pull/4 (base: green v0.4 branch).
-Preview: https://walletface-nsj5vbky3-dao-vote.vercel.app .
-Deployment `dpl_GrjvSxPPDxhFGPqHbmTHrBwQnSud` reached READY; build completed in 42 seconds.
-Authenticated deployment fetches returned HTTP 200 for `/ai`, `/v1/ai/status` and `/v1/spaces/ens.eth`.
-The live Preview API returned the same ENS 50/500 scan, 390 included public votes, 110 omitted private votes and 128 wallets.
-The shipped JS asset name matches the locally tested production build. The deployed status accurately reported AI disabled.
-Browser navigation to the Preview reached Vercel Login; authenticated Preview browser journeys remain unverified.
-Browser flow/viewport evidence above comes from the same implementation running locally. Deployment Protection was retained.
-Authenticated read checks used the platform connector’s temporary deployment access, with no public share token included in deliverables.
-
-Preview-only config now records provider `newapi`, the owner’s example base URL/model and explicit HTTP opt-in;
-`FACE_AI_ENABLED=false`. The project has no persistent Git repository connection, so branch-scoped environment writes were rejected;
-the five non-secret variables were applied to Preview only. Manual deployments use an exact Git commit.
-Production environment variables and domain assignment were unchanged. No NewAPI key or quota credential was created.
-The account has an existing Neon Free integration with no connected Vercel project in its inventory; no redundant database was provisioned.
-A subsequent documentation commit/rebuild records this validation and picks up those Preview variables.
+The production database schema application was rejected by automatic approval review as a consequential production migration requiring owner confirmation.
+Finish the corrective proposal regression and final Preview checks, then request approval for the exact versioned migrations and deployment.
+Registry token ownership checks additionally need a trusted `ENS_RPC_URL`; no successful live ERC-8004 registry verification is claimed.
+Service-domain proof needs an operator to publish the fresh well-known challenge; no external service control is invented.

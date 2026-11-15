@@ -92,40 +92,37 @@ Optional real upstream integration: `npm run smoke`.
 Responsive methodology and reference sources: docs/UI_RESEARCH.md.
 
 
-## v0.5 Preview and AI activation / 预览与 AI 激活
+## Agent platform configuration / Agent 平台配置
 
-Build from `feature/face-ai-agent-v05` at repository root using existing vercel.json; Vercel Preview only.
-Keep rootDirectory empty, install `npm ci && npm --prefix web ci`, build `npm run build`, output `web/dist`.
-Do not apply the alternative main branch web-only project override. No custom domains or production settings change.
+Use the existing Vercel project, repository root, `npm ci && npm --prefix web ci`, output `web/dist`, Node 24.
+`vercel.json` builds the app and runs live verification scripts only when their explicit flags are true.
 
-Public tools need no AI secret. To activate a restricted beta, configure Preview-only variables in Vercel:
-`FACE_AI_ENABLED=true`, `FACE_AI_PROVIDER=newapi`, `NEWAPI_BASE_URL=https://your-host/v1`,
-`NEWAPI_API_KEY`, `NEWAPI_MODEL` (exact model name), `FACE_AI_BETA_TOKEN` (32+ characters),
-`UPSTASH_REDIS_REST_URL`, `UPSTASH_REDIS_REST_TOKEN`, with an existing shared Redis instance. NewAPI uses its own server-side key.
-Optional Gateway mode uses `FACE_AI_PROVIDER=gateway`, `AI_GATEWAY_MODEL` and a Gateway key or Vercel OIDC.
-Choose the exact model and review current pricing before activation. Enter provider secrets through the dashboard, never chat or client VITE variables.
-Reuse an existing quota store after inspecting its ownership and capacity. No service is purchased by this release.
-`GET /v1/ai/status` reports missing configuration. Never enable AI using only per-instance counters.
+| Variable | Purpose |
+|---|---|
+| FACE_AI_ENABLED | Model kill switch; Preview true, default false |
+| FACE_AI_PROVIDER, NEWAPI_BASE_URL, NEWAPI_MODEL | Server provider/model |
+| NEWAPI_API_KEY | Server-only sensitive provider key |
+| NEWAPI_ALLOW_HTTP | Explicit opt-in for the owner's HTTP provider endpoint |
+| FACE_AI_BETA_TOKEN | 32+ character owner beta access code |
+| FACE_AI_QUOTA_STORE=postgres | Durable shared quotas |
+| FACE_DATABASE_URL | Environment-specific Neon connection |
+| FACE_PLATFORM_ENABLED=true | Persistent platform switch |
+| FACE_SESSION_SECRET | 32+ character private read-session signing secret |
+| ENS_RPC_URL | Optional trusted chain-1 token ownership verification |
+| FACE_SCHEDULED_REFRESH, CRON_SECRET | Opted-in daily index job; disabled until configured |
 
-Default beta quota is five requests/day globally, three/IP/hour and 1M conservatively reserved tokens/day.
-Each model request reserves 200K tokens and is limited to four steps, 800 output tokens/step and six tools.
-These are execution limits, not a provider monetary cap. Keep owner-controlled beta access until billing-level caps and live quota tests are verified.
-Kill switch: set `FACE_AI_ENABLED=false` and redeploy. Existing avatar publication and free data tools remain available.
-The single api/index.mjs handler preserves request bodies/signals and derives only the AI route origin from the Vercel Request URL.
-Native EIP-712 mutations retain their separate configured origin and stay disabled on Vercel.
+Alternative quota adapter: UPSTASH_REDIS_REST_URL/TOKEN. Preview now uses Neon and no longer depends on the temporary Redis database's expiry.
+No model/provider key belongs in VITE_* or client JavaScript. NewAPI uses http://82.156.218.54/v1 and gpt-6.1-sol, owner-authorized HTTP opt-in; TLS is preferable when the provider supplies it.
 
-For local QA use `APP_ORIGIN` matching the browser origin and `FACE_READ_ONLY=true`.
-`npm --prefix web run build:qa` includes the existing `/__qa` iframe viewport harness; production `npm run build` excludes it.
-Preview authentication remains as configured. Use existing Vercel account access; do not disable protection for testing.
+Apply versioned SQL `server/platform/migrations/001`–`004` on an isolated environment first. Preview migration/nonce concurrency tests passed.
+Formal database `walletface_production` is empty: automatic approval review blocked applying the production schema pending owner confirmation.
+No legacy SQLite records are copied or authorization stores switched.
 
-NewAPI activation order: set endpoint/model/key in **Preview**; confirm `/v1/ai/status` missing names;
-configure the shared quota store and owner beta key; enable FACE_AI_ENABLED; redeploy; run one real tool-calling
-request and verify NewAPI token usage/channel charges. Model text-only streaming does not establish tool compatibility.
-Set a per-key NewAPI quota and restrict allowed models in its console before any broader rollout. No quota is raised automatically.
+Live checks: FACE_AI_VERIFY_ON_BUILD=true, optionally FACE_AI_VERIFY_CASE=proposal; FACE_PLATFORM_VERIFY_ON_BUILD=true.
+These scripts require VERCEL_ENV=preview, use synthetic test wallets/prompts, and emit sanitized JSON reports. Model verification incurs provider usage.
+Disable both verification flags after the explicit acceptance run. Scripts are not public API routes.
 
-Owner-selected NewAPI example: `NEWAPI_BASE_URL=http://82.156.218.54/v1`,
-`NEWAPI_MODEL=gpt-6.1-sol`. HTTP requires explicit `NEWAPI_ALLOW_HTTP=true`.
-HTTP transports the bearer key without TLS; use the provider’s HTTPS entry when available.
-The implementation is server-side JavaScript ESM through AI SDK, matching the existing `.mjs` API.
-The React UI remains TypeScript. cURL is for diagnostics; all languages call the same API.
-The configured example has not been called with a live key. Its pricing depends on the owner’s NewAPI plan/channel.
+Cron is 03:17 UTC / 11:17 Singapore daily, at most three opted-in Spaces and one bounded page per Space.
+Production deployment requires successful corrected proposal acceptance, final Preview rendering, approved formal schema application and environment configuration.
+The owner authorized promotion after acceptance; production migration approval remains separately required by the task and automatic review.
+Kill switches: FACE_AI_ENABLED=false, FACE_PLATFORM_ENABLED=false; redeploy. Original avatar publication remains independent.

@@ -201,6 +201,8 @@ test("proposal reader validates Space binding, bounds body, preserves source and
     proposal({ body: "x".repeat(7000) }),
   ).proposal("ens.eth", pid);
   assert.equal(r.body.length, 6000);
+  assert.equal(r.startUtc, new Date(r.start * 1000).toISOString());
+  assert.equal(r.endUtc, new Date(r.end * 1000).toISOString());
   assert.equal(r.bodyTruncated, true);
   assert.match(r.provenance.sourceUrl, new RegExp(pid));
   assert.equal(r.strategies[0].params, undefined);

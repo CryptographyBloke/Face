@@ -24,6 +24,9 @@ export function publicIp(ip) {
   }
   if (family === 6) {
     const v = ip.toLowerCase();
+    const second = parseInt(v.split(":")[1] || "0", 16);
+    if (v.startsWith("2001:") && second < 0x200) return false;
+    if (v.startsWith("3fff:")) return false;
     return v.startsWith("2") || v.startsWith("3")
       ? !v.startsWith("2001:db8:") &&
           !v.startsWith("2001:0:") &&

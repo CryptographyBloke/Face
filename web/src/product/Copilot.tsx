@@ -92,8 +92,9 @@ function DataView({ e }: { e: Evidence }) {
           {t("状态", "State")}: {String(d.state)} · {String(d.type)}
         </p>
         <p>
-          {new Date(Number(d.start) * 1000).toLocaleString()} →{" "}
-          {new Date(Number(d.end) * 1000).toLocaleString()}
+          {String(d.startUtc || new Date(Number(d.start) * 1000).toISOString())}{" "}
+          → {String(d.endUtc || new Date(Number(d.end) * 1000).toISOString())}{" "}
+          (UTC)
         </p>
         <p>
           {t("隐私模式", "Privacy")}: {String(d.privacy || t("公开", "Public"))}

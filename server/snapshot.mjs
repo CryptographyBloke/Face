@@ -193,9 +193,9 @@ export class Snapshot {
         body: z.string().max(200000).nullable(),
         choices: z.array(z.string().max(1000)).max(100),
         state: z.string().max(50),
-        start: z.number().int(),
-        end: z.number().int(),
-        created: z.number().int(),
+        start: z.number().int().nonnegative().max(4102444800),
+        end: z.number().int().nonnegative().max(4102444800),
+        created: z.number().int().nonnegative().max(4102444800),
         scores: z.array(z.number().finite()).max(100).nullable().optional(),
         scores_total: z.number().finite().nullable().optional(),
         scores_state: z.string().nullable().optional(),
@@ -228,6 +228,13 @@ export class Snapshot {
     const hidden = !!p.privacy;
     return {
       ...p,
+      startUtc: new Date(p.start * 1000).toISOString(),
+      endUtc: new Date(p.end * 1000).toISOString(),
+      createdUtc: new Date(p.created * 1000).toISOString(),
+      votingWindowUTC: {
+        startInclusive: new Date(p.start * 1000).toISOString(),
+        end: new Date(p.end * 1000).toISOString(),
+      },
       body: (p.body || "").slice(0, 6000),
       bodyTruncated: (p.body?.length || 0) > 6000,
       contentStatus: p.body ? "available" : "missing",

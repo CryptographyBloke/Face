@@ -64,10 +64,7 @@ Roadmap targets guide upcoming work. Individual avatar upload stays free; paid s
 - Avoid a custom registry contract until real integrations demonstrate the need.
 
 
-## v0.5–v1.0 dependencies / 后续版本
+## Agent platform status / Agent 平台状态
 
-v0.5 implements public research tools, proposal reader, evidence UI and a disabled-by-default AI beta integration.
-Live AI and shared Redis activation remain configuration gates, with actual verification in
-[the test report](docs/AI_AGENT_TEST_REPORT.md). v0.6 historical indexing and saved reports precede v0.7 verified Agent Profiles,
-v0.8 read-only MCP and v1.0 human-approved actions. Concrete dependencies and verification semantics are in
-[the Agent roadmap](docs/AGENT_IDENTITY_ROADMAP.md).
+v0.5 Copilot is implemented and live-tested in Preview. Additional indexing, signed reports, Agent profiles, reviewed internal organization actions and MCP are implemented with explicit acceptance boundaries.
+Production awaits formal database migration approval. Remaining indexing reconciliation, contract-account ownership, registry conformance and external operation adapters are listed in [the roadmap](docs/AGENT_IDENTITY_ROADMAP.md).

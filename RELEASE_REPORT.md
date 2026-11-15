@@ -88,28 +88,23 @@ Rollback target: `dpl_4LtevLxZM7vpQchDXoRuiX8cMtCd`.
 - China-mainland reachability requires independent regional measurement; this environment
   does not establish nationwide availability.
 
-## v0.5 Face Copilot candidate — 2026-11-15
+## Agent platform candidate — 2026-11-15
 
-Based on the actual green production source `3f505dc3b5092d77c5f3797b5dfe5393d973b09d`, on
-`feature/face-ai-agent-v05`. The alternative `main` remains intact. Production is unchanged.
-
-Implemented: global Copilot, contextual Space AI Insights, proposal research pages, six real read-only tools,
-deterministic governance statistics, server-built evidence, Chinese/English and responsive/dark UI,
-AI SDK 7 streaming, NewAPI/Gateway provider interfaces, shared quota reservations and an explicit restricted-beta gate.
-NewAPI configuration is server-side JavaScript ESM; the owner example uses `gpt-6.1-sol` and an explicit HTTP opt-in.
-
-Tests: **42 backend + 33 frontend**, SDK build, production build, protocol checks and both dependency audits pass.
-Two real Snapshot Spaces and four real browser iframe viewports were checked. Evidence, exact scope and limitations:
-[AI test report](docs/AI_AGENT_TEST_REPORT.md), [source baseline](docs/AI_AGENT_BASELINE.md),
-[live data](docs/AI_LIVE_EVIDENCE.json), [screenshots](docs/screenshots/v05/).
-
-Live model execution is off: API key/shared quota store/beta key activation is pending. Controlled SDK/provider tests
-are distinct from the real Snapshot data path. No model charges, paid resources, production migration or registry contract.
-Agent identity schemas and v0.6–v1.0 dependencies are in [the roadmap](docs/AGENT_IDENTITY_ROADMAP.md).
-
-Verified implementation commit: `198ac563a9b5d52b21b38114b4d142691495c768`.
+Baseline `3f505dc3b5092d77c5f3797b5dfe5393d973b09d`; branch `feature/face-ai-agent-v05`.
 PR: https://github.com/CryptographyBloke/Face/pull/4 .
-READY Preview: https://walletface-nsj5vbky3-dao-vote.vercel.app (`dpl_GrjvSxPPDxhFGPqHbmTHrBwQnSud`).
-Remote `/ai`, Agent status and ENS data returned HTTP 200 through authenticated platform access.
-Direct Preview browser access requires Vercel login; local browser evidence is distinguished from that limit in the test report.
-Preview provider config is prepared for the owner’s NewAPI example, with AI execution disabled. Production remains on `3f505dc3`.
+Implemented Preview: https://walletface-7n0698h4m-dao-vote.vercel.app at `bdd5181eba38f1ecd8435ccc3b5f6942f6ec4abc`.
+
+Six read-only AI tools, real NewAPI streaming, bilingual evidence UI, proposal reader and contextual wallet/Space research are implemented.
+Additional modules: Neon-backed signed Agent profiles/private reports/organization workspaces, bounded historical index/SQL analytics, read-only MCP and signed reviewed internal actions.
+
+51 backend + 38 web tests passed; SDK/build/protocol checks and both dependency audits passed.
+Real model calls, real database concurrency and actual Preview browser acceptance are distinguished in [the test report](docs/AI_AGENT_TEST_REPORT.md).
+[Model report](docs/AI_MODEL_LIVE_REPORT.json), [database report](docs/PLATFORM_LIVE_REPORT.json), [screenshots](docs/screenshots/platform/).
+The initial English model proposal date conversion failed acceptance; server UTC fields and policy correction await the explicit live regression in the next candidate.
+
+Infrastructure: existing Vercel project, free Neon project with isolated Preview and empty formal databases. No paid service or quota increase.
+Temporary free Upstash was approved/created earlier; current quotas use Neon, so Redis expiry does not gate the candidate.
+NewAPI monetary costs are unknown; 47,433 model tokens observed before the corrective regression. AI remains owner beta, five requests/day.
+
+Production is unchanged. Formal schema application was blocked by automatic approval review as a consequential migration needing owner confirmation.
+No existing SQLite authorization data was migrated. RPC/real operator endpoint evidence and external action adapters retain the limits documented in [the roadmap](docs/AGENT_IDENTITY_ROADMAP.md).

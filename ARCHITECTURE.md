@@ -93,4 +93,6 @@ The existing green v0.4 application remains the base. `server/ai/` adds the six 
 strict Agent routes, AI SDK 7 streaming and shared quota reservations. `/ai`, Space AI Insights and
 proposal research reuse the app shell. `server/identity/profile.mjs` supplies a versioned future model.
 Implementation details and limits: [AI architecture](docs/AI_AGENT_ARCHITECTURE.md).
-Source comparison: [baseline report](docs/AI_AGENT_BASELINE.md). No alternative-main merge or database migration occurred.
+Source comparison: [baseline report](docs/AI_AGENT_BASELINE.md). The alternative main branch is not merged. New isolated platform tables use versioned migrations; legacy SQLite authorization remains unchanged.
+
+Durable Agent and governance modules: [platform architecture](docs/PLATFORM_ARCHITECTURE.md).
