@@ -134,6 +134,7 @@ describe("Wallet authorized Agent platform", () => {
     const fetch = vi.spyOn(globalThis, "fetch").mockResolvedValue(
       Response.json({
         spaceId: "ens.eth",
+        range: { start: 0, end: 1794746700 },
         votes: 390,
         wallets: 128,
         ranking: [],
@@ -165,5 +166,51 @@ describe("Wallet authorized Agent platform", () => {
         }) as HTMLButtonElement
       ).disabled,
     ).toBe(true);
+  });
+  it("sends explicit UTC ranges and rejects impossible calendar dates before querying", async () => {
+    const fetch = vi.spyOn(globalThis, "fetch").mockResolvedValue(
+      Response.json({
+        spaceId: "ens.eth",
+        range: { start: 1790812800, end: 1793491200 },
+        votes: 86,
+        wallets: 64,
+        ranking: [],
+        distribution: [],
+        trends: [],
+        comparison: { votes: 0, wallets: 0, voteDelta: 86, walletDelta: 64 },
+        provenance: {
+          sourceUrl: "https://snapshot.box/#/ens.eth",
+          retrievedAt: "2026-11-15T00:00:00Z",
+          completeness: "partial",
+          scan: null,
+        },
+      }),
+    );
+    mount(<Analytics />);
+    fireEvent.change(screen.getByLabelText("Start (inclusive)"), {
+      target: { value: "2026-10-01" },
+    });
+    fireEvent.change(screen.getByLabelText("End (exclusive)"), {
+      target: { value: "2026-11-01" },
+    });
+    fireEvent.change(screen.getByLabelText("Comparison start"), {
+      target: { value: "2026-09-01" },
+    });
+    fireEvent.change(screen.getByLabelText("Comparison end"), {
+      target: { value: "2026-10-01" },
+    });
+    fireEvent.click(screen.getByRole("button", { name: "Load analytics" }));
+    await screen.findByText("86");
+    const url = String(fetch.mock.calls[0][0]);
+    expect(url).toContain("start=1790812800");
+    expect(url).toContain("end=1793491200");
+    expect(url).toContain("compareStart=1788220800");
+    fetch.mockClear();
+    fireEvent.change(screen.getByLabelText("Start (inclusive)"), {
+      target: { value: "2026-02-31" },
+    });
+    fireEvent.click(screen.getByRole("button", { name: "Load analytics" }));
+    await screen.findByText("Use a valid YYYY-MM-DD date.");
+    expect(fetch).not.toHaveBeenCalled();
   });
 });

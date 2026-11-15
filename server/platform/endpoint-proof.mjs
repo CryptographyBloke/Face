@@ -40,7 +40,12 @@ export function publicIp(ip) {
 }
 export async function fetchPublicJson(
   input,
-  { resolve = lookup, request = https.request, maxBytes = 32768 } = {},
+  {
+    resolve = lookup,
+    request = https.request,
+    maxBytes = 32768,
+    timeoutMs = 5000,
+  } = {},
 ) {
   const url = new URL(input);
   if (
@@ -58,7 +63,25 @@ export async function fetchPublicJson(
       "ENDPOINT_URL",
       "Use a public HTTPS hostname without credentials",
     );
-  const records = await resolve(url.hostname, { all: true, verbatim: true });
+  const started = Date.now(),
+    deadline = Math.max(1, Math.min(5000, timeoutMs));
+  let timer;
+  const records = await Promise.race([
+    resolve(url.hostname, { all: true, verbatim: true }),
+    new Promise((_, reject) => {
+      timer = setTimeout(
+        () =>
+          reject(
+            new ApiError(
+              504,
+              "ENDPOINT_TIMEOUT",
+              "Endpoint DNS lookup timed out",
+            ),
+          ),
+        deadline,
+      );
+    }),
+  ]).finally(() => clearTimeout(timer));
   if (!records.length || records.some((r) => !publicIp(r.address)))
     throw new ApiError(
       422,
@@ -122,7 +145,13 @@ export async function fetchPublicJson(
         });
       },
     );
-    req.setTimeout(5000, () => req.destroy(new Error("timeout")));
+    const remaining = Math.max(1, deadline - (Date.now() - started));
+    const totalTimer = setTimeout(
+      () => req.destroy(new Error("deadline")),
+      remaining,
+    );
+    req.once("close", () => clearTimeout(totalTimer));
+    req.setTimeout(remaining, () => req.destroy(new Error("timeout")));
     req.on("error", () =>
       fail(
         new ApiError(

@@ -92,19 +92,20 @@ Rollback target: `dpl_4LtevLxZM7vpQchDXoRuiX8cMtCd`.
 
 Baseline `3f505dc3b5092d77c5f3797b5dfe5393d973b09d`; branch `feature/face-ai-agent-v05`.
 PR: https://github.com/CryptographyBloke/Face/pull/4 .
-Implemented Preview: https://walletface-7n0698h4m-dao-vote.vercel.app at `bdd5181eba38f1ecd8435ccc3b5f6942f6ec4abc`.
+Current verified Preview: https://walletface-nmpiox22a-dao-vote.vercel.app at `41aadb3e925922dc05c8d616606d3751a8593c1f`.
+The prior `bdd5181` Preview remains a database-workflow acceptance reference.
 
 Six read-only AI tools, real NewAPI streaming, bilingual evidence UI, proposal reader and contextual wallet/Space research are implemented.
 Additional modules: Neon-backed signed Agent profiles/private reports/organization workspaces, bounded historical index/SQL analytics, read-only MCP and signed reviewed internal actions.
 
-51 backend + 38 web tests passed; SDK/build/protocol checks and both dependency audits passed.
+52 backend + 39 web tests passed; SDK/build/protocol checks and both dependency audits passed.
 Real model calls, real database concurrency and actual Preview browser acceptance are distinguished in [the test report](docs/AI_AGENT_TEST_REPORT.md).
 [Model report](docs/AI_MODEL_LIVE_REPORT.json), [database report](docs/PLATFORM_LIVE_REPORT.json), [screenshots](docs/screenshots/platform/).
-The initial English model proposal date conversion failed acceptance; server UTC fields and policy correction await the explicit live regression in the next candidate.
+The initial English model proposal date conversion failed acceptance. Server UTC fields/policy correction passed real NewAPI regression on `41aadb3`; [record](docs/AI_PROPOSAL_REGRESSION.json).
 
 Infrastructure: existing Vercel project, free Neon project with isolated Preview and empty formal databases. No paid service or quota increase.
 Temporary free Upstash was approved/created earlier; current quotas use Neon, so Redis expiry does not gate the candidate.
-NewAPI monetary costs are unknown; 47,433 model tokens observed before the corrective regression. AI remains owner beta, five requests/day.
+NewAPI monetary costs are unknown; 95,486 model tokens reported across five live generations, including the corrective regression. AI remains owner beta, five requests/day.
 
 Production is unchanged. Formal schema application was blocked by automatic approval review as a consequential migration needing owner confirmation.
 No existing SQLite authorization data was migrated. RPC/real operator endpoint evidence and external action adapters retain the limits documented in [the roadmap](docs/AGENT_IDENTITY_ROADMAP.md).

@@ -54,7 +54,21 @@ export default function Analytics() {
         compareStart,
         compareEnd,
       }))
-        if (v) search.set(k, String(Math.floor(new Date(v).getTime() / 1000)));
+        if (v) {
+          const parsed = new Date(v + "T00:00:00.000Z");
+          if (
+            !/^\d{4}-\d{2}-\d{2}$/.test(v) ||
+            !Number.isFinite(parsed.getTime()) ||
+            parsed.toISOString().slice(0, 10) !== v
+          )
+            throw new Error(
+              t(
+                "请使用有效的 YYYY-MM-DD 日期。",
+                "Use a valid YYYY-MM-DD date.",
+              ),
+            );
+          search.set(k, String(Math.floor(parsed.getTime() / 1000)));
+        }
       setData(
         await platformRequest<Analysis>("analytics/" + space + "?" + search),
       );
@@ -65,7 +79,7 @@ export default function Analytics() {
     }
   };
   return (
-    <section className="platform-page">
+    <section className="platform-page" aria-busy={busy}>
       <h1>{t("治理参与统计", "Governance participation")}</h1>
       <p>
         {t(
@@ -88,7 +102,9 @@ export default function Analytics() {
             <label key={i}>
               {label as string}
               <input
-                type="date"
+                type="text"
+                placeholder="YYYY-MM-DD"
+                maxLength={10}
                 value={value as string}
                 onChange={(e) => (set as (s: string) => void)(e.target.value)}
               />
@@ -104,6 +120,9 @@ export default function Analytics() {
             {t("管理员刷新下一页", "Admin: refresh next page")}
           </button>
         </div>
+        {busy && (
+          <p role="status">{t("正在读取统计…", "Loading analytics…")}</p>
+        )}
         {error && <p role="alert">{error}</p>}
       </div>
       {data && (
@@ -112,6 +131,14 @@ export default function Analytics() {
             <p>
               {t("覆盖状态", "Coverage")}: {data.provenance.completeness} ·{" "}
               {data.provenance.retrievedAt}
+            </p>
+            <p>
+              {t(
+                "统计区间（UTC，含开始、不含结束）",
+                "Analysis range (UTC, inclusive start / exclusive end)",
+              )}
+              : {new Date(data.range.start * 1000).toISOString()} →{" "}
+              {new Date(data.range.end * 1000).toISOString()}
             </p>
             <div className="metric-grid">
               <div>

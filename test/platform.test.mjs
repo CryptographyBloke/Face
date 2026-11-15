@@ -1,4 +1,5 @@
 import test from "node:test";
+import { EventEmitter } from "node:events";
 import assert from "node:assert/strict";
 import { randomUUID } from "node:crypto";
 import { privateKeyToAccount, generatePrivateKey } from "viem/accounts";
@@ -470,5 +471,78 @@ test("MCP SDK client discovers exactly five read-only tools and invokes real ada
       )
     ).status,
     403,
+  );
+});
+
+test("endpoint HTTP guards enforce redirect/size and total DNS/body deadlines", async () => {
+  await assert.rejects(
+    fetchPublicJson("https://public.example", {
+      resolve: () => new Promise(() => {}),
+      timeoutMs: 10,
+    }),
+    /timed out/,
+  );
+  const resolve = async () => [{ address: "8.8.8.8", family: 4 }];
+  const fake =
+    (status, chunks, finish = true) =>
+    (_url, options, callback) => {
+      const req = new EventEmitter(),
+        res = new EventEmitter();
+      res.statusCode = status;
+      res.headers = { "content-type": "application/json" };
+      res.resume = () => {};
+      req.setTimeout = () => {};
+      req.destroy = (e) => {
+        if (e) req.emit("error", e);
+        req.emit("close");
+      };
+      req.end = () => {
+        queueMicrotask(() => {
+          callback(res);
+          if (status !== 200) {
+            req.emit("close");
+            return;
+          }
+          for (const c of chunks) res.emit("data", Buffer.from(c));
+          if (finish) {
+            res.emit("end");
+            req.emit("close");
+          }
+        });
+      };
+      options.lookup("public.example", {}, (_e, ip) =>
+        assert.equal(ip, "8.8.8.8"),
+      );
+      return req;
+    };
+  await assert.rejects(
+    fetchPublicJson("https://public.example", {
+      resolve,
+      request: fake(302, []),
+    }),
+    /without redirects/,
+  );
+  await assert.rejects(
+    fetchPublicJson("https://public.example", {
+      resolve,
+      request: fake(200, ["x".repeat(100)]),
+      maxBytes: 20,
+    }),
+    /too large/,
+  );
+  await assert.rejects(
+    fetchPublicJson("https://public.example", {
+      resolve,
+      request: fake(200, ["{"], false),
+      timeoutMs: 15,
+    }),
+    /verification failed/,
+  );
+  assert.deepEqual(
+    await fetchPublicJson("https://public.example", {
+      resolve,
+      request: fake(200, ['{"ok":true}']),
+    }),
+    { ok: true },
   );
 });

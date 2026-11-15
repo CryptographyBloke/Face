@@ -7,8 +7,8 @@ Production promotion is pending the formal database migration approval. Existing
 
 | Check | Verified result |
 |---|---|
-| `npm test` | 51 passed |
-| `npm --prefix web test` | 38 passed |
+| `npm test` | 52 passed |
+| `npm --prefix web test` | 39 passed |
 | SDK build, TypeScript/Vite production build | Passed |
 | `npm run test:protocol` | Passed; existing Snapshot avatar signing contract |
 | Root and web `npm audit` | Zero vulnerabilities |
@@ -25,7 +25,8 @@ Controlled model tests exercise the installed AI SDK and NewAPI SSE adapter; the
 Actual browser generations added ENS Chinese participation analysis (**11,774 tokens**) and English proposal explanation (**12,062 tokens**).
 The initial English proposal explanation converted a Unix timestamp to the wrong month. This failed acceptance.
 The reader now supplies `startUtc`, `endUtc`, `createdUtc` and `votingWindowUTC`; system policy requires copying these values.
-The corrective live regression result is recorded separately before the release candidate is approved.
+The corrective real NewAPI regression passed on commit `41aadb3` at 20:44 Singapore time: both UTC dates match tool evidence.
+[Regression report](AI_PROPOSAL_REGRESSION.json): one getProposal call, 48,053 reported tokens.
 
 | Space | Bounded proposals/votes | Private omitted | Public votes | Observed wallets |
 |---|---:|---:|---:|---:|
@@ -33,7 +34,7 @@ The corrective live regression result is recorded separately before the release 
 | Yam | 50 / 500 | 0 | 500 | 102 |
 
 These are scan observations, not complete historical rankings. Raw tools: [live evidence](AI_LIVE_EVIDENCE.json).
-No monetary charge is inferred from token counts: NewAPI channel pricing/ledger is unavailable. Observed usage so far is **47,433 tokens** before the corrective regression.
+No monetary charge is inferred from token counts: NewAPI channel pricing/ledger is unavailable. Total reported model usage is **95,486 tokens** including the corrective regression.
 
 ## Real PostgreSQL
 
@@ -51,7 +52,7 @@ Test records remain isolated in the Preview database. Production database is sep
 
 ## Browser acceptance
 
-Live Edge rendering against https://walletface-7n0698h4m-dao-vote.vercel.app, without disabling deployment protection:
+Live Edge rendering against the initial https://walletface-7n0698h4m-dao-vote.vercel.app and corrected https://walletface-nmpiox22a-dao-vote.vercel.app, without disabling deployment protection:
 
 - Explore → ENS → AI Insights → real model/tool response → official Snapshot source opened.
 - Global Copilot → actual public wallet → profile source/claim state/time → wallet profile.
@@ -66,6 +67,8 @@ no unattended signature was requested from a user wallet. Live upstream faults w
 ## Release gates
 
 The production database schema application was rejected by automatic approval review as a consequential production migration requiring owner confirmation.
-Finish the corrective proposal regression and final Preview checks, then request approval for the exact versioned migrations and deployment.
+Corrective proposal regression passed. Formal schema application and production deployment await the exact migration approval.
+Calendar input uses explicit validated YYYY-MM-DD UTC dates; impossible calendar dates are rejected before querying.
+Endpoint proof tests additionally cover redirects, oversized JSON and total DNS/body deadlines.
 Registry token ownership checks additionally need a trusted `ENS_RPC_URL`; no successful live ERC-8004 registry verification is claimed.
 Service-domain proof needs an operator to publish the fresh well-known challenge; no external service control is invented.

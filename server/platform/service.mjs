@@ -137,6 +137,12 @@ export class PlatformService {
   async challenge(actor, action, input) {
     if (!platformSchemas[action])
       throw new ApiError(400, "ACTION", "Unsupported platform action");
+    if (action === "agent.verify.registry" && !this.env.ENS_RPC_URL)
+      throw new ApiError(
+        503,
+        "REGISTRY_RPC",
+        "Trusted Ethereum RPC is not configured",
+      );
     const payload = parsePlatformPayload(action, input);
     actor = actor.toLowerCase();
     await this.policy(action, payload, actor);
