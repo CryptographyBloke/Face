@@ -1,0 +1,49 @@
+{
+  "checkedAt": "2026-11-15T09:28:28.448Z",
+  "syntheticWalletsOnly": true,
+  "checks": [
+    {
+      "name": "real-postgres-signed-private-agent",
+      "success": true
+    },
+    {
+      "name": "replay-rejected",
+      "success": true
+    },
+    {
+      "name": "concurrent-nonce-one-winner",
+      "accepted": 1,
+      "rejected": 3,
+      "success": true
+    },
+    {
+      "name": "prepare-approve-execute-atomic-workflow",
+      "success": true,
+      "authoritySource": "controlled Snapshot admin fixture; no real administrator impersonation"
+    },
+    {
+      "name": "real-postgres-global-budget-concurrency",
+      "accepted": 5,
+      "rejected": 7,
+      "success": true
+    },
+    {
+      "name": "real-snapshot-index-ens.eth",
+      "success": true,
+      "votesFetched": 100,
+      "privateVotesOmitted": 0,
+      "observedPublicVotes": 100,
+      "observedWallets": 66,
+      "completeness": "partial"
+    },
+    {
+      "name": "real-snapshot-index-yam.eth",
+      "success": true,
+      "votesFetched": 100,
+      "privateVotesOmitted": 0,
+      "observedPublicVotes": 100,
+      "observedWallets": 46,
+      "completeness": "partial"
+    }
+  ]
+}

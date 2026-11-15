@@ -87,3 +87,28 @@ Rollback target: `dpl_4LtevLxZM7vpQchDXoRuiX8cMtCd`.
 - Partner-controlled SDK integration, pilot adoption and commercial operations.
 - China-mainland reachability requires independent regional measurement; this environment
   does not establish nationwide availability.
+
+## Agent platform candidate — 2026-11-15
+
+Baseline `3f505dc3b5092d77c5f3797b5dfe5393d973b09d`; branch `feature/face-ai-agent-v05`.
+PR: https://github.com/CryptographyBloke/Face/pull/4 .
+Current verified application Preview: https://walletface-3sx17fb8b-dao-vote.vercel.app at `38a78d1b0c61a9b77b535dfd1a342311b70c4d8d`.
+Stable branch Preview: https://walletface-git-feature-face-ai-agent-v05-dao-vote.vercel.app .
+The prior `bdd5181` Preview remains a database-workflow acceptance reference.
+
+Six read-only AI tools, real NewAPI streaming, bilingual evidence UI, proposal reader and contextual wallet/Space research are implemented.
+Additional modules: Neon-backed signed Agent profiles/private reports/organization workspaces, bounded historical index/SQL analytics, read-only MCP and signed reviewed internal actions.
+
+52 backend + 39 web tests passed; SDK/build/protocol checks and both dependency audits passed.
+Real model calls, real database concurrency and actual Preview browser acceptance are distinguished in [the test report](docs/AI_AGENT_TEST_REPORT.md).
+[Model report](docs/AI_MODEL_LIVE_REPORT.json), [database report](docs/PLATFORM_LIVE_REPORT.json), [screenshots](docs/screenshots/platform/).
+The initial English model proposal date conversion failed acceptance. Server UTC fields/policy correction passed real NewAPI regression on `41aadb3`; [record](docs/AI_PROPOSAL_REGRESSION.json).
+
+Infrastructure: existing Vercel project, free Neon project with isolated Preview and empty formal databases. No paid service or quota increase.
+Temporary free Upstash was approved/created earlier; current quotas use Neon, so Redis expiry does not gate the candidate.
+NewAPI monetary costs are unknown; 95,486 model tokens reported across five live generations, including the corrective regression. AI remains owner beta, five requests/day.
+
+Production is unchanged. Formal schema application was blocked by automatic approval review as a consequential migration needing owner confirmation.
+No existing SQLite authorization data was migrated. RPC/real operator endpoint evidence and external action adapters retain the limits documented in [the roadmap](docs/AGENT_IDENTITY_ROADMAP.md).
+
+Specific formal migration approval: [production change request](docs/PRODUCTION_CHANGE_REQUEST.md).

@@ -65,7 +65,7 @@ export class Snapshot {
     this.lastRequest = 0;
     this.queued = 0;
   }
-  async query(query, variables) {
+  async query(query, variables, signal) {
     if (this.queued >= 64)
       throw new ApiError(
         503,
@@ -74,6 +74,7 @@ export class Snapshot {
       );
     this.queued++;
     const work = async () => {
+      signal?.throwIfAborted();
       for (let attempt = 0; attempt < 3; attempt++) {
         await this.sleep(
           Math.max(0, this.spacingMs - (this.now() - this.lastRequest)),
@@ -84,7 +85,9 @@ export class Snapshot {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ query, variables }),
-            signal: AbortSignal.timeout(8000),
+            signal: signal
+              ? AbortSignal.any([signal, AbortSignal.timeout(8000)])
+              : AbortSignal.timeout(8000),
           });
           if (res.status === 429 || res.status >= 500) {
             if (attempt < 2) {
@@ -103,6 +106,7 @@ export class Snapshot {
             throw new ApiError(502, "SNAPSHOT_QUERY", "Snapshot query failed");
           return body.data;
         } catch (err) {
+          if (signal?.aborted) throw signal.reason;
           if (err instanceof ApiError || attempt === 2)
             throw err instanceof ApiError
               ? err
@@ -166,6 +170,93 @@ export class Snapshot {
       return parse(spaceSchema, data.space);
     };
     return fresh ? load() : this.cached("space:" + id, load);
+  }
+  async proposal(id, proposalId, signal) {
+    spaceId(id);
+    if (!/^0x[0-9a-fA-F]{64}$/.test(proposalId))
+      throw new ApiError(
+        400,
+        "INVALID_PROPOSAL",
+        "Use a Snapshot proposal hash",
+      );
+    const data = await this.query(
+      "query($id:String!){proposal(id:$id){id title body choices state start end created scores scores_total scores_state type privacy network snapshot space{id} strategies{name network params}}}",
+      { id: proposalId },
+      signal,
+    );
+    if (!data.proposal)
+      throw new ApiError(404, "PROPOSAL_NOT_FOUND", "Proposal unavailable");
+    const p = parse(
+      z.object({
+        id: z.string().regex(/^0x[0-9a-fA-F]{64}$/),
+        title: z.string().max(500),
+        body: z.string().max(200000).nullable(),
+        choices: z.array(z.string().max(1000)).max(100),
+        state: z.string().max(50),
+        start: z.number().int().nonnegative().max(4102444800),
+        end: z.number().int().nonnegative().max(4102444800),
+        created: z.number().int().nonnegative().max(4102444800),
+        scores: z.array(z.number().finite()).max(100).nullable().optional(),
+        scores_total: z.number().finite().nullable().optional(),
+        scores_state: z.string().nullable().optional(),
+        type: z.string().max(100).nullable(),
+        privacy: z.string().max(100).nullable(),
+        network: z.string().max(100).nullable(),
+        snapshot: z
+          .union([z.string().max(100), z.number().int().nonnegative()])
+          .nullable(),
+        space: z.object({ id: z.string() }),
+        strategies: z
+          .array(
+            z.object({
+              name: z.string().max(100),
+              network: z.string().nullable().optional(),
+              params: z.unknown(),
+            }),
+          )
+          .max(30)
+          .optional(),
+      }),
+      data.proposal,
+    );
+    if (p.space.id !== id || p.id.toLowerCase() !== proposalId.toLowerCase())
+      throw new ApiError(
+        404,
+        "PROPOSAL_SPACE_MISMATCH",
+        "Proposal does not belong to this Space",
+      );
+    const hidden = !!p.privacy;
+    return {
+      ...p,
+      startUtc: new Date(p.start * 1000).toISOString(),
+      endUtc: new Date(p.end * 1000).toISOString(),
+      createdUtc: new Date(p.created * 1000).toISOString(),
+      votingWindowUTC: {
+        startInclusive: new Date(p.start * 1000).toISOString(),
+        end: new Date(p.end * 1000).toISOString(),
+      },
+      body: (p.body || "").slice(0, 6000),
+      bodyTruncated: (p.body?.length || 0) > 6000,
+      contentStatus: p.body ? "available" : "missing",
+      scores: hidden ? null : (p.scores ?? null),
+      scores_total: hidden ? null : (p.scores_total ?? null),
+      scores_state: hidden
+        ? "withheld_by_privacy_policy"
+        : (p.scores_state ?? null),
+      strategies:
+        p.strategies?.map(({ name, network }) => ({ name, network })) ?? null,
+      unavailableFields: [
+        ...(p.scores == null ? ["scores"] : []),
+        ...(hidden ? ["private_ballots", "private_scores"] : []),
+      ],
+      provenance: {
+        source: "snapshot",
+        sourceUrl: `https://snapshot.box/#/${encodeURIComponent(id)}/proposal/${encodeURIComponent(proposalId)}`,
+        fetchedAt: new Date(this.now()).toISOString(),
+        scope: "single_proposal",
+        privacyPolicy: "Private/shielded ballots and scores are withheld.",
+      },
+    };
   }
   async directory(id) {
     spaceId(id);
@@ -232,6 +323,7 @@ export class Snapshot {
           space,
           proposals: [...new Map(proposals.map((p) => [p.id, p])).values()],
           activity: uniqueVotes.slice(0, 50),
+          publicVotes: uniqueVotes,
           participants: [...people.values()],
           provenance: {
             source: "snapshot",
@@ -239,6 +331,8 @@ export class Snapshot {
             fetchedAt: new Date(this.now()).toISOString(),
             cutoff,
             votesScanned: votes.length,
+            publicVotesIncluded: uniqueVotes.length,
+            privateVotesOmitted: votes.filter((v) => v.proposal.privacy).length,
             proposalsScanned: proposals.length,
             votesComplete,
             proposalsComplete,

@@ -47,6 +47,8 @@ export default function VisualQA() {
           >
             <option value="/">Home</option>
             <option value="/spaces">Explore</option>
+            <option value="/ai">Copilot</option>
+            <option value="/spaces/ens.eth/ai">Space AI Insights</option>
             <option value="/spaces/yam.eth">Space</option>
             <option value="/spaces/yam.eth/participants">Participants</option>
             <option value="/u/0x5ea6c7f21a2d7a29168d7c3f0bab6465f5023e97">
@@ -67,19 +69,21 @@ export default function VisualQA() {
         </label>
         <small>Real API · CSS viewport sizes</small>
       </header>
-      <div style={{width:width*scale,height:900*scale}}><iframe
-        title="Application viewport"
-        src={path + (fixture ? "?qaWallet=fixture" : "")}
-        style={{
-          width,
-          height: 900,
-          border: 0,
-          display: "block",
-          background: "#fff",
-          transform: `scale(${scale})`,
-          transformOrigin: "top left",
-        }}
-      /></div>
+      <div style={{ width: width * scale, height: 900 * scale }}>
+        <iframe
+          title="Application viewport"
+          src={path + (fixture ? "?qaWallet=fixture" : "")}
+          style={{
+            width,
+            height: 900,
+            border: 0,
+            display: "block",
+            background: "#fff",
+            transform: `scale(${scale})`,
+            transformOrigin: "top left",
+          }}
+        />
+      </div>
     </div>
   );
 }

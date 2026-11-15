@@ -586,7 +586,7 @@ it("Space overview preserves source, scan range and section navigation", async (
   expect(await screen.findByRole("heading", { name: "Yam" })).toBeTruthy();
   expect(screen.getByText("Public wallets observed")).toBeTruthy();
   fireEvent.click(screen.getByText("Source and scan details"));
-  expect(screen.getAllByText(/500 public votes/).length).toBeGreaterThan(0);
+  expect(screen.getAllByText(/500 votes scanned/).length).toBeGreaterThan(0);
   fireEvent.click(screen.getByRole("link", { name: "About" }));
   expect(
     await screen.findByRole("heading", { name: "About this community" }),

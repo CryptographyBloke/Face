@@ -111,6 +111,15 @@ function ProfileView({ address }: { address: string }) {
           </div>
           {p.profile.bio && <p className="profile-bio">{p.profile.bio}</p>}
           <div className="actions">
+            <Link
+              className="button"
+              to={"/ai?address=" + encodeURIComponent(p.address)}
+            >
+              {t(
+                "询问钱包的公开治理活动",
+                "Ask AI about public governance activity",
+              )}
+            </Link>
             {self && (
               <Link className="button primary" to="/avatar">
                 <Icon name="image" size={17} />

@@ -1,0 +1,118 @@
+.platform-page {
+  max-width: 1050px;
+  margin: 0 auto;
+  display: grid;
+  gap: 20px;
+}
+.platform-page h1 {
+  font-size: 32px;
+  margin: 0 0 14px;
+}
+.platform-page h2 {
+  font-size: 21px;
+}
+.platform-page p {
+  line-height: 1.7;
+  overflow-wrap: anywhere;
+}
+.platform-page label {
+  display: grid;
+  gap: 9px;
+  font-weight: 600;
+}
+.platform-page input:not([type="checkbox"]),
+.platform-page textarea,
+.platform-page select {
+  width: 100%;
+  min-width: 0;
+  padding: 12px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: var(--panel);
+  color: var(--text);
+  font: inherit;
+}
+.platform-page textarea {
+  resize: vertical;
+}
+.platform-page pre,
+dialog pre {
+  max-width: 100%;
+  overflow: auto;
+  max-height: 440px;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  font-size: 12px;
+  line-height: 1.6;
+  background: var(--soft);
+  padding: 16px;
+  border-radius: 10px;
+}
+.platform-page .panel {
+  padding: 24px;
+}
+.platform-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 18px;
+}
+.agent-card {
+  display: block;
+}
+.agent-card p {
+  color: var(--muted);
+}
+.platform-links {
+  display: flex;
+  gap: 14px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+.platform-error {
+  color: var(--danger);
+  overflow-wrap: anywhere;
+}
+.preserve-lines {
+  white-space: pre-wrap;
+}
+.platform-page table {
+  width: 100%;
+  border-collapse: collapse;
+}
+.platform-page td,
+.platform-page th {
+  text-align: left;
+  padding: 10px 4px;
+  border-bottom: 1px solid var(--line);
+}
+.platform-table {
+  max-width: 100%;
+  overflow: auto;
+}
+.platform-page button {
+  justify-self: start;
+}
+.platform-page .metric-grid {
+  display: flex;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+.platform-page .metric-grid strong {
+  display: block;
+  font-size: 32px;
+}
+@media (max-width: 600px) {
+  .platform-page h1 {
+    font-size: 26px;
+  }
+  .platform-page .panel {
+    padding: 18px;
+  }
+  .platform-page .page-heading {
+    display: grid;
+    gap: 16px;
+  }
+  .platform-grid {
+    grid-template-columns: 1fr;
+  }
+}

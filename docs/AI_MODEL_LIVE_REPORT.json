@@ -1,0 +1,516 @@
+{
+  "checkedAt": "2026-11-15T08:58:35.228Z",
+  "provider": "newapi",
+  "model": "gpt-6.1-sol",
+  "syntheticTestPrompts": true,
+  "checks": [
+    {
+      "language": "zh",
+      "spaceId": "ens.eth",
+      "success": true,
+      "usage": {
+        "inputTokens": 11651,
+        "outputTokens": 121,
+        "totalTokens": 11772
+      },
+      "toolCalls": 1,
+      "metered": true,
+      "error": null,
+      "answer": "在 `ens.eth` 本次有界扫描中，观察到 **390 条公开投票**、来自 **128 个参与钱包**。扫描检查了 500 条记录，另有 110 条私密投票未计入；`votesComplete=false`，因此这不是全量统计。[1]\n\n证据 [1]：`analyzeParticipation`，检索时间 2026-11-15 08:58:16 UTC。",
+      "evidence": [
+        {
+          "id": 1,
+          "tool": "analyzeParticipation",
+          "data": {
+            "publicVotes": 390,
+            "uniqueWallets": 128,
+            "ranking": [
+              {
+                "address": "0x019Ed608dD806b80193942F2A960e7AC8aBb2EE3",
+                "chainId": 1,
+                "publicVotes": 6,
+                "lastVotedAt": 1793718213
+              },
+              {
+                "address": "0x025376E7e7f161A198fb5fc90a220A553836d11A",
+                "chainId": 1,
+                "publicVotes": 6,
+                "lastVotedAt": 1793546105
+              },
+              {
+                "address": "0x0579A616689f7ed748dC07692A3F150D44b0CA09",
+                "chainId": 1,
+                "publicVotes": 6,
+                "lastVotedAt": 1793724435
+              },
+              {
+                "address": "0x17241c2183c1032cFf9d789694b496c16fFEBdd5",
+                "chainId": 1,
+                "publicVotes": 6,
+                "lastVotedAt": 1793453013
+              },
+              {
+                "address": "0x1D5460F896521aD685Ea4c3F2c679Ec0b6806359",
+                "chainId": 1,
+                "publicVotes": 6,
+                "lastVotedAt": 1793685638
+              },
+              {
+                "address": "0x3426995466CCBFaa6bec5b929bf3403990525404",
+                "chainId": 1,
+                "publicVotes": 6,
+                "lastVotedAt": 1793342422
+              },
+              {
+                "address": "0x3FB19771947072629C8EEE7995a2eF23B72d4C8A",
+                "chainId": 1,
+                "publicVotes": 6,
+                "lastVotedAt": 1793429427
+              },
+              {
+                "address": "0x409E5ee14B3dA7E908bB92EB884afB241a6504bD",
+                "chainId": 1,
+                "publicVotes": 6,
+                "lastVotedAt": 1793452980
+              },
+              {
+                "address": "0x5A3D7866A8B80A4DaA8374a5932067aD2035D2Ef",
+                "chainId": 1,
+                "publicVotes": 6,
+                "lastVotedAt": 1793452964
+              },
+              {
+                "address": "0x5Be1Eb1AC2b82e220A9Ea41F188f7D7954C192b7",
+                "chainId": 1,
+                "publicVotes": 6,
+                "lastVotedAt": 1793311647
+              }
+            ],
+            "rankingScope": "observed_scan",
+            "distribution": {
+              "one": 44,
+              "twoToFive": 56,
+              "sixPlus": 28
+            },
+            "topFiveShare": 0.07692307692307693,
+            "dailyCounts": [
+              {
+                "date": "2026-05-15",
+                "count": 4
+              },
+              {
+                "date": "2026-05-16",
+                "count": 2
+              },
+              {
+                "date": "2026-05-27",
+                "count": 32
+              },
+              {
+                "date": "2026-05-28",
+                "count": 16
+              },
+              {
+                "date": "2026-05-29",
+                "count": 9
+              },
+              {
+                "date": "2026-05-30",
+                "count": 15
+              },
+              {
+                "date": "2026-05-31",
+                "count": 6
+              },
+              {
+                "date": "2026-06-01",
+                "count": 1
+              },
+              {
+                "date": "2026-06-23",
+                "count": 14
+              },
+              {
+                "date": "2026-06-24",
+                "count": 45
+              },
+              {
+                "date": "2026-06-25",
+                "count": 29
+              },
+              {
+                "date": "2026-06-26",
+                "count": 16
+              },
+              {
+                "date": "2026-06-27",
+                "count": 17
+              },
+              {
+                "date": "2026-06-28",
+                "count": 13
+              },
+              {
+                "date": "2026-06-29",
+                "count": 2
+              },
+              {
+                "date": "2026-07-14",
+                "count": 25
+              },
+              {
+                "date": "2026-07-15",
+                "count": 9
+              },
+              {
+                "date": "2026-07-16",
+                "count": 8
+              },
+              {
+                "date": "2026-07-17",
+                "count": 11
+              },
+              {
+                "date": "2026-07-18",
+                "count": 14
+              },
+              {
+                "date": "2026-10-22",
+                "count": 15
+              },
+              {
+                "date": "2026-10-23",
+                "count": 6
+              },
+              {
+                "date": "2026-10-24",
+                "count": 5
+              },
+              {
+                "date": "2026-10-25",
+                "count": 13
+              },
+              {
+                "date": "2026-10-26",
+                "count": 14
+              },
+              {
+                "date": "2026-10-29",
+                "count": 4
+              },
+              {
+                "date": "2026-10-30",
+                "count": 14
+              },
+              {
+                "date": "2026-10-31",
+                "count": 17
+              },
+              {
+                "date": "2026-11-01",
+                "count": 3
+              },
+              {
+                "date": "2026-11-02",
+                "count": 5
+              },
+              {
+                "date": "2026-11-03",
+                "count": 6
+              }
+            ],
+            "ranges": [],
+            "trendScope": "UTC days with observed votes only; absent days and older records are not established by this scan"
+          },
+          "provenance": {
+            "source": "snapshot",
+            "sourceUrl": "https://snapshot.box/#/ens.eth",
+            "fetchedAt": "2026-11-15T08:58:16.045Z",
+            "cutoff": 1794733088,
+            "votesScanned": 500,
+            "publicVotesIncluded": 390,
+            "privateVotesOmitted": 110,
+            "proposalsScanned": 50,
+            "votesComplete": false,
+            "proposalsComplete": false,
+            "scanLimits": {
+              "votes": 500,
+              "proposals": 50
+            },
+            "privacyPolicy": "Public governance participation from the bounded Snapshot scan. Shielded/private proposal votes are omitted.",
+            "scope": "bounded_public_governance_scan",
+            "completeness": "scan_limited"
+          }
+        }
+      ]
+    },
+    {
+      "language": "en",
+      "spaceId": "yam.eth",
+      "success": true,
+      "usage": {
+        "inputTokens": 11727,
+        "outputTokens": 98,
+        "totalTokens": 11825
+      },
+      "toolCalls": 1,
+      "metered": true,
+      "error": null,
+      "answer": "The observed scan contains **500 public votes from 102 unique wallets** [1]. This is a bounded scan: it reached the 500-vote and 50-proposal limits, so it does not establish the complete totals for `yam.eth`. Private votes are omitted. Retrieved 2026-11-15 08:58:30 UTC [1].",
+      "evidence": [
+        {
+          "id": 1,
+          "tool": "analyzeParticipation",
+          "data": {
+            "publicVotes": 500,
+            "uniqueWallets": 102,
+            "ranking": [
+              {
+                "address": "0x06c4865ab16c9C760622f19a313a2E637E2e66a2",
+                "chainId": 1,
+                "publicVotes": 17,
+                "lastVotedAt": 1682213683
+              },
+              {
+                "address": "0x07187DfF8d1061320beE5A370C2D55e4cAfb062a",
+                "chainId": 1,
+                "publicVotes": 13,
+                "lastVotedAt": 1682225452
+              },
+              {
+                "address": "0x0Fe92A09dD382f8014FE067CF4861fc6B6a9f0f6",
+                "chainId": 1,
+                "publicVotes": 13,
+                "lastVotedAt": 1682223300
+              },
+              {
+                "address": "0x23356602CaF99E185c530A8BB76C0aa31B6049ED",
+                "chainId": 1,
+                "publicVotes": 13,
+                "lastVotedAt": 1682223647
+              },
+              {
+                "address": "0x23b66e2cFE462977796e3626263786Ce894bbb0A",
+                "chainId": 1,
+                "publicVotes": 13,
+                "lastVotedAt": 1682223126
+              },
+              {
+                "address": "0x33B6eA4c943A7086cFf6adEBc3e20477bF7742a5",
+                "chainId": 1,
+                "publicVotes": 13,
+                "lastVotedAt": 1682224364
+              },
+              {
+                "address": "0x653d63E4F2D7112a19f5Eb993890a3F27b48aDa5",
+                "chainId": 1,
+                "publicVotes": 13,
+                "lastVotedAt": 1682354314
+              },
+              {
+                "address": "0x9FC5BEa9000986a756C61E00E34d50c3f0A3283D",
+                "chainId": 1,
+                "publicVotes": 13,
+                "lastVotedAt": 1682222984
+              },
+              {
+                "address": "0xB820a6709aCAE568Aecb89eE0Ce29427386cA2F8",
+                "chainId": 1,
+                "publicVotes": 13,
+                "lastVotedAt": 1682225498
+              },
+              {
+                "address": "0xF399b438fb5eeF6B94D5728C36F53338C4C0D336",
+                "chainId": 1,
+                "publicVotes": 13,
+                "lastVotedAt": 1682223089
+              }
+            ],
+            "rankingScope": "observed_scan",
+            "distribution": {
+              "one": 32,
+              "twoToFive": 43,
+              "sixPlus": 27
+            },
+            "topFiveShare": 0.138,
+            "dailyCounts": [
+              {
+                "date": "2022-10-01",
+                "count": 3
+              },
+              {
+                "date": "2022-10-03",
+                "count": 5
+              },
+              {
+                "date": "2022-10-04",
+                "count": 8
+              },
+              {
+                "date": "2022-10-05",
+                "count": 6
+              },
+              {
+                "date": "2022-10-10",
+                "count": 14
+              },
+              {
+                "date": "2022-10-11",
+                "count": 7
+              },
+              {
+                "date": "2022-10-12",
+                "count": 17
+              },
+              {
+                "date": "2022-10-13",
+                "count": 6
+              },
+              {
+                "date": "2022-10-14",
+                "count": 34
+              },
+              {
+                "date": "2022-10-15",
+                "count": 8
+              },
+              {
+                "date": "2022-10-16",
+                "count": 10
+              },
+              {
+                "date": "2022-10-17",
+                "count": 7
+              },
+              {
+                "date": "2022-11-12",
+                "count": 1
+              },
+              {
+                "date": "2022-11-13",
+                "count": 90
+              },
+              {
+                "date": "2022-11-14",
+                "count": 6
+              },
+              {
+                "date": "2022-11-15",
+                "count": 5
+              },
+              {
+                "date": "2022-11-16",
+                "count": 19
+              },
+              {
+                "date": "2022-11-17",
+                "count": 7
+              },
+              {
+                "date": "2022-12-02",
+                "count": 6
+              },
+              {
+                "date": "2022-12-03",
+                "count": 8
+              },
+              {
+                "date": "2022-12-05",
+                "count": 23
+              },
+              {
+                "date": "2022-12-06",
+                "count": 6
+              },
+              {
+                "date": "2022-12-07",
+                "count": 2
+              },
+              {
+                "date": "2022-12-08",
+                "count": 2
+              },
+              {
+                "date": "2022-12-10",
+                "count": 3
+              },
+              {
+                "date": "2022-12-11",
+                "count": 60
+              },
+              {
+                "date": "2022-12-12",
+                "count": 14
+              },
+              {
+                "date": "2022-12-13",
+                "count": 56
+              },
+              {
+                "date": "2023-01-26",
+                "count": 1
+              },
+              {
+                "date": "2023-01-27",
+                "count": 7
+              },
+              {
+                "date": "2023-01-28",
+                "count": 14
+              },
+              {
+                "date": "2023-03-01",
+                "count": 2
+              },
+              {
+                "date": "2023-03-02",
+                "count": 20
+              },
+              {
+                "date": "2023-03-03",
+                "count": 2
+              },
+              {
+                "date": "2023-04-22",
+                "count": 1
+              },
+              {
+                "date": "2023-04-23",
+                "count": 16
+              },
+              {
+                "date": "2023-04-24",
+                "count": 3
+              },
+              {
+                "date": "2023-04-25",
+                "count": 1
+              }
+            ],
+            "ranges": [],
+            "trendScope": "UTC days with observed votes only; absent days and older records are not established by this scan"
+          },
+          "provenance": {
+            "source": "snapshot",
+            "sourceUrl": "https://snapshot.box/#/yam.eth",
+            "fetchedAt": "2026-11-15T08:58:30.948Z",
+            "cutoff": 1794733103,
+            "votesScanned": 500,
+            "publicVotesIncluded": 500,
+            "privateVotesOmitted": 0,
+            "proposalsScanned": 50,
+            "votesComplete": false,
+            "proposalsComplete": false,
+            "scanLimits": {
+              "votes": 500,
+              "proposals": 50
+            },
+            "privacyPolicy": "Public governance participation from the bounded Snapshot scan. Shielded/private proposal votes are omitted.",
+            "scope": "bounded_public_governance_scan",
+            "completeness": "scan_limited"
+          }
+        }
+      ]
+    }
+  ]
+}

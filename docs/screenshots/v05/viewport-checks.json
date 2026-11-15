@@ -1,0 +1,22 @@
+[
+  {
+    "viewport": 1440,
+    "client": 1425,
+    "scroll": 1425
+  },
+  {
+    "client": 1009,
+    "scroll": 1009,
+    "viewport": 1024
+  },
+  {
+    "client": 753,
+    "scroll": 753,
+    "viewport": 768
+  },
+  {
+    "client": 360,
+    "scroll": 360,
+    "viewport": 375
+  }
+]

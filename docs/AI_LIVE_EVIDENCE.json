@@ -1,0 +1,1301 @@
+{
+  "retrievedAt": "2026-11-15T08:05:23.305Z",
+  "modelUsed": false,
+  "results": [
+    {
+      "spaceId": "ens.eth",
+      "space": {
+        "tool": "getSpace",
+        "data": {
+          "space": {
+            "id": "ens.eth",
+            "name": "ENS",
+            "about": "",
+            "network": "1",
+            "avatar": "ipfs://QmSL2X1h1uk26ahSALTw2qKyc61VaySRRstueVMm1Aym3e",
+            "admins": [
+              "0xb8c2c29ee19d8307cb7255e1cd9cbde883a267d5",
+              "0xb6e040c9ecaae172a89bd561c5f73e1c48d28cd9",
+              "0x9297a132af2a1481441ab8dc1ce6e243d879eafd"
+            ]
+          },
+          "proposals": [
+            {
+              "id": "0x5bc7802637848e22f47e23615d3dcb2649e10b5feed5033a974eb556cdf3627a",
+              "title": "[7.3] [Social] Governor Nexus Update",
+              "created": 1793297708,
+              "privacy": "",
+              "votes": 49
+            },
+            {
+              "id": "0xbbadb404accf9dddd246f8942f51f7e3511b6145d57e62197f163380128b720b",
+              "title": "[7.2] [Social] Funding Request: ENS Meta-Governance Working Group Term 7 (Oct. Window)",
+              "created": 1792609661,
+              "privacy": "",
+              "votes": 53
+            },
+            {
+              "id": "0x943e585d1a4996525c5c7d229401d604ea56fe08c2c9c615c44f048ba42487b7",
+              "title": "[7.1] [Social] SPP3: Marketplace RFP",
+              "created": 1783988115,
+              "privacy": "",
+              "votes": 67
+            },
+            {
+              "id": "0x3e7acd4a47b246382bf9a3aeb71d0fd1562d38dbb9f7b7760445cf9731229b9d",
+              "title": "[6.47] [Social] Election of the New ENS DAO Security Council",
+              "created": 1783450672,
+              "privacy": "shutter",
+              "votes": 50
+            },
+            {
+              "id": "0xa736ce4411be14ceaab141989ac271ce1ca96aee6d3ac26bb893ec3c898385d0",
+              "title": "Term 7 Meta-Governance Working Group Election",
+              "created": 1782475071,
+              "privacy": "shutter",
+              "votes": 60
+            },
+            {
+              "id": "0x0b5fde95f53bbcda7935cdc0d29c852f3447cc324a618b031bd6f4ec3a0aeee0",
+              "title": "[6.46] [Social] 2026 Endowment Investment Policy Update",
+              "created": 1782259880,
+              "privacy": "",
+              "votes": 63
+            },
+            {
+              "id": "0x9ed89cf79760eb92d220fee2da08896bf027317f394aab87863011f964e19453",
+              "title": "[6.45][Social] Renewal of the Security Council",
+              "created": 1782233012,
+              "privacy": "",
+              "votes": 73
+            },
+            {
+              "id": "0xe4e1c052b2ea4f640cab27ddec326df6290d8996a9219b60cda4c4d4509f5f9a",
+              "title": "[6.44] [Social] Path forward on Working Groups for Term 7",
+              "created": 1779848547,
+              "privacy": "",
+              "votes": 79
+            },
+            {
+              "id": "0xeba629f6c1600cceff07e01e922e4e61c7b19f9e04e03e89ec30500878cb6783",
+              "title": "[Social] ENSv2 Pricing: 5+ Character Name Adjustment, Multi-Year Discounts, Grace Period Change",
+              "created": 1778526631,
+              "privacy": "",
+              "votes": 113
+            },
+            {
+              "id": "0x3e523451340e987e9d3745fb33585bd7136bb6fa8519691ba7b04fa160d4ab7b",
+              "title": "[6.42] [Social] SPP3: Program Authorization and Committee Model",
+              "created": 1777940497,
+              "privacy": "",
+              "votes": 101
+            },
+            {
+              "id": "0xf0ad5ad5a1ee353a65424a83e74f2b8846b16885a4be99af26b5162bfa78c644",
+              "title": "[6.31] [Temp Check] Delegation Incentives Program",
+              "created": 1770239154,
+              "privacy": "",
+              "votes": 105
+            },
+            {
+              "id": "0x8d16992852893f05b23b0e26de27c9e6b2a8de1193c991e14f81ef13cd943517",
+              "title": "[6.26] [Social] ENS Retro: An ENS DAO Retrospective & Stakeholder Analysis",
+              "created": 1764888335,
+              "privacy": "",
+              "votes": 109
+            }
+          ],
+          "proposalListTruncated": true
+        },
+        "provenance": {
+          "source": "snapshot",
+          "sourceUrl": "https://snapshot.box/#/ens.eth",
+          "fetchedAt": "2026-11-15T08:05:11.256Z",
+          "cutoff": 1794729905,
+          "votesScanned": 500,
+          "publicVotesIncluded": 390,
+          "privateVotesOmitted": 110,
+          "proposalsScanned": 50,
+          "votesComplete": false,
+          "proposalsComplete": false,
+          "scanLimits": {
+            "votes": 500,
+            "proposals": 50
+          },
+          "privacyPolicy": "Public governance participation from the bounded Snapshot scan. Shielded/private proposal votes are omitted.",
+          "scope": "bounded_public_governance_scan",
+          "completeness": "scan_limited"
+        },
+        "untrustedContent": true
+      },
+      "participation": {
+        "tool": "analyzeParticipation",
+        "data": {
+          "publicVotes": 390,
+          "uniqueWallets": 128,
+          "ranking": [
+            {
+              "address": "0x019Ed608dD806b80193942F2A960e7AC8aBb2EE3",
+              "chainId": 1,
+              "publicVotes": 6,
+              "lastVotedAt": 1793718213
+            },
+            {
+              "address": "0x025376E7e7f161A198fb5fc90a220A553836d11A",
+              "chainId": 1,
+              "publicVotes": 6,
+              "lastVotedAt": 1793546105
+            },
+            {
+              "address": "0x0579A616689f7ed748dC07692A3F150D44b0CA09",
+              "chainId": 1,
+              "publicVotes": 6,
+              "lastVotedAt": 1793724435
+            },
+            {
+              "address": "0x17241c2183c1032cFf9d789694b496c16fFEBdd5",
+              "chainId": 1,
+              "publicVotes": 6,
+              "lastVotedAt": 1793453013
+            },
+            {
+              "address": "0x1D5460F896521aD685Ea4c3F2c679Ec0b6806359",
+              "chainId": 1,
+              "publicVotes": 6,
+              "lastVotedAt": 1793685638
+            },
+            {
+              "address": "0x3426995466CCBFaa6bec5b929bf3403990525404",
+              "chainId": 1,
+              "publicVotes": 6,
+              "lastVotedAt": 1793342422
+            },
+            {
+              "address": "0x3FB19771947072629C8EEE7995a2eF23B72d4C8A",
+              "chainId": 1,
+              "publicVotes": 6,
+              "lastVotedAt": 1793429427
+            },
+            {
+              "address": "0x409E5ee14B3dA7E908bB92EB884afB241a6504bD",
+              "chainId": 1,
+              "publicVotes": 6,
+              "lastVotedAt": 1793452980
+            },
+            {
+              "address": "0x5A3D7866A8B80A4DaA8374a5932067aD2035D2Ef",
+              "chainId": 1,
+              "publicVotes": 6,
+              "lastVotedAt": 1793452964
+            },
+            {
+              "address": "0x5Be1Eb1AC2b82e220A9Ea41F188f7D7954C192b7",
+              "chainId": 1,
+              "publicVotes": 6,
+              "lastVotedAt": 1793311647
+            }
+          ],
+          "rankingScope": "observed_scan",
+          "distribution": {
+            "one": 44,
+            "twoToFive": 56,
+            "sixPlus": 28
+          },
+          "topFiveShare": 0.07692307692307693,
+          "dailyCounts": [
+            {
+              "date": "2026-05-15",
+              "count": 4
+            },
+            {
+              "date": "2026-05-16",
+              "count": 2
+            },
+            {
+              "date": "2026-05-27",
+              "count": 32
+            },
+            {
+              "date": "2026-05-28",
+              "count": 16
+            },
+            {
+              "date": "2026-05-29",
+              "count": 9
+            },
+            {
+              "date": "2026-05-30",
+              "count": 15
+            },
+            {
+              "date": "2026-05-31",
+              "count": 6
+            },
+            {
+              "date": "2026-06-01",
+              "count": 1
+            },
+            {
+              "date": "2026-06-23",
+              "count": 14
+            },
+            {
+              "date": "2026-06-24",
+              "count": 45
+            },
+            {
+              "date": "2026-06-25",
+              "count": 29
+            },
+            {
+              "date": "2026-06-26",
+              "count": 16
+            },
+            {
+              "date": "2026-06-27",
+              "count": 17
+            },
+            {
+              "date": "2026-06-28",
+              "count": 13
+            },
+            {
+              "date": "2026-06-29",
+              "count": 2
+            },
+            {
+              "date": "2026-07-14",
+              "count": 25
+            },
+            {
+              "date": "2026-07-15",
+              "count": 9
+            },
+            {
+              "date": "2026-07-16",
+              "count": 8
+            },
+            {
+              "date": "2026-07-17",
+              "count": 11
+            },
+            {
+              "date": "2026-07-18",
+              "count": 14
+            },
+            {
+              "date": "2026-10-22",
+              "count": 15
+            },
+            {
+              "date": "2026-10-23",
+              "count": 6
+            },
+            {
+              "date": "2026-10-24",
+              "count": 5
+            },
+            {
+              "date": "2026-10-25",
+              "count": 13
+            },
+            {
+              "date": "2026-10-26",
+              "count": 14
+            },
+            {
+              "date": "2026-10-29",
+              "count": 4
+            },
+            {
+              "date": "2026-10-30",
+              "count": 14
+            },
+            {
+              "date": "2026-10-31",
+              "count": 17
+            },
+            {
+              "date": "2026-11-01",
+              "count": 3
+            },
+            {
+              "date": "2026-11-02",
+              "count": 5
+            },
+            {
+              "date": "2026-11-03",
+              "count": 6
+            }
+          ],
+          "ranges": [
+            {
+              "start": 1792195200,
+              "end": 1793404800,
+              "publicVotes": 71,
+              "uniqueWallets": 58
+            },
+            {
+              "start": 1793404800,
+              "end": 1794700800,
+              "publicVotes": 31,
+              "uniqueWallets": 31
+            }
+          ],
+          "trendScope": "UTC days with observed votes only; absent days and older records are not established by this scan"
+        },
+        "provenance": {
+          "source": "snapshot",
+          "sourceUrl": "https://snapshot.box/#/ens.eth",
+          "fetchedAt": "2026-11-15T08:05:11.256Z",
+          "cutoff": 1794729905,
+          "votesScanned": 500,
+          "publicVotesIncluded": 390,
+          "privateVotesOmitted": 110,
+          "proposalsScanned": 50,
+          "votesComplete": false,
+          "proposalsComplete": false,
+          "scanLimits": {
+            "votes": 500,
+            "proposals": 50
+          },
+          "privacyPolicy": "Public governance participation from the bounded Snapshot scan. Shielded/private proposal votes are omitted.",
+          "scope": "bounded_public_governance_scan",
+          "completeness": "scan_limited"
+        },
+        "untrustedContent": true
+      },
+      "participants": {
+        "tool": "listParticipants",
+        "data": {
+          "kind": "public_governance_participants",
+          "items": [
+            {
+              "address": "0x019Ed608dD806b80193942F2A960e7AC8aBb2EE3",
+              "chainId": 1,
+              "publicVotes": 6,
+              "lastVotedAt": 1793718213,
+              "name": null
+            },
+            {
+              "address": "0x025376E7e7f161A198fb5fc90a220A553836d11A",
+              "chainId": 1,
+              "publicVotes": 6,
+              "lastVotedAt": 1793546105,
+              "name": null
+            },
+            {
+              "address": "0x0579A616689f7ed748dC07692A3F150D44b0CA09",
+              "chainId": 1,
+              "publicVotes": 6,
+              "lastVotedAt": 1793724435,
+              "name": null
+            }
+          ],
+          "page": 0,
+          "totalObserved": 128,
+          "hasMore": true
+        },
+        "provenance": {
+          "source": "snapshot",
+          "sourceUrl": "https://snapshot.box/#/ens.eth",
+          "fetchedAt": "2026-11-15T08:05:11.256Z",
+          "cutoff": 1794729905,
+          "votesScanned": 500,
+          "publicVotesIncluded": 390,
+          "privateVotesOmitted": 110,
+          "proposalsScanned": 50,
+          "votesComplete": false,
+          "proposalsComplete": false,
+          "scanLimits": {
+            "votes": 500,
+            "proposals": 50
+          },
+          "privacyPolicy": "Public governance participation from the bounded Snapshot scan. Shielded/private proposal votes are omitted.",
+          "scope": "bounded_public_governance_scan",
+          "completeness": "scan_limited"
+        },
+        "untrustedContent": true
+      },
+      "activity": {
+        "tool": "getGovernanceActivity",
+        "data": {
+          "items": [
+            {
+              "id": "0xd6049dbd00c9665e71566fd1753b50d05ef443d3699478d1d06454c96b8f2441",
+              "voter": "0x7F7720BDb2CB5C13dd30a0C8aB8D0dD553b31caA",
+              "created": 1793724464,
+              "vp": 33562.052981238856,
+              "proposal": {
+                "id": "0x5bc7802637848e22f47e23615d3dcb2649e10b5feed5033a974eb556cdf3627a",
+                "title": "[7.3] [Social] Governor Nexus Update",
+                "privacy": ""
+              }
+            },
+            {
+              "id": "0x91a03c7e0027f61289b5c0903fd0bab7197965a43391db1a836c615551d91cd7",
+              "voter": "0x0579A616689f7ed748dC07692A3F150D44b0CA09",
+              "created": 1793724435,
+              "vp": 12.975580906573816,
+              "proposal": {
+                "id": "0x5bc7802637848e22f47e23615d3dcb2649e10b5feed5033a974eb556cdf3627a",
+                "title": "[7.3] [Social] Governor Nexus Update",
+                "privacy": ""
+              }
+            },
+            {
+              "id": "0x2d52566d13781f0ce60a10e84afef737fbc9b5b681e40c30a23377ecd1e4a5d3",
+              "voter": "0x019Ed608dD806b80193942F2A960e7AC8aBb2EE3",
+              "created": 1793718213,
+              "vp": 1,
+              "proposal": {
+                "id": "0x5bc7802637848e22f47e23615d3dcb2649e10b5feed5033a974eb556cdf3627a",
+                "title": "[7.3] [Social] Governor Nexus Update",
+                "privacy": ""
+              }
+            }
+          ],
+          "matchedInScan": 390,
+          "returnedLimit": 3,
+          "proposals": [
+            {
+              "id": "0x5bc7802637848e22f47e23615d3dcb2649e10b5feed5033a974eb556cdf3627a",
+              "title": "[7.3] [Social] Governor Nexus Update",
+              "created": 1793297708,
+              "privacy": "",
+              "votes": 49
+            },
+            {
+              "id": "0xbbadb404accf9dddd246f8942f51f7e3511b6145d57e62197f163380128b720b",
+              "title": "[7.2] [Social] Funding Request: ENS Meta-Governance Working Group Term 7 (Oct. Window)",
+              "created": 1792609661,
+              "privacy": "",
+              "votes": 53
+            },
+            {
+              "id": "0x943e585d1a4996525c5c7d229401d604ea56fe08c2c9c615c44f048ba42487b7",
+              "title": "[7.1] [Social] SPP3: Marketplace RFP",
+              "created": 1783988115,
+              "privacy": "",
+              "votes": 67
+            },
+            {
+              "id": "0x3e7acd4a47b246382bf9a3aeb71d0fd1562d38dbb9f7b7760445cf9731229b9d",
+              "title": "[6.47] [Social] Election of the New ENS DAO Security Council",
+              "created": 1783450672,
+              "privacy": "shutter",
+              "votes": 50
+            },
+            {
+              "id": "0xa736ce4411be14ceaab141989ac271ce1ca96aee6d3ac26bb893ec3c898385d0",
+              "title": "Term 7 Meta-Governance Working Group Election",
+              "created": 1782475071,
+              "privacy": "shutter",
+              "votes": 60
+            },
+            {
+              "id": "0x0b5fde95f53bbcda7935cdc0d29c852f3447cc324a618b031bd6f4ec3a0aeee0",
+              "title": "[6.46] [Social] 2026 Endowment Investment Policy Update",
+              "created": 1782259880,
+              "privacy": "",
+              "votes": 63
+            },
+            {
+              "id": "0x9ed89cf79760eb92d220fee2da08896bf027317f394aab87863011f964e19453",
+              "title": "[6.45][Social] Renewal of the Security Council",
+              "created": 1782233012,
+              "privacy": "",
+              "votes": 73
+            },
+            {
+              "id": "0xe4e1c052b2ea4f640cab27ddec326df6290d8996a9219b60cda4c4d4509f5f9a",
+              "title": "[6.44] [Social] Path forward on Working Groups for Term 7",
+              "created": 1779848547,
+              "privacy": "",
+              "votes": 79
+            }
+          ]
+        },
+        "provenance": {
+          "source": "snapshot",
+          "sourceUrl": "https://snapshot.box/#/ens.eth",
+          "fetchedAt": "2026-11-15T08:05:11.256Z",
+          "cutoff": 1794729905,
+          "votesScanned": 500,
+          "publicVotesIncluded": 390,
+          "privateVotesOmitted": 110,
+          "proposalsScanned": 50,
+          "votesComplete": false,
+          "proposalsComplete": false,
+          "scanLimits": {
+            "votes": 500,
+            "proposals": 50
+          },
+          "privacyPolicy": "Public governance participation from the bounded Snapshot scan. Shielded/private proposal votes are omitted.",
+          "scope": "bounded_public_governance_scan",
+          "completeness": "scan_limited"
+        },
+        "untrustedContent": true
+      },
+      "proposal": {
+        "tool": "getProposal",
+        "data": {
+          "id": "0x5bc7802637848e22f47e23615d3dcb2649e10b5feed5033a974eb556cdf3627a",
+          "title": "[7.3] [Social] Governor Nexus Update",
+          "body": "**TL;DR:** We propose that the DAO approve the Governor Nexus update, the next version of the ENS governor. It is built on OpenZeppelin v5.6.1 and fixes the risks found in the Governance Security Assessment. If this vote passes, the code goes through an external audit paid by MetaGov, and we then bring the migration proposal to an executable proposal.\n\n## **Context**\n\nWe posted the Governor Nexus RFC in March and the implementation report in August. The code is public at blockful/nexus. The feedback window closed on Sep 2, and none of the questions raised called for a change to the code.\n\nOur Governance Security Assessment placed ENS at Stage 0 under the Anticapture framework. Once Nexus is deployed and its parameters are ratified, ENS moves to Stage 1.\n\n## **What changes**\n\n- **Voting delay per proposal type.** The migration proposal sets it to 2 days.\n- **Proposal limit.** Each proposer can have at most 2 live proposals, adjustable by vote between 1 and 10. Anyone can cancel a proposal whose proposer dropped below the proposal threshold.\n- **Mutable votes.** A voter can recast a vote before the deadline, which lets them correct a vote cast through a compromised interface.\n- **Late-vote extension.** If a proposal flips from failing to passing in the final 24 hours, voting extends by 48 hours from the original deadline. It fires once per proposal.\n- **Proposal types.** A registry, governed by vote, holds the types. Three come first: Standard (the same rules as today), Optimistic (passes unless 500k ENS oppose, and starts with empty allowlists) and Bond (a 1,000 ENS bond, as ratified in EP 5.15).\n- **Batch voting and contract wallets.** One call can cast votes on several proposals, and Safes and multisigs can sign votes through ERC-1271.\n\nThe Timelock is untouched. The risks we accepted are listed in the implementation report.\n\n## **External audit**\n\n- **Scope:** the code we wrote on top of OpenZeppelin's library, as published in the implementation report.\n- **Quotes:** we requested quotes from three firms, including OpenZeppelin and Trail of Bits. They range from **$14,000 to $25,000**.\n- **Who chooses:** the MetaGov stewards select the firm. This vote does not.\n- **Funding:** MetaGov pays for the audit from the contract audits line of its Term 7 funding request. There is no new funding request to the DAO.\n- **After the audit:** we address every finding and publish the report before the migration proposal.\n\n## **Voting**\n\n- **For:** approve the Governor Nexus update. MetaGov proceeds with the audit, and we post the migration proposal once the audit clears.\n- **Against:** do not proceed. The current governor stays and MetaGov does not fund the audit.\n- **Abstain:** no position.\n\n## **Timeline and next steps**\n\n| **Step** | **Status** |\n| --- | --- |\n| RFC, implementation report and feedback window | ✅ Done |\n| Audit quotes collected | ✅ Done |\n| Snapshot to approve the update | **⬅ We are here** |\n| Audit firm selected by MetaGov, audit and fixes | Next |\n| Migration proposal: deployment, parameter ratification, Timelock admin transfer | Pending |\n1. Once this vote passes, MetaGov selects the firm and the audit starts.\n2. Once the audit is done, we publish the report and our fixes.\n3. After that, we post the migration proposal for a vote.",
+          "choices": [
+            "For",
+            "Against",
+            "Abstain"
+          ],
+          "state": "closed",
+          "start": 1793297708,
+          "end": 1793729708,
+          "created": 1793297708,
+          "scores": [
+            115918.49892439684,
+            334165.6016910519,
+            66393.54369337167
+          ],
+          "scores_total": 516477.6443088204,
+          "scores_state": "final",
+          "type": "basic",
+          "privacy": "",
+          "network": "1",
+          "snapshot": 26300118,
+          "space": {
+            "id": "ens.eth"
+          },
+          "strategies": [
+            {
+              "name": "delegation",
+              "network": "1"
+            },
+            {
+              "name": "erc20-votes",
+              "network": "1"
+            }
+          ],
+          "bodyTruncated": false,
+          "contentStatus": "available",
+          "unavailableFields": [],
+          "provenance": {
+            "source": "snapshot",
+            "sourceUrl": "https://snapshot.box/#/ens.eth/proposal/0x5bc7802637848e22f47e23615d3dcb2649e10b5feed5033a974eb556cdf3627a",
+            "fetchedAt": "2026-11-15T08:05:12.304Z",
+            "scope": "single_proposal",
+            "privacyPolicy": "Private/shielded ballots and scores are withheld."
+          }
+        },
+        "provenance": {
+          "source": "snapshot",
+          "sourceUrl": "https://snapshot.box/#/ens.eth/proposal/0x5bc7802637848e22f47e23615d3dcb2649e10b5feed5033a974eb556cdf3627a",
+          "fetchedAt": "2026-11-15T08:05:12.304Z",
+          "scope": "single_proposal",
+          "privacyPolicy": "Private/shielded ballots and scores are withheld."
+        },
+        "untrustedContent": true
+      },
+      "wallet": {
+        "tool": "getWalletProfile",
+        "data": {
+          "chainId": 1,
+          "address": "0x019Ed608dD806b80193942F2A960e7AC8aBb2EE3",
+          "avatar": {
+            "uri": "ipfs://bafkreiau2qfp5kolnnz7o52kffxkgbhmyvrwjexudokzzb3hb6np66pxo4",
+            "resolvedUrl": "https://ipfs.io/ipfs/bafkreiau2qfp5kolnnz7o52kffxkgbhmyvrwjexudokzzb3hb6np66pxo4",
+            "urls": [
+              "https://ipfs.io/ipfs/bafkreiau2qfp5kolnnz7o52kffxkgbhmyvrwjexudokzzb3hb6np66pxo4",
+              "https://dweb.link/ipfs/bafkreiau2qfp5kolnnz7o52kffxkgbhmyvrwjexudokzzb3hb6np66pxo4",
+              "https://gateway.pinata.cloud/ipfs/bafkreiau2qfp5kolnnz7o52kffxkgbhmyvrwjexudokzzb3hb6np66pxo4"
+            ],
+            "source": "snapshot"
+          },
+          "profile": {
+            "name": "webvr.eth",
+            "bio": "Gm frens!",
+            "links": [],
+            "revision": 0
+          },
+          "provenance": {
+            "profileClaimVerified": false,
+            "sources": [
+              "snapshot"
+            ],
+            "warnings": [],
+            "verification": null
+          },
+          "updatedAt": null,
+          "cache": {
+            "fetchedAt": "2026-11-15T08:05:13.370Z",
+            "ttlSeconds": 60
+          }
+        },
+        "provenance": {
+          "source": "walletface",
+          "sourceUrl": "https://walletface.org/u/0x019Ed608dD806b80193942F2A960e7AC8aBb2EE3",
+          "fetchedAt": "2026-11-15T08:05:13.370Z",
+          "scope": "public_profile",
+          "claimVerified": false
+        },
+        "untrustedContent": true
+      }
+    },
+    {
+      "spaceId": "yam.eth",
+      "space": {
+        "tool": "getSpace",
+        "data": {
+          "space": {
+            "id": "yam.eth",
+            "name": "Yam",
+            "about": "Only delegated YAM may be used to vote on proposals. You can delegate to yourself or another address here: yam.finance/#/delegate",
+            "network": "1",
+            "avatar": "ipfs://QmWe6sMgURBDA3cadz6s59MDjExHtNXXsFBvVG84PMGdhU",
+            "admins": [
+              "0x9Ebc8AD4011C7f559743Eb25705CCF5A9B58D0bc",
+              "0x415215e4d4d868B067A30cFcB4fB66d08b14c3b8"
+            ]
+          },
+          "proposals": [
+            {
+              "id": "0xaee9727ec0319e77da7ac49d5e4db631a75fb034aa27748e688c4bfb8458c349",
+              "title": "YIP-210 Finalizing YIP-114 and implementing a rebalancing framework. ",
+              "created": 1682170952,
+              "privacy": "",
+              "votes": 21
+            },
+            {
+              "id": "0x617192f236033eac7439ec0b3ef8765c7b5eaf4279609ff02b195fb248ca20a8",
+              "title": "Removal of 0xE from Guardian Multisig and Operations Multisig",
+              "created": 1677699678,
+              "privacy": "",
+              "votes": 24
+            },
+            {
+              "id": "0x7e4a82c045f51625d9d707b09214b77f95ad4697ba06aa5ed9737e662afe5eeb",
+              "title": "0xE needs to give access to all yam.finance infrastructure to active yam team members that have history of supporting yam. ",
+              "created": 1674752355,
+              "privacy": "",
+              "votes": 22
+            },
+            {
+              "id": "0x3a9fde3ecd262cf9fa900f60185df87015b167b76cc8862a6ede97b8e634ef00",
+              "title": "Long Live Yam",
+              "created": 1670773572,
+              "privacy": "",
+              "votes": 44
+            },
+            {
+              "id": "0x2d05c00a62bcf549c0c2aca1a790f2058db647166deba417cd93b81953169ccb",
+              "title": "Yam Core Development Fund",
+              "created": 1670773461,
+              "privacy": "",
+              "votes": 40
+            },
+            {
+              "id": "0xa5203245338aeab3b5e4141e82282c600acdba14788af7b5852eb13da2d2b42a",
+              "title": "E Retroactive Comp",
+              "created": 1670773389,
+              "privacy": "",
+              "votes": 40
+            },
+            {
+              "id": "0x376c47244d414ffc7aa2cc0ffdf563f31842b90df74604551c9bc052f80d1844",
+              "title": "[Fixed] YAM Redemption",
+              "created": 1670109767,
+              "privacy": "",
+              "votes": 42
+            },
+            {
+              "id": "0x714af9e0c378f0e8c82267eded4e3f5abae978d2c2a02e4d858754c938ba9a72",
+              "title": "YAM Redemption",
+              "created": 1669940037,
+              "privacy": "",
+              "votes": 14
+            },
+            {
+              "id": "0x3a076b285ff586ee9159937a7370d5498347ea3a15995137154f1d66b5b5e01b",
+              "title": "Redemption",
+              "created": 1668509808,
+              "privacy": "",
+              "votes": 31
+            },
+            {
+              "id": "0x69ba310a132ba3bfa6b4a98a0c0f07a7aeb03ced3a2aae52cc711e663a1f35c1",
+              "title": "Long Live Yam",
+              "created": 1668286410,
+              "privacy": "",
+              "votes": 26
+            },
+            {
+              "id": "0xaf9f9c36adb15c898638cdbfbda8a30ca5afdfd184ce69bf447411e4546a6d20",
+              "title": "Yam Core Development Fund",
+              "created": 1668286236,
+              "privacy": "",
+              "votes": 23
+            },
+            {
+              "id": "0x949864fb08d32db705123bac0067e938b89a6f4e5b692ad9fc5a0cc9be2540f2",
+              "title": "Redemption related updates",
+              "created": 1668282888,
+              "privacy": "",
+              "votes": 24
+            }
+          ],
+          "proposalListTruncated": true
+        },
+        "provenance": {
+          "source": "snapshot",
+          "sourceUrl": "https://snapshot.box/#/yam.eth",
+          "fetchedAt": "2026-11-15T08:05:21.447Z",
+          "cutoff": 1794729914,
+          "votesScanned": 500,
+          "publicVotesIncluded": 500,
+          "privateVotesOmitted": 0,
+          "proposalsScanned": 50,
+          "votesComplete": false,
+          "proposalsComplete": false,
+          "scanLimits": {
+            "votes": 500,
+            "proposals": 50
+          },
+          "privacyPolicy": "Public governance participation from the bounded Snapshot scan. Shielded/private proposal votes are omitted.",
+          "scope": "bounded_public_governance_scan",
+          "completeness": "scan_limited"
+        },
+        "untrustedContent": true
+      },
+      "participation": {
+        "tool": "analyzeParticipation",
+        "data": {
+          "publicVotes": 500,
+          "uniqueWallets": 102,
+          "ranking": [
+            {
+              "address": "0x06c4865ab16c9C760622f19a313a2E637E2e66a2",
+              "chainId": 1,
+              "publicVotes": 17,
+              "lastVotedAt": 1682213683
+            },
+            {
+              "address": "0x07187DfF8d1061320beE5A370C2D55e4cAfb062a",
+              "chainId": 1,
+              "publicVotes": 13,
+              "lastVotedAt": 1682225452
+            },
+            {
+              "address": "0x0Fe92A09dD382f8014FE067CF4861fc6B6a9f0f6",
+              "chainId": 1,
+              "publicVotes": 13,
+              "lastVotedAt": 1682223300
+            },
+            {
+              "address": "0x23356602CaF99E185c530A8BB76C0aa31B6049ED",
+              "chainId": 1,
+              "publicVotes": 13,
+              "lastVotedAt": 1682223647
+            },
+            {
+              "address": "0x23b66e2cFE462977796e3626263786Ce894bbb0A",
+              "chainId": 1,
+              "publicVotes": 13,
+              "lastVotedAt": 1682223126
+            },
+            {
+              "address": "0x33B6eA4c943A7086cFf6adEBc3e20477bF7742a5",
+              "chainId": 1,
+              "publicVotes": 13,
+              "lastVotedAt": 1682224364
+            },
+            {
+              "address": "0x653d63E4F2D7112a19f5Eb993890a3F27b48aDa5",
+              "chainId": 1,
+              "publicVotes": 13,
+              "lastVotedAt": 1682354314
+            },
+            {
+              "address": "0x9FC5BEa9000986a756C61E00E34d50c3f0A3283D",
+              "chainId": 1,
+              "publicVotes": 13,
+              "lastVotedAt": 1682222984
+            },
+            {
+              "address": "0xB820a6709aCAE568Aecb89eE0Ce29427386cA2F8",
+              "chainId": 1,
+              "publicVotes": 13,
+              "lastVotedAt": 1682225498
+            },
+            {
+              "address": "0xF399b438fb5eeF6B94D5728C36F53338C4C0D336",
+              "chainId": 1,
+              "publicVotes": 13,
+              "lastVotedAt": 1682223089
+            }
+          ],
+          "rankingScope": "observed_scan",
+          "distribution": {
+            "one": 32,
+            "twoToFive": 43,
+            "sixPlus": 27
+          },
+          "topFiveShare": 0.138,
+          "dailyCounts": [
+            {
+              "date": "2022-10-01",
+              "count": 3
+            },
+            {
+              "date": "2022-10-03",
+              "count": 5
+            },
+            {
+              "date": "2022-10-04",
+              "count": 8
+            },
+            {
+              "date": "2022-10-05",
+              "count": 6
+            },
+            {
+              "date": "2022-10-10",
+              "count": 14
+            },
+            {
+              "date": "2022-10-11",
+              "count": 7
+            },
+            {
+              "date": "2022-10-12",
+              "count": 17
+            },
+            {
+              "date": "2022-10-13",
+              "count": 6
+            },
+            {
+              "date": "2022-10-14",
+              "count": 34
+            },
+            {
+              "date": "2022-10-15",
+              "count": 8
+            },
+            {
+              "date": "2022-10-16",
+              "count": 10
+            },
+            {
+              "date": "2022-10-17",
+              "count": 7
+            },
+            {
+              "date": "2022-11-12",
+              "count": 1
+            },
+            {
+              "date": "2022-11-13",
+              "count": 90
+            },
+            {
+              "date": "2022-11-14",
+              "count": 6
+            },
+            {
+              "date": "2022-11-15",
+              "count": 5
+            },
+            {
+              "date": "2022-11-16",
+              "count": 19
+            },
+            {
+              "date": "2022-11-17",
+              "count": 7
+            },
+            {
+              "date": "2022-12-02",
+              "count": 6
+            },
+            {
+              "date": "2022-12-03",
+              "count": 8
+            },
+            {
+              "date": "2022-12-05",
+              "count": 23
+            },
+            {
+              "date": "2022-12-06",
+              "count": 6
+            },
+            {
+              "date": "2022-12-07",
+              "count": 2
+            },
+            {
+              "date": "2022-12-08",
+              "count": 2
+            },
+            {
+              "date": "2022-12-10",
+              "count": 3
+            },
+            {
+              "date": "2022-12-11",
+              "count": 60
+            },
+            {
+              "date": "2022-12-12",
+              "count": 14
+            },
+            {
+              "date": "2022-12-13",
+              "count": 56
+            },
+            {
+              "date": "2023-01-26",
+              "count": 1
+            },
+            {
+              "date": "2023-01-27",
+              "count": 7
+            },
+            {
+              "date": "2023-01-28",
+              "count": 14
+            },
+            {
+              "date": "2023-03-01",
+              "count": 2
+            },
+            {
+              "date": "2023-03-02",
+              "count": 20
+            },
+            {
+              "date": "2023-03-03",
+              "count": 2
+            },
+            {
+              "date": "2023-04-22",
+              "count": 1
+            },
+            {
+              "date": "2023-04-23",
+              "count": 16
+            },
+            {
+              "date": "2023-04-24",
+              "count": 3
+            },
+            {
+              "date": "2023-04-25",
+              "count": 1
+            }
+          ],
+          "ranges": [
+            {
+              "start": 1792195200,
+              "end": 1793404800,
+              "publicVotes": 0,
+              "uniqueWallets": 0
+            },
+            {
+              "start": 1793404800,
+              "end": 1794700800,
+              "publicVotes": 0,
+              "uniqueWallets": 0
+            }
+          ],
+          "trendScope": "UTC days with observed votes only; absent days and older records are not established by this scan"
+        },
+        "provenance": {
+          "source": "snapshot",
+          "sourceUrl": "https://snapshot.box/#/yam.eth",
+          "fetchedAt": "2026-11-15T08:05:21.447Z",
+          "cutoff": 1794729914,
+          "votesScanned": 500,
+          "publicVotesIncluded": 500,
+          "privateVotesOmitted": 0,
+          "proposalsScanned": 50,
+          "votesComplete": false,
+          "proposalsComplete": false,
+          "scanLimits": {
+            "votes": 500,
+            "proposals": 50
+          },
+          "privacyPolicy": "Public governance participation from the bounded Snapshot scan. Shielded/private proposal votes are omitted.",
+          "scope": "bounded_public_governance_scan",
+          "completeness": "scan_limited"
+        },
+        "untrustedContent": true
+      },
+      "participants": {
+        "tool": "listParticipants",
+        "data": {
+          "kind": "public_governance_participants",
+          "items": [
+            {
+              "address": "0x06c4865ab16c9C760622f19a313a2E637E2e66a2",
+              "chainId": 1,
+              "publicVotes": 17,
+              "lastVotedAt": 1682213683,
+              "name": null
+            },
+            {
+              "address": "0x07187DfF8d1061320beE5A370C2D55e4cAfb062a",
+              "chainId": 1,
+              "publicVotes": 13,
+              "lastVotedAt": 1682225452,
+              "name": null
+            },
+            {
+              "address": "0x0Fe92A09dD382f8014FE067CF4861fc6B6a9f0f6",
+              "chainId": 1,
+              "publicVotes": 13,
+              "lastVotedAt": 1682223300,
+              "name": null
+            }
+          ],
+          "page": 0,
+          "totalObserved": 102,
+          "hasMore": true
+        },
+        "provenance": {
+          "source": "snapshot",
+          "sourceUrl": "https://snapshot.box/#/yam.eth",
+          "fetchedAt": "2026-11-15T08:05:21.447Z",
+          "cutoff": 1794729914,
+          "votesScanned": 500,
+          "publicVotesIncluded": 500,
+          "privateVotesOmitted": 0,
+          "proposalsScanned": 50,
+          "votesComplete": false,
+          "proposalsComplete": false,
+          "scanLimits": {
+            "votes": 500,
+            "proposals": 50
+          },
+          "privacyPolicy": "Public governance participation from the bounded Snapshot scan. Shielded/private proposal votes are omitted.",
+          "scope": "bounded_public_governance_scan",
+          "completeness": "scan_limited"
+        },
+        "untrustedContent": true
+      },
+      "activity": {
+        "tool": "getGovernanceActivity",
+        "data": {
+          "items": [
+            {
+              "id": "0x60d592326c14e65d366e9c1677ff699a4c2ea663b38fdbb4cccd290e0ac970bb",
+              "voter": "0x5ea6c7F21A2d7a29168D7C3f0Bab6465f5023E97",
+              "created": 1682426840,
+              "vp": 0.399788359894584,
+              "proposal": {
+                "id": "0xaee9727ec0319e77da7ac49d5e4db631a75fb034aa27748e688c4bfb8458c349",
+                "title": "YIP-210 Finalizing YIP-114 and implementing a rebalancing framework. ",
+                "privacy": ""
+              }
+            },
+            {
+              "id": "0x257da7f6fe5d42b47d8394d1ed0070796c9e7667c9e8f0031cb11fdd7747b547",
+              "voter": "0xF3BaeaB4AFA486991845d5dbe31069265da39D57",
+              "created": 1682369624,
+              "vp": 3.99788359894584,
+              "proposal": {
+                "id": "0xaee9727ec0319e77da7ac49d5e4db631a75fb034aa27748e688c4bfb8458c349",
+                "title": "YIP-210 Finalizing YIP-114 and implementing a rebalancing framework. ",
+                "privacy": ""
+              }
+            },
+            {
+              "id": "0x8217179b0ad579445b2ab5068f5f2e664edeab8ec604793c9c6857101efd98d6",
+              "voter": "0x6ba6c53c8757C99aDc983e84ce7e87F240bf7531",
+              "created": 1682369622,
+              "vp": 0.6415763291521561,
+              "proposal": {
+                "id": "0xaee9727ec0319e77da7ac49d5e4db631a75fb034aa27748e688c4bfb8458c349",
+                "title": "YIP-210 Finalizing YIP-114 and implementing a rebalancing framework. ",
+                "privacy": ""
+              }
+            }
+          ],
+          "matchedInScan": 500,
+          "returnedLimit": 3,
+          "proposals": [
+            {
+              "id": "0xaee9727ec0319e77da7ac49d5e4db631a75fb034aa27748e688c4bfb8458c349",
+              "title": "YIP-210 Finalizing YIP-114 and implementing a rebalancing framework. ",
+              "created": 1682170952,
+              "privacy": "",
+              "votes": 21
+            },
+            {
+              "id": "0x617192f236033eac7439ec0b3ef8765c7b5eaf4279609ff02b195fb248ca20a8",
+              "title": "Removal of 0xE from Guardian Multisig and Operations Multisig",
+              "created": 1677699678,
+              "privacy": "",
+              "votes": 24
+            },
+            {
+              "id": "0x7e4a82c045f51625d9d707b09214b77f95ad4697ba06aa5ed9737e662afe5eeb",
+              "title": "0xE needs to give access to all yam.finance infrastructure to active yam team members that have history of supporting yam. ",
+              "created": 1674752355,
+              "privacy": "",
+              "votes": 22
+            },
+            {
+              "id": "0x3a9fde3ecd262cf9fa900f60185df87015b167b76cc8862a6ede97b8e634ef00",
+              "title": "Long Live Yam",
+              "created": 1670773572,
+              "privacy": "",
+              "votes": 44
+            },
+            {
+              "id": "0x2d05c00a62bcf549c0c2aca1a790f2058db647166deba417cd93b81953169ccb",
+              "title": "Yam Core Development Fund",
+              "created": 1670773461,
+              "privacy": "",
+              "votes": 40
+            },
+            {
+              "id": "0xa5203245338aeab3b5e4141e82282c600acdba14788af7b5852eb13da2d2b42a",
+              "title": "E Retroactive Comp",
+              "created": 1670773389,
+              "privacy": "",
+              "votes": 40
+            },
+            {
+              "id": "0x376c47244d414ffc7aa2cc0ffdf563f31842b90df74604551c9bc052f80d1844",
+              "title": "[Fixed] YAM Redemption",
+              "created": 1670109767,
+              "privacy": "",
+              "votes": 42
+            },
+            {
+              "id": "0x714af9e0c378f0e8c82267eded4e3f5abae978d2c2a02e4d858754c938ba9a72",
+              "title": "YAM Redemption",
+              "created": 1669940037,
+              "privacy": "",
+              "votes": 14
+            }
+          ]
+        },
+        "provenance": {
+          "source": "snapshot",
+          "sourceUrl": "https://snapshot.box/#/yam.eth",
+          "fetchedAt": "2026-11-15T08:05:21.447Z",
+          "cutoff": 1794729914,
+          "votesScanned": 500,
+          "publicVotesIncluded": 500,
+          "privateVotesOmitted": 0,
+          "proposalsScanned": 50,
+          "votesComplete": false,
+          "proposalsComplete": false,
+          "scanLimits": {
+            "votes": 500,
+            "proposals": 50
+          },
+          "privacyPolicy": "Public governance participation from the bounded Snapshot scan. Shielded/private proposal votes are omitted.",
+          "scope": "bounded_public_governance_scan",
+          "completeness": "scan_limited"
+        },
+        "untrustedContent": true
+      },
+      "proposal": {
+        "tool": "getProposal",
+        "data": {
+          "id": "0xaee9727ec0319e77da7ac49d5e4db631a75fb034aa27748e688c4bfb8458c349",
+          "title": "YIP-210 Finalizing YIP-114 and implementing a rebalancing framework. ",
+          "body": "# YIP-210 Finalizing YIP-114 and implementing a rebalancing framework. \n\n# Background\n1. 0xE has maliciously denied other team members admin access to Yam's core infrastructure. Discord / Twitter / Forums (closed) / Github / Gsuite (closed) / Website is all under his sole control. He has removed admin access from other team members without a vote or consultation. https://snapshot.org/#/yam.eth/proposal/0x617192f236033eac7439ec0b3ef8765c7b5eaf4279609ff02b195fb248ca20a8\n2. A small group of YAM token holders who bought at a discount to treasury value tried to exploit the Treasury by allowing redemptions AND donating (to their own charity) the rest of the treasury from people who did not or forgot to claim. This small group of malicious individuals was actively supported by 0xE. https://snapshot.org/#/yam.eth/proposal/0x3db446c52f54bba28b95551dfa8f55ca0a9fda868dbec04d37a46467eb3fc1bf\n3. All proposals will go thru snapshot and or offical governance proposals from now on. Any questions or discussions can be done via the link on the proposal. 0xE is in fact in control of snapshot as well, so if there is any censoring there, we will move it to the official governance proposals. \n4. YIP-210 is a continuation of the work that was interrupted on YIP-114. Since then there has been a redemption and the treasury has been partially redeemed. This proposal will finalize the work done on YIP-114 by creating a rebalancing structure that is related to the investment risk orginally chosen back when the treasury was managed. \n5. Yam DAO has been put into a hibernation mode, to preserve the treasury and wait till there are more interested non-malicious parties in rebuilding the DAO. Feel free to contact me at IYamFeddas.eth@skiff.com if you are interested in helping. \n\n## Summary\n\nThis YIP-210 simplifies the treasury management to a rebalancing strategy for a portfolio consisting of 70% ETH and 30% USDC, with a rebalancing threshold of 7.5%. This will allow for super low maintaince and minimal on-chain smart contract interactions with the treasury.\nBased on backtesting of this strategy, it has proven to provide superior results compared to a buy and hold strategy since 2021, with lower volatility. Longer term buy and hold basis generally out performs but it ultimately depends on at which point did you buy. \n\n\n## Methodology:\n\nUsing TradingView's strategy tester, we implemented a rebalancing strategy for an ETH/USD portfolio holding an allocation of 70% ETH and 30% USDC. This strategy involves checking the portfolio balance every 30 days and rebalancing if the difference between the current allocation and the target allocation (70% ETH, 30% USDC) exceeds the rebalancing threshold of 7.5%.\nLink to the strategy and code: https://www.tradingview.com/v/hKwtzj9w/\n\n## Results:\n\nThe results obtained from the TradingView strategy tester demonstrate that our rebalancing strategy significantly outperforms a buy and hold strategy since 2021. However, it is worth noting that buy and hold generally performed better when starting from 2021 and earlier. Despite this, the lower risk associated with our rebalancing strategy makes it an attractive option for treasury management.\n\n## Next steps\n1. Complete YIP-114 by adjusting the balances of the treasury 70% ETH and 30% USDC. \n2. Invest all ETH into wstETH to earn yield.\n3. A monthly check if it is necessary to rebalance the treasury. ",
+          "choices": [
+            "Approve YIP-210",
+            "Do Not Approve"
+          ],
+          "state": "closed",
+          "start": 1682170931,
+          "end": 1682430120,
+          "created": 1682170952,
+          "scores": [
+            286653.5335327927,
+            0
+          ],
+          "scores_total": 286653.5335327927,
+          "scores_state": "final",
+          "type": "single-choice",
+          "privacy": "",
+          "network": "1",
+          "snapshot": 17102243,
+          "space": {
+            "id": "yam.eth"
+          },
+          "strategies": [
+            {
+              "name": "contract-call",
+              "network": "1"
+            }
+          ],
+          "bodyTruncated": false,
+          "contentStatus": "available",
+          "unavailableFields": [],
+          "provenance": {
+            "source": "snapshot",
+            "sourceUrl": "https://snapshot.box/#/yam.eth/proposal/0xaee9727ec0319e77da7ac49d5e4db631a75fb034aa27748e688c4bfb8458c349",
+            "fetchedAt": "2026-11-15T08:05:22.200Z",
+            "scope": "single_proposal",
+            "privacyPolicy": "Private/shielded ballots and scores are withheld."
+          }
+        },
+        "provenance": {
+          "source": "snapshot",
+          "sourceUrl": "https://snapshot.box/#/yam.eth/proposal/0xaee9727ec0319e77da7ac49d5e4db631a75fb034aa27748e688c4bfb8458c349",
+          "fetchedAt": "2026-11-15T08:05:22.200Z",
+          "scope": "single_proposal",
+          "privacyPolicy": "Private/shielded ballots and scores are withheld."
+        },
+        "untrustedContent": true
+      },
+      "wallet": {
+        "tool": "getWalletProfile",
+        "data": {
+          "chainId": 1,
+          "address": "0x06c4865ab16c9C760622f19a313a2E637E2e66a2",
+          "avatar": {
+            "uri": null,
+            "resolvedUrl": null,
+            "urls": [],
+            "source": "none"
+          },
+          "profile": {
+            "name": null,
+            "bio": null,
+            "links": [],
+            "revision": 0
+          },
+          "provenance": {
+            "profileClaimVerified": false,
+            "sources": [
+              "snapshot"
+            ],
+            "warnings": [],
+            "verification": null
+          },
+          "updatedAt": null,
+          "cache": {
+            "fetchedAt": "2026-11-15T08:05:23.305Z",
+            "ttlSeconds": 60
+          }
+        },
+        "provenance": {
+          "source": "walletface",
+          "sourceUrl": "https://walletface.org/u/0x06c4865ab16c9C760622f19a313a2E637E2e66a2",
+          "fetchedAt": "2026-11-15T08:05:23.305Z",
+          "scope": "public_profile",
+          "claimVerified": false
+        },
+        "untrustedContent": true
+      }
+    }
+  ]
+}

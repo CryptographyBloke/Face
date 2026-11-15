@@ -21,7 +21,9 @@ export function createNodeHandler(
         let size = 0;
         for await (const chunk of req) {
           size += chunk.length;
-          if (size > 16384) {
+          if (
+            size > (url.pathname.startsWith("/v1/platform/") ? 32768 : 16384)
+          ) {
             res.writeHead(413, { "Content-Type": "application/json" });
             res.end(
               '{"error":{"code":"BODY_SIZE","message":"Request too large"}}',
@@ -30,16 +32,49 @@ export function createNodeHandler(
           }
           chunks.push(chunk);
         }
+        const controller = new AbortController();
+        res.on("close", () => {
+          if (!res.writableEnded) controller.abort();
+        });
         const response = await api(
           new Request(url, {
             method: req.method,
             headers: req.headers,
+            signal: controller.signal,
             ...(req.method === "POST" ? { body: Buffer.concat(chunks) } : {}),
           }),
           req.socket.remoteAddress || "local",
         );
         res.writeHead(response.status, Object.fromEntries(response.headers));
-        res.end(await response.text());
+        if (response.body) {
+          const reader = response.body.getReader();
+          try {
+            while (true) {
+              const { done, value } = await reader.read();
+              if (done) break;
+              if (res.destroyed) {
+                await reader.cancel();
+                break;
+              }
+              if (!res.write(value))
+                await new Promise((resolve) => {
+                  const onDrain = () => {
+                    res.off("close", onClose);
+                    resolve();
+                  };
+                  const onClose = () => {
+                    res.off("drain", onDrain);
+                    resolve();
+                  };
+                  res.once("drain", onDrain);
+                  res.once("close", onClose);
+                });
+            }
+          } finally {
+            reader.releaseLock();
+          }
+        }
+        res.end();
         return;
       }
       if (req.method !== "GET" && req.method !== "HEAD") {
@@ -74,6 +109,10 @@ export function createNodeHandler(
       });
       res.end(req.method === "HEAD" ? null : data);
     } catch {
+      if (res.headersSent) {
+        res.destroy();
+        return;
+      }
       res.writeHead(500);
       res.end("Server unavailable");
     }

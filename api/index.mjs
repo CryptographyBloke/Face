@@ -1,19 +1,38 @@
 import { Snapshot } from "../server/snapshot.mjs";
 import { createApi } from "../server/app.mjs";
-// Preview is deliberately read-only; no ephemeral database is used.
+// Legacy native writes remain disabled. Agent writes use separate durable authorization.
+const snapshot = new Snapshot();
 const api = createApi({
-  snapshot: new Snapshot(),
+  snapshot,
   origin: process.env.APP_ORIGIN || "https://walletface.org",
 });
+const handlers = new Map();
 function handle(request) {
   const u = new URL(request.url);
   const route = u.searchParams.get("_route");
   const path = route ? "/" + route.replace(/^\//, "") : u.pathname;
   u.searchParams.delete("_route");
-  return api(
-    new Request("https://preview.invalid" + path + u.search, {
+  if (
+    (path.startsWith("/v1/ai/") ||
+      path.startsWith("/v1/platform/") ||
+      path === "/v1/mcp") &&
+    !handlers.has(u.origin)
+  ) {
+    if (handlers.size >= 20) handlers.delete(handlers.keys().next().value);
+    handlers.set(u.origin, createApi({ snapshot, origin: u.origin }));
+  }
+  const handler =
+    path.startsWith("/v1/ai/") ||
+    path.startsWith("/v1/platform/") ||
+    path === "/v1/mcp"
+      ? handlers.get(u.origin)
+      : api;
+  return handler(
+    new Request(u.origin + path + u.search, {
       method: request.method,
       headers: request.headers,
+      signal: request.signal,
+      ...(request.body ? { body: request.body, duplex: "half" } : {}),
     }),
     request.headers.get("x-real-ip") || "preview",
   );

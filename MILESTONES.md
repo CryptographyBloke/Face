@@ -62,3 +62,9 @@ Roadmap targets guide upcoming work. Individual avatar upload stays free; paid s
 - Keep Snapshot and ENS integrations optional and modular.
 - Document supported integrations and make adding a new integration straightforward.
 - Avoid a custom registry contract until real integrations demonstrate the need.
+
+
+## Agent platform status / Agent 平台状态
+
+v0.5 Copilot is implemented and live-tested in Preview. Additional indexing, signed reports, Agent profiles, reviewed internal organization actions and MCP are implemented with explicit acceptance boundaries.
+Production awaits formal database migration approval. Remaining indexing reconciliation, contract-account ownership, registry conformance and external operation adapters are listed in [the roadmap](docs/AGENT_IDENTITY_ROADMAP.md).

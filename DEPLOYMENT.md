@@ -90,3 +90,39 @@ git diff --check
 
 Optional real upstream integration: `npm run smoke`.
 Responsive methodology and reference sources: docs/UI_RESEARCH.md.
+
+
+## Agent platform configuration / Agent 平台配置
+
+Use the existing Vercel project, repository root, `npm ci && npm --prefix web ci`, output `web/dist`, Node 24.
+`vercel.json` builds the app and runs live verification scripts only when their explicit flags are true.
+
+| Variable | Purpose |
+|---|---|
+| FACE_AI_ENABLED | Model kill switch; Preview true, default false |
+| FACE_AI_PROVIDER, NEWAPI_BASE_URL, NEWAPI_MODEL | Server provider/model |
+| NEWAPI_API_KEY | Server-only sensitive provider key |
+| NEWAPI_ALLOW_HTTP | Explicit opt-in for the owner's HTTP provider endpoint |
+| FACE_AI_BETA_TOKEN | 32+ character owner beta access code |
+| FACE_AI_QUOTA_STORE=postgres | Durable shared quotas |
+| FACE_DATABASE_URL | Environment-specific Neon connection |
+| FACE_PLATFORM_ENABLED=true | Persistent platform switch |
+| FACE_SESSION_SECRET | 32+ character private read-session signing secret |
+| ENS_RPC_URL | Optional trusted chain-1 token ownership verification |
+| FACE_SCHEDULED_REFRESH, CRON_SECRET | Opted-in daily index job; disabled until configured |
+
+Alternative quota adapter: UPSTASH_REDIS_REST_URL/TOKEN. Preview now uses Neon and no longer depends on the temporary Redis database's expiry.
+No model/provider key belongs in VITE_* or client JavaScript. NewAPI uses http://82.156.218.54/v1 and gpt-6.1-sol, owner-authorized HTTP opt-in; TLS is preferable when the provider supplies it.
+
+Apply versioned SQL `server/platform/migrations/001`–`004` on an isolated environment first. Preview migration/nonce concurrency tests passed.
+Formal database `walletface_production` is empty: automatic approval review blocked applying the production schema pending owner confirmation.
+No legacy SQLite records are copied or authorization stores switched.
+
+Live checks: FACE_AI_VERIFY_ON_BUILD=true, optionally FACE_AI_VERIFY_CASE=proposal; FACE_PLATFORM_VERIFY_ON_BUILD=true.
+These scripts require VERCEL_ENV=preview, use synthetic test wallets/prompts, and emit sanitized JSON reports. Model verification incurs provider usage.
+Disable both verification flags after the explicit acceptance run. Scripts are not public API routes.
+
+Cron is 03:17 UTC / 11:17 Singapore daily, at most three opted-in Spaces and one bounded page per Space.
+Production deployment requires successful corrected proposal acceptance, final Preview rendering, approved formal schema application and environment configuration.
+The owner authorized promotion after acceptance; production migration approval remains separately required by the task and automatic review.
+Kill switches: FACE_AI_ENABLED=false, FACE_PLATFORM_ENABLED=false; redeploy. Original avatar publication remains independent.

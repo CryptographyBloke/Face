@@ -59,3 +59,26 @@ and expired on later requests; no advertising analytics is implemented.
 Do not post secrets or an exploitable production vulnerability in a public issue. Use the
 repository owner's configured private GitHub reporting channel if available; otherwise contact
 the maintainer to establish a private channel.
+
+
+## v0.5 Agent boundaries / AI 安全边界
+
+The Agent has six read-only capabilities. Its server registry has no signing, voting, transaction, profile
+or admin mutation tool. Native EIP-712 authorization and SQLite nonce transactions are unchanged.
+Model input is text-only; fixed system instructions treat all retrieved content as untrusted data.
+Zod schemas reject arbitrary URLs, GraphQL, extra properties and client-supplied system roles.
+Escaped text rendering and server-built source cards prevent retrieved/model HTML from executing.
+Semantic prompt injection can still mislead prose; capability boundaries and code-computed evidence remain enforced.
+AI execution requires a 32-character owner beta key, model provider access and shared atomic PostgreSQL or Redis reservations.
+Quotas fail closed. Conversations are page-memory only; quota stores retain hashed-IP counters and aggregate token usage. Explicitly signed saved reports are separate private records.
+Provider errors are sanitized. Public data routes keep the existing bounded per-process controls; they incur no model cost.
+See [actual controls and limits](docs/AI_AGENT_ARCHITECTURE.md). Preview uses owner-provided server-side NewAPI access and an owner beta token. Free Neon storage is configured; no paid service/quota was enabled.
+
+## Signed platform operations
+
+Platform writes have separate origin-bound EIP-712 nonces, expiry, optimistic revisions, fresh Snapshot admin policy, transactional audit and replay enforcement.
+The AI and public MCP registries remain read-only. Private read sessions expire in 15 minutes and clear on wallet change.
+Endpoint-control verification permits only pinned public HTTPS destinations with bounded JSON and no redirects.
+Controller signatures prove EOA control at authorization time; service control, declared organization relations and registry token ownership are distinct evidence.
+Registry standard conformance and real-world identities are not inferred. Production schema application requires owner approval.
+Details and test limits: [platform architecture](docs/PLATFORM_ARCHITECTURE.md), [acceptance](docs/AI_AGENT_TEST_REPORT.md).

@@ -1,41 +1,130 @@
 {
   "installCommand": "npm ci && npm --prefix web ci",
-  "buildCommand": "npm run build",
+  "buildCommand": "npm run build && node scripts/verify-ai-live.mjs && node scripts/verify-platform-live.mjs",
   "outputDirectory": "web/dist",
   "framework": null,
   "redirects": [
     {
       "source": "/:path*",
-      "has": [{ "type": "host", "value": "dao.sarl" }],
+      "has": [
+        {
+          "type": "host",
+          "value": "dao.sarl"
+        }
+      ],
       "destination": "https://walletface.org/:path*",
       "permanent": true
     },
     {
       "source": "/:path*",
-      "has": [{ "type": "host", "value": "www.walletface.org" }],
+      "has": [
+        {
+          "type": "host",
+          "value": "www.walletface.org"
+        }
+      ],
       "destination": "https://walletface.org/:path*",
       "permanent": true
     },
     {
       "source": "/",
-      "has": [{ "type": "host", "value": "www.walletface.org" }],
+      "has": [
+        {
+          "type": "host",
+          "value": "www.walletface.org"
+        }
+      ],
       "destination": "https://walletface.org/",
       "permanent": true
     }
   ],
-  "functions": { "api/index.mjs": { "maxDuration": 60 } },
+  "functions": {
+    "api/index.mjs": {
+      "maxDuration": 60
+    }
+  },
   "rewrites": [
-    { "source": "/v1/:path*", "destination": "/api?_route=v1/:path*" },
-    { "source": "/health", "destination": "/api?_route=health" },
-    { "source": "/", "destination": "/index.html" },
-    { "source": "/avatar", "destination": "/index.html" },
-    { "source": "/followed", "destination": "/index.html" },
-    { "source": "/u/:path*", "destination": "/index.html" },
-    { "source": "/profile/:path*", "destination": "/index.html" },
-    { "source": "/spaces/:path*", "destination": "/index.html" },
-    { "source": "/developers", "destination": "/index.html" },
-    { "source": "/communities", "destination": "/index.html" },
-    { "source": "/privacy", "destination": "/index.html" },
-    { "source": "/examples/:path*", "destination": "/index.html" }
+    {
+      "source": "/v1/:path*",
+      "destination": "/api?_route=v1/:path*"
+    },
+    {
+      "source": "/health",
+      "destination": "/api?_route=health"
+    },
+    {
+      "source": "/",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/avatar",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/followed",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/u/:path*",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/profile/:path*",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/spaces/:path*",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/developers",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/communities",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/privacy",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/examples/:path*",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/ai",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/agents/:path*",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/workspaces",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/reports/:path*",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/actions/:path*",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/organizations",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/analytics",
+      "destination": "/index.html"
+    }
+  ],
+  "crons": [
+    {
+      "path": "/v1/platform/refresh",
+      "schedule": "17 3 * * *"
+    }
   ]
 }
