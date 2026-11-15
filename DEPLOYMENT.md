@@ -132,3 +132,5 @@ Release A configuration: `FACE_IDENTITY_ENABLED`, optional isolated `FACE_IDENTI
 Release B: additive migration 006, `FACE_X402_ENABLED`, `FACE_X402_RECEIVER`, optional trusted `BASE_SEPOLIA_RPC_URL`, Preview-only `FACE_PAYMENTS_VERIFY_ON_BUILD`. Public facilitator supports Base Sepolia; mainnet activation remains disabled pending funded testnet acceptance. [Release B operations](docs/X402_RECEIVE_RELEASE_B.md).
 
 Release C adds human-reviewed testnet spending policies, per-quote approval, conservative atomic budgets, revocation and a guarded wallet-signing boundary. See [exact routes and enforcement scope](docs/CONTROLLED_SPENDING_RELEASE_C.md).
+
+Release D Preview: migration 008, FACE_INTEROP_ENABLED, Preview-only FACE_INTEROP_VERIFY_ON_BUILD. The complete release verification script runs backend/React tests, SDK/build/protocol checks and separately flagged integration checks; AI model verification remains off unless explicitly activated. [Release D acceptance scope](docs/AGENT_INTEROP_RELEASE_D.md).

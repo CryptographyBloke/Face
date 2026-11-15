@@ -256,3 +256,47 @@ export function resolveAgentIdentity(
     options,
   );
 }
+
+/** Public service metadata, distinct from domain control and successful execution. */
+export interface AgentDiscovery {
+  schemaVersion: "walletface.agent-discovery/2";
+  agentId: string;
+  profileRevision: number;
+  name: string;
+  profileWallet: string;
+  declaredController: string;
+  localOnly: boolean;
+  interfaces: Array<{
+    protocol: "mcp" | "a2a" | "https";
+    url: string;
+    declaration: "publisher_signed";
+    checks: Array<{
+      agent_revision: number;
+      currentProfile: boolean;
+      checked_at: string;
+      evidence: Record<string, unknown>;
+    }>;
+  }>;
+  capabilities: { status: "self_declared"; items: string[] };
+  sourceUrl: string;
+  retrievedAt: string;
+  taskExecution: false;
+  externalToolExecution: false;
+  ap2Compliant: false;
+}
+export function resolveAgentDiscovery(
+  client: FaceClient,
+  id: string,
+  options: RequestInit = {},
+) {
+  if (
+    !/^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(
+      id,
+    )
+  )
+    throw new Error("Invalid Agent ID");
+  return client.request<AgentDiscovery>(
+    "/v1/platform/agents/" + id + "/discovery",
+    options,
+  );
+}

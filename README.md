@@ -152,3 +152,5 @@ Agent profiles, signed private reports, organization workspaces, historical inde
 Routes: `/agents`, `/workspaces`, `/analytics`, `/organizations`, `/reports/new`, `/actions/new`; MCP: `/v1/mcp`.
 See [implemented platform](docs/PLATFORM_ARCHITECTURE.md) and [verified acceptance](docs/AI_AGENT_TEST_REPORT.md).
 v0.5 is live on walletface.org; [production acceptance](docs/V05_PRODUCTION_ACCEPTANCE.md) records deployment, actual model/MCP checks and rollback. Existing wallet/avatar publication is preserved.
+
+Personal Agents and testnet payments are developed in independent A–D releases. Routes: /my-agents, /agents/:id, /payments, /spending. [Identity](docs/AGENT_IDENTITY_RELEASE_A.md), [receive](docs/X402_RECEIVE_RELEASE_B.md), [spending](docs/CONTROLLED_SPENDING_RELEASE_C.md), [interop](docs/AGENT_INTEROP_RELEASE_D.md). v0.5 remains live while final extension acceptance completes.

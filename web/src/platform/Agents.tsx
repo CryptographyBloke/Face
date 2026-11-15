@@ -1,3 +1,4 @@
+import Discovery from "./Discovery";
 import { AgentIdentityEvidence } from "./PersonalAgents";
 import { useEffect, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
@@ -239,6 +240,7 @@ export function AgentProfile() {
           <pre>{JSON.stringify(a.metadata.registryVerification, null, 2)}</pre>
         )}
         <AgentIdentityEvidence agent={a} />
+        <Discovery agent={a} />
         <h2>{t("自声明的组织关系", "Self-declared organization claims")}</h2>
         {a.metadata.organizations.map((o) => (
           <p key={o.spaceId}>

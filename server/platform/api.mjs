@@ -1,4 +1,4 @@
-import { SpendingService } from "../spending/service.mjs";
+import { InteropService, interopEnabled } from "../interop/service.mjs";
 import { scheduledRefresh } from "./scheduler.mjs";
 import { createHash } from "node:crypto";
 import { GovernanceIndex } from "./indexer.mjs";
@@ -49,6 +49,7 @@ export function platformStatus(env = process.env) {
     walletApprovalRequired: true,
     chatStored: false,
     personalAgents: identityEnabled(env),
+    serviceDiscovery: interopEnabled(env),
   };
 }
 export function createPlatformApi({
@@ -82,7 +83,7 @@ export function createPlatformApi({
           "PLATFORM_DISABLED",
           "Agent platform is unavailable",
         );
-      current ||= new SpendingService({ snapshot, origin, env });
+      current ||= new InteropService({ snapshot, origin, env });
       const repo = current.repository;
       const index = new GovernanceIndex({ snapshot, db: repo.db });
       const reserve = async (kind, ip, max = 10) => {
@@ -233,6 +234,16 @@ export function createPlatformApi({
               notice:
                 "Service declarations only. A2A Agent Card URLs must point to operator-hosted conformant cards; Wallet Face does not proxy A2A execution.",
             });
+        }
+        if (
+          interopEnabled(env) &&
+          path[0] === "agents" &&
+          path.length === 3 &&
+          path[2] === "discovery"
+        ) {
+          const a = await repo.agent(uuid(path[1]), true, optionalActor());
+          if (!a) throw new ApiError(404, "NOT_FOUND", "Agent not found");
+          return json(await current.manifest(a, optionalActor()));
         }
         if (path[0] === "workspace" && path.length === 1)
           return json(await repo.workspace(actor()));

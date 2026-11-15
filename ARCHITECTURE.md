@@ -98,3 +98,5 @@ Source comparison: [baseline report](docs/AI_AGENT_BASELINE.md). The alternative
 Durable Agent and governance modules: [platform architecture](docs/PLATFORM_ARCHITECTURE.md).
 
 Personal Agent Release A extends existing signed Agent profiles with optional runtime controller, service declarations and curated ERC-8004 references. `server/personal/` separates association authorization, read projection, registry reads and strict schemas; migration 005 adds durable evidence. [Data flow and verification semantics](docs/AGENT_IDENTITY_RELEASE_A.md).
+
+Release D adds a signed read-only service discovery layer in server/interop, atomic metadata provenance (migration 008), a v2 public discovery manifest, and bounded personal identity projections in the existing five MCP tools. [Protocol and permission boundaries](docs/AGENT_INTEROP_RELEASE_D.md).
