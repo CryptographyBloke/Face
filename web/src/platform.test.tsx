@@ -216,21 +216,19 @@ describe("Wallet authorized Agent platform", () => {
   });
   it("loads a personal Agent and requires separate review before an association signature", async () => {
     const id = "123e4567-e89b-42d3-a456-426614174000";
-    const fetch = vi
-      .spyOn(globalThis, "fetch")
-      .mockResolvedValue(
-        Response.json({
-          id,
-          name: "Local research helper",
-          controller: wallet.address,
-          revision: 1,
-          metadata: {
-            description: "Local integration",
-            endpoints: [],
-            agentController: wallet.address,
-          },
-        }),
-      );
+    const fetch = vi.spyOn(globalThis, "fetch").mockResolvedValue(
+      Response.json({
+        id,
+        name: "Local research helper",
+        controller: wallet.address,
+        revision: 1,
+        metadata: {
+          description: "Local integration",
+          endpoints: [],
+          agentController: wallet.address,
+        },
+      }),
+    );
     mount(<ConnectAgent />);
     fireEvent.change(screen.getByLabelText("Existing Wallet Face Agent ID"), {
       target: { value: id },
@@ -242,5 +240,33 @@ describe("Wallet authorized Agent platform", () => {
     ).toBeTruthy();
     expect(wallet.walletClient.signTypedData).not.toHaveBeenCalled();
     expect(fetch).toHaveBeenCalledTimes(1);
+  });
+  it("clears the loaded Agent and signing action after a missing/private profile response", async () => {
+    const fetch = vi
+      .spyOn(globalThis, "fetch")
+      .mockResolvedValueOnce(
+        Response.json({
+          id: "123e4567-e89b-42d3-a456-426614174000",
+          name: "Temporary",
+          controller: wallet.address,
+          revision: 1,
+          metadata: { description: "Test", endpoints: [] },
+        }),
+      )
+      .mockResolvedValueOnce(
+        Response.json(
+          { error: { message: "Agent not found" } },
+          { status: 404 },
+        ),
+      );
+    mount(<ConnectAgent />);
+    fireEvent.click(screen.getByRole("button", { name: "Load Agent" }));
+    await screen.findByRole("button", { name: "Review and sign association" });
+    fireEvent.click(screen.getByRole("button", { name: "Load Agent" }));
+    await screen.findByRole("alert");
+    expect(
+      screen.queryByRole("button", { name: "Review and sign association" }),
+    ).toBeNull();
+    expect(fetch).toHaveBeenCalledTimes(2);
   });
 });

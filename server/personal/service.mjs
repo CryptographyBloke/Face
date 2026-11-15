@@ -288,6 +288,12 @@ export class PersonalAgentService extends PlatformService {
         );
       const url = c.endpointOrigin + "/.well-known/wallet-face-agent.json";
       const body = await (this.endpointFetcher || fetchPublicJson)(url);
+      if (!body || typeof body !== "object" || Array.isArray(body))
+        throw new ApiError(
+          422,
+          "ENDPOINT_JSON",
+          "Endpoint proof must be a JSON object",
+        );
       for (const k of [
         "type",
         "agentId",

@@ -69,6 +69,7 @@ export default function MyAgents() {
     let live = true;
     setLoaded(false);
     setItems([]);
+    setError("");
     if (token)
       platformRequest<{ items: PersonalLink[] }>("my-agents", undefined, token)
         .then((d) => {
@@ -154,6 +155,8 @@ export function ConnectAgent() {
   const [linkId] = useState(() => crypto.randomUUID());
   const { token } = usePlatformSession();
   const load = async () => {
+    setAgent(null);
+    setError("");
     try {
       setAgent(await platformRequest<Agent>("agents/" + id, undefined, token));
       setError("");
@@ -237,6 +240,8 @@ export function AgentLinkPage() {
     [refresh, setRefresh] = useState(0);
   useEffect(() => {
     let live = true;
+    setData(null);
+    setError("");
     if (!token) return;
     platformRequest<PersonalLink>("links/" + id, undefined, token)
       .then((d) => {
@@ -395,6 +400,8 @@ export function AgentIdentityEvidence({ agent }: { agent: Agent }) {
   const metadata = agent.metadata as PersonalMetadata;
   useEffect(() => {
     let live = true;
+    setData(null);
+    setError("");
     platformRequest<IdentityData>(
       "agents/" + agent.id + "/identity",
       undefined,

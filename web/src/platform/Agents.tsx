@@ -60,6 +60,8 @@ function useAgent(id?: string) {
   const [agent, setAgent] = useState<Agent | null>(null),
     [error, setError] = useState("");
   useEffect(() => {
+    setAgent(null);
+    setError("");
     if (!id) return;
     let live = true;
     platformRequest<Agent>("agents/" + id, undefined, token)
@@ -183,8 +185,8 @@ export function AgentProfile() {
         </p>
         <p>
           {t(
-            "这验证授权时的钱包控制权，不代表真实身份、服务安全性或组织成员资格。",
-            "This checks wallet control at authorization time, not real-world identity, service safety or organization membership.",
+            "签名核验授权时的钱包控制权。服务和组织关系分别核验。",
+            "The signature checks wallet control at authorization time. Service and organization claims are checked separately.",
           )}
         </p>
         <p>{a.metadata.capabilities.join(" · ")}</p>

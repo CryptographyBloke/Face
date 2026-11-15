@@ -48,6 +48,12 @@ Optional `ENS_RPC_URL` / `BASE_SEPOLIA_RPC_URL` enable real registry reads. With
 
 ## Validation / 验证
 
-Automated: 59 backend tests, 40 React tests; SDK build, application build and avatar EIP-712 protocol regression pass. Added tests cover forged controller/receiver, signature substitution, profile changes, revocation, domain nonce/context, local/public schema contradictions, arbitrary registry and wrong RPC chain. Existing SSRF tests cover private networks, DNS pinning, redirects, response bounds and deadlines.
+Automated: 59 backend tests, 41 React tests; SDK build, application build and avatar EIP-712 protocol regression pass. Added tests cover forged controller/receiver, signature substitution, profile changes, revocation, domain nonce/context, local/public schema contradictions, arbitrary registry and wrong RPC chain. Existing SSRF tests cover private networks, DNS pinning, redirects, response bounds and deadlines.
 
-Real Preview database checks and browser evidence will be appended after deployment. Endpoint-control success uses controlled JSON fixtures in unit tests; no third-party service ownership is claimed. Payments are a separate Release B/C.
+Preview: https://walletface-cye1au23i-dao-vote.vercel.app/my-agents (deployment dpl_4T75HBoWjey7hZoJyZrGFkxNR7j8, initial source cd262b1). PR: https://github.com/CryptographyBloke/Face/pull/5.
+
+Real isolated PostgreSQL acceptance passed five groups: four concurrent nonce submissions accept exactly one; profile edits stale old evidence and require owner/controller refresh; revocation disables association; distinct receiver signatures/revocation preserve settlementProcessed=false; remote links remain pending without domain proof. Build log contains FACE_IDENTITY_LIVE_CHECK.
+
+Edge acceptance inspected 1440/1024/768/375 layouts (no horizontal overflow), local/remote form switching, pricing fields, Chinese/English, actual signed synthetic profile evidence, and contextual profile-to-connect navigation. Screenshots: screenshots/platform/identity-desktop.png and identity-mobile.png. Test profile was withdrawn from public listing after inspection. A browser-discovered stale-data/signing-button issue after a private/missing response was fixed with a React regression test. No user wallet signature was automated; signing and transactional flows were validated using generated test wallets against the actual Preview database.
+
+The protected-fetch helper was rejected because it would create a temporary share link. Existing authenticated browser and deployment build logs supplied the evidence without expanding Preview access. Endpoint-control success uses controlled JSON fixtures in unit tests; no third-party service ownership is claimed. Payments are a separate Release B/C.
