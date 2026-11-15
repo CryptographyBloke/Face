@@ -92,7 +92,8 @@ Rollback target: `dpl_4LtevLxZM7vpQchDXoRuiX8cMtCd`.
 
 Baseline `3f505dc3b5092d77c5f3797b5dfe5393d973b09d`; branch `feature/face-ai-agent-v05`.
 PR: https://github.com/CryptographyBloke/Face/pull/4 .
-Current verified Preview: https://walletface-nmpiox22a-dao-vote.vercel.app at `41aadb3e925922dc05c8d616606d3751a8593c1f`.
+Current verified application Preview: https://walletface-3sx17fb8b-dao-vote.vercel.app at `38a78d1b0c61a9b77b535dfd1a342311b70c4d8d`.
+Stable branch Preview: https://walletface-git-feature-face-ai-agent-v05-dao-vote.vercel.app .
 The prior `bdd5181` Preview remains a database-workflow acceptance reference.
 
 Six read-only AI tools, real NewAPI streaming, bilingual evidence UI, proposal reader and contextual wallet/Space research are implemented.
@@ -109,3 +110,5 @@ NewAPI monetary costs are unknown; 95,486 model tokens reported across five live
 
 Production is unchanged. Formal schema application was blocked by automatic approval review as a consequential migration needing owner confirmation.
 No existing SQLite authorization data was migrated. RPC/real operator endpoint evidence and external action adapters retain the limits documented in [the roadmap](docs/AGENT_IDENTITY_ROADMAP.md).
+
+Specific formal migration approval: [production change request](docs/PRODUCTION_CHANGE_REQUEST.md).

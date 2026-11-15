@@ -61,7 +61,7 @@ Live Edge rendering against the initial https://walletface-7n0698h4m-dao-vote.ve
 - Widths 1440 / 1024 / 768 / 375: no document horizontal overflow. Chinese, English and dark theme inspected.
 
 [Screenshots](screenshots/platform/) accompany the earlier [v0.5 screenshots](screenshots/v05/).
-Full-page capture timed out once; viewport captures succeeded. New platform wallet signing is covered by deterministic UI tests and real database signature tests;
+Full-page capture timed out once; viewport captures succeeded. Clipboard/download automation later timed out and reset the browser session; end-to-end clipboard content and file download are not claimed as verified. Copy/export controls and their deterministic UI tests remain available. New platform wallet signing is covered by deterministic UI tests and real database signature tests;
 no unattended signature was requested from a user wallet. Live upstream faults were not induced; timeout/rate-limit/malformed response recovery uses controlled tests.
 
 ## Release gates
@@ -69,6 +69,10 @@ no unattended signature was requested from a user wallet. Live upstream faults w
 The production database schema application was rejected by automatic approval review as a consequential production migration requiring owner confirmation.
 Corrective proposal regression passed. Formal schema application and production deployment await the exact migration approval.
 Calendar input uses explicit validated YYYY-MM-DD UTC dates; impossible calendar dates are rejected before querying.
+Final `38a78d1` Preview browser comparison: 2026-10-01 to 2026-11-01 yielded 86 observed public votes / 64 wallets; comparison to the observed September subset yielded +86 / +64. Coverage remained partial.
+Private workspace sign-in boundaries, Agent draft form, internal action preparation and all four viewport widths were inspected.
 Endpoint proof tests additionally cover redirects, oversized JSON and total DNS/body deadlines.
 Registry token ownership checks additionally need a trusted `ENS_RPC_URL`; no successful live ERC-8004 registry verification is claimed.
 Service-domain proof needs an operator to publish the fresh well-known challenge; no external service control is invented.
+
+Formal release approval target: [exact production change request](PRODUCTION_CHANGE_REQUEST.md).
