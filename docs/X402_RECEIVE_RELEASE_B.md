@@ -36,8 +36,12 @@ Public facilitator `/supported` returned HTTP 200 and x402Version=2/scheme=exact
 
 ## Validation and remaining activation / 验证与激活
 
-66 backend tests +44 React tests cover malformed/oversized payments, forged payer/receiver, wrong network/token, price/resource changes, expired authorizations, concurrency, replay, facilitator timeout, failed service, missing chain evidence, private receipts, shared quotas, human review and wrong-chain signing prevention. Existing avatar protocol regression remains required.
+67 backend tests +45 React tests cover malformed/oversized payments, forged payer/receiver, wrong network/token, price/resource changes, expired authorizations, concurrency, replay, facilitator timeout, failed service, missing chain evidence, private receipts, shared quotas, human review and wrong-chain signing prevention. Existing avatar protocol regression remains required.
 
-Full successful testnet settlement is **pending** a funded payer with Base Sepolia USDC and explicit wallet approval. No real-money payment has been enabled or claimed as tested. Preview/database/browser evidence will be appended after deployment. AP2 compliance and autonomous transfers are outside this release.
+Full successful testnet settlement is **pending** a funded payer with Base Sepolia USDC and explicit wallet approval. No real-money payment has been enabled or claimed as tested. Preview: https://walletface-fjnvvtacc-dao-vote.vercel.app/payments (dpl_8seTqVy6XmGXsoR7eM7bpy85Wn2Y, source 2d1bd5e). PR: https://github.com/CryptographyBloke/Face/pull/6.
+
+Actual Preview build acceptance: facilitator discovery + HTTP 402/official SDK offer, eight concurrent PostgreSQL receipt claims accept one, unknown state rejects resettlement, fresh unfunded wallet rejected before settlement. FACE_PAYMENTS_LIVE_CHECK explicitly records realSettlement=false.
+
+Edge rendered the live fixed offer in Chinese and English, with native navigation and no horizontal overflow at 1440/1024/768/375. Screenshots: screenshots/platform/payments-desktop.png and payments-mobile.png. Browser-discovered rewrite-capture input and missing shell issues were fixed and regression tested. No user wallet signature/payment was automated. AP2 compliance and autonomous transfers are outside this release.
 
 Primary references: https://github.com/x402-foundation/x402 / https://docs.x402.org/getting-started/quickstart-for-sellers / https://github.com/x402-foundation/x402/blob/main/specs/x402-specification-v2.md .
