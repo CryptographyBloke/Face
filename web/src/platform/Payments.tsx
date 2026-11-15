@@ -226,9 +226,11 @@ export default function Payments() {
       <div className="panel">
         <h2>{t("测试网状态", "Testnet status")}</h2>
         <p>
-          {status?.enabled
-            ? t("测试网收款可用", "Testnet receiving enabled")
-            : t("测试网执行待配置", "Testnet execution awaits configuration")}
+          {!status
+            ? t("正在读取测试网状态…", "Loading testnet status…")
+            : status.enabled
+              ? t("测试网收款可用", "Testnet receiving enabled")
+              : t("测试网执行待配置", "Testnet execution awaits configuration")}
         </p>
         <p>
           {t("本次报表报价", "Report price")}: 0.001 test USDC (1000 atomic

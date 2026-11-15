@@ -103,8 +103,8 @@ function NotFound() {
 export function ProductRoutes() {
   return (
     <Routes>
-      <Route path="/payments" element={<Payments />} />
       <Route element={<Layout />}>
+        <Route path="payments" element={<Payments />} />
         <Route index element={<Home />} />
         <Route path="ai" element={<Copilot />} />
         <Route path="agents" element={<Agents />} />

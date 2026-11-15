@@ -100,8 +100,24 @@ export function createPaymentApi({
         {
           error: {
             code: validation ? "PAYMENT_INPUT" : e.code || "PAYMENT_UPSTREAM",
+            ...(validation
+              ? {
+                  fields: e.issues.map((i) => ({
+                    path: i.path,
+                    code: i.code,
+                    keys: i.keys,
+                  })),
+                }
+              : {}),
             message: validation
-              ? "Invalid payment parameters"
+              ? "Invalid payment parameters: " +
+                e.issues
+                  .map((i) =>
+                    i.code === "unrecognized_keys"
+                      ? "unexpected " + i.keys.join(",")
+                      : i.path.join("."),
+                  )
+                  .join("; ")
               : e instanceof ApiError
                 ? e.message
                 : "Payment service unavailable; inspect receipts before retrying",

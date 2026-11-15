@@ -727,3 +727,12 @@ it("copy failure provides a keyboard-accessible manual copy dialog", async () =>
   fireEvent(dialog, new Event("cancel", { bubbles: false, cancelable: true }));
   expect(screen.queryByRole("dialog")).toBeNull();
 });
+
+it("payment workspace keeps native navigation and wallet controls", async () => {
+  renderApp("/payments");
+  await screen.findByRole("heading", { name: "Agent payments testnet" });
+  expect(
+    screen.getByRole("navigation", { name: "Main navigation" }),
+  ).toBeTruthy();
+  expect(screen.getByRole("button", { name: "Connect wallet" })).toBeTruthy();
+});

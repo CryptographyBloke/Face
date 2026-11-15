@@ -7,8 +7,17 @@ const api = createApi({
   origin: process.env.APP_ORIGIN || "https://walletface.org",
 });
 const handlers = new Map();
+export function normalizeAppUrl(input) {
+  const u = new URL(input);
+  const route = u.searchParams.get("_route");
+  if (route && u.searchParams.get("path") === route.replace(/^v1\//, ""))
+    u.searchParams.delete("path");
+  if (route) u.pathname = "/" + route.replace(/^\//, "");
+  u.searchParams.delete("_route");
+  return u;
+}
 function handle(request) {
-  const u = new URL(request.url);
+  const u = normalizeAppUrl(request.url);
   const route = u.searchParams.get("_route");
   const path = route ? "/" + route.replace(/^\//, "") : u.pathname;
   u.searchParams.delete("_route");

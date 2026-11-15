@@ -360,3 +360,25 @@ test("independent chain check requires correct chain, USDC transfer, nonce consu
     true,
   );
 });
+
+test("Vercel rewrite capture is removed while real input parameters remain strict", async () => {
+  const { normalizeAppUrl } = await import("../api/index.mjs");
+  const id = randomUUID(),
+    u = normalizeAppUrl(
+      "https://preview.example/api?_route=v1/payments/report&path=payments%2Freport&spaceId=ens.eth&requestId=" +
+        id,
+    );
+  assert.equal(u.pathname, "/v1/payments/report");
+  assert.equal(u.searchParams.get("path"), null);
+  assert.equal(u.searchParams.get("spaceId"), "ens.eth");
+  assert.equal(u.searchParams.get("requestId"), id);
+  const f = fixture(),
+    api = createPaymentApi({
+      origin: "https://preview.example",
+      env,
+      service: f.service,
+    });
+  assert.equal((await api(new Request(u))).status, 402);
+  u.searchParams.set("price", "1");
+  assert.equal((await api(new Request(u))).status, 400);
+});
