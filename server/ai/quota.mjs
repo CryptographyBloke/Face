@@ -1,3 +1,4 @@
+import { postgresQuota } from "../platform/ai-quota.mjs";
 import { createHash, timingSafeEqual } from "node:crypto";
 import { providerConfig } from "./provider.mjs";
 import { ApiError } from "../validation.mjs";
@@ -22,7 +23,9 @@ export function aiStatus(env = process.env) {
   missing.push(...config.missing);
   if (!env.FACE_AI_BETA_TOKEN || env.FACE_AI_BETA_TOKEN.length < 32)
     missing.push("FACE_AI_BETA_TOKEN (32+ characters)");
-  if (!env.UPSTASH_REDIS_REST_URL || !env.UPSTASH_REDIS_REST_TOKEN)
+  if (env.FACE_AI_QUOTA_STORE === "postgres") {
+    if (!env.FACE_DATABASE_URL) missing.push("shared Postgres quota store");
+  } else if (!env.UPSTASH_REDIS_REST_URL || !env.UPSTASH_REDIS_REST_TOKEN)
     missing.push("shared Redis quota store");
   return {
     available: missing.length === 0,
@@ -56,6 +59,8 @@ export function createQuota(
   fetchImpl = fetch,
   now = () => Date.now(),
 ) {
+  if (env.FACE_AI_QUOTA_STORE === "postgres")
+    return postgresQuota(env, LIMITS, now);
   async function command(args) {
     if (
       !/^https:\/\/[^/]+\.upstash\.io\/?$/.test(

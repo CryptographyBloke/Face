@@ -1,3 +1,4 @@
+import { PlatformSession } from "./platform/client";
 import { lazy, Suspense, type ReactNode } from "react";
 import {
   BrowserRouter,
@@ -13,6 +14,30 @@ import { SpacesProvider } from "./app/SpacesProvider";
 import { AppShell } from "./app/AppShell";
 import { EmptyState, LoadingSkeleton, ToastProvider } from "./ui/primitives";
 import "./product.css";
+const Agents = lazy(() => import("./platform/Agents"));
+const AgentProfile = lazy(() =>
+  import("./platform/Agents").then((m) => ({ default: m.AgentProfile })),
+);
+const AgentEditor = lazy(() =>
+  import("./platform/Agents").then((m) => ({ default: m.AgentEditor })),
+);
+const Workspace = lazy(() => import("./platform/Workspace"));
+const ReportEditor = lazy(() =>
+  import("./platform/Workspace").then((m) => ({ default: m.ReportEditor })),
+);
+const ReportPage = lazy(() =>
+  import("./platform/Workspace").then((m) => ({ default: m.ReportPage })),
+);
+const ActionEditor = lazy(() =>
+  import("./platform/Workspace").then((m) => ({ default: m.ActionEditor })),
+);
+const ActionPage = lazy(() =>
+  import("./platform/Workspace").then((m) => ({ default: m.ActionPage })),
+);
+const OrganizationPage = lazy(() =>
+  import("./platform/Workspace").then((m) => ({ default: m.OrganizationPage })),
+);
+const Analytics = lazy(() => import("./platform/Analytics"));
 const Copilot = lazy(() => import("./product/Copilot"));
 const Proposal = lazy(() => import("./product/ProposalPage"));
 const Home = lazy(() => import("./product/Home"));
@@ -30,7 +55,9 @@ export function AppProviders({ children }: { children: ReactNode }) {
     <PreferencesProvider>
       <WalletProvider>
         <SpacesProvider>
-          <ToastProvider>{children}</ToastProvider>
+          <ToastProvider>
+            <PlatformSession>{children}</PlatformSession>
+          </ToastProvider>
         </SpacesProvider>
       </WalletProvider>
     </PreferencesProvider>
@@ -67,6 +94,17 @@ export function ProductRoutes() {
       <Route element={<Layout />}>
         <Route index element={<Home />} />
         <Route path="ai" element={<Copilot />} />
+        <Route path="agents" element={<Agents />} />
+        <Route path="agents/new" element={<AgentEditor />} />
+        <Route path="agents/:id" element={<AgentProfile />} />
+        <Route path="agents/:id/edit" element={<AgentEditor />} />
+        <Route path="workspaces" element={<Workspace />} />
+        <Route path="reports/new" element={<ReportEditor />} />
+        <Route path="reports/:id" element={<ReportPage />} />
+        <Route path="actions/new" element={<ActionEditor />} />
+        <Route path="actions/:id" element={<ActionPage />} />
+        <Route path="organizations" element={<OrganizationPage />} />
+        <Route path="analytics" element={<Analytics />} />
         <Route
           path="spaces/:spaceId/proposals/:proposalId"
           element={<Proposal />}

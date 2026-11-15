@@ -595,7 +595,20 @@ export default function Copilot({
             )}
           </p>
         </div>
-        <Icon name="activity" size={32} />
+        <div className="platform-links">
+          <Link to="/agents">{t("Agent 身份", "Agent identities")}</Link>
+          <Link
+            to={
+              "/reports/new" +
+              (context.spaceId
+                ? "?spaceId=" + encodeURIComponent(context.spaceId)
+                : "")
+            }
+          >
+            {t("保存报告", "Save a report")}
+          </Link>
+          <Icon name="activity" size={32} />
+        </div>
       </div>
       <div className="copilot-status" role="status">
         <span className={status?.available ? "status-dot on" : "status-dot"} />

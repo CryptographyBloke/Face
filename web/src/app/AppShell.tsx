@@ -512,6 +512,20 @@ function Navigation({
       { to: "/", icon: "home", label: t("首页", "Home"), end: true },
       { to: "/spaces", icon: "globe", label: t("探索", "Explore") },
       { to: "/ai", icon: "activity", label: "Copilot" },
+      ...(!mobile
+        ? [
+            {
+              to: "/agents",
+              icon: "user" as IconName,
+              label: t("Agent 身份", "Agents"),
+            },
+            {
+              to: "/workspaces",
+              icon: "globe" as IconName,
+              label: t("工作区", "Workspace"),
+            },
+          ]
+        : []),
       { to: "/followed", icon: "star", label: t("收藏", "Following") },
       {
         to: wallet ? profilePath(wallet.address) : "/profile",

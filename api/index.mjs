@@ -1,6 +1,6 @@
 import { Snapshot } from "../server/snapshot.mjs";
 import { createApi } from "../server/app.mjs";
-// Preview is deliberately read-only; no ephemeral database is used.
+// Legacy native writes remain disabled. Agent writes use separate durable authorization.
 const snapshot = new Snapshot();
 const api = createApi({
   snapshot,
@@ -12,11 +12,21 @@ function handle(request) {
   const route = u.searchParams.get("_route");
   const path = route ? "/" + route.replace(/^\//, "") : u.pathname;
   u.searchParams.delete("_route");
-  if (path.startsWith("/v1/ai/") && !handlers.has(u.origin)) {
+  if (
+    (path.startsWith("/v1/ai/") ||
+      path.startsWith("/v1/platform/") ||
+      path === "/v1/mcp") &&
+    !handlers.has(u.origin)
+  ) {
     if (handlers.size >= 20) handlers.delete(handlers.keys().next().value);
     handlers.set(u.origin, createApi({ snapshot, origin: u.origin }));
   }
-  const handler = path.startsWith("/v1/ai/") ? handlers.get(u.origin) : api;
+  const handler =
+    path.startsWith("/v1/ai/") ||
+    path.startsWith("/v1/platform/") ||
+    path === "/v1/mcp"
+      ? handlers.get(u.origin)
+      : api;
   return handler(
     new Request(u.origin + path + u.search, {
       method: request.method,
