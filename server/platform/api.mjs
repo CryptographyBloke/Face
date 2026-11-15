@@ -1,3 +1,4 @@
+import { SpendingService } from "../spending/service.mjs";
 import { scheduledRefresh } from "./scheduler.mjs";
 import { createHash } from "node:crypto";
 import { GovernanceIndex } from "./indexer.mjs";
@@ -81,7 +82,7 @@ export function createPlatformApi({
           "PLATFORM_DISABLED",
           "Agent platform is unavailable",
         );
-      current ||= new PersonalAgentService({ snapshot, origin, env });
+      current ||= new SpendingService({ snapshot, origin, env });
       const repo = current.repository;
       const index = new GovernanceIndex({ snapshot, db: repo.db });
       const reserve = async (kind, ip, max = 10) => {
