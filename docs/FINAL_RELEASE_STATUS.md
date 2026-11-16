@@ -8,7 +8,7 @@ Updated 2026-11-16 Asia/Singapore. Production remains the independently accepted
 | A — personal identity | feature/face-agent-identity-a / c9593a4e26740e54f7d71baae6d600346f54afe4 | https://github.com/CryptographyBloke/Face/pull/5 | https://walletface-p5vgkoxru-dao-vote.vercel.app/my-agents |
 | B — testnet receive | feature/face-x402-receive-b / 2d1bd5ec23867210f0b99fffdbfe65ea0c8e2a88 (evidence 40e4efc) | https://github.com/CryptographyBloke/Face/pull/6 | https://walletface-fjnvvtacc-dao-vote.vercel.app/payments |
 | C — reviewed spending | feature/face-controlled-spending-c / db81f77e803752b495dba979af379ff1e9176773 | https://github.com/CryptographyBloke/Face/pull/7 | https://walletface-2prdt0hnr-dao-vote.vercel.app/spending |
-| D — interoperability | feature/face-agent-interop-d | Preview/PR recorded after build | Complete stacked candidate |
+| D — interoperability | feature/face-agent-interop-d / 438708974c87a5c3972e5c41401e5c7db16b89ef | https://github.com/CryptographyBloke/Face/pull/8 | https://walletface-c95g87iyr-dao-vote.vercel.app |
 
 ## Implemented / 已实现
 
@@ -25,12 +25,12 @@ MCP/A2A metadata discovery requires profile authorization, an active association
 - v0.5: real production model generation, Snapshot scans for ENS/Yam, proposal explanation and actual external MCP client; desktop/mobile screenshots retained.
 - A/B: Edge at 1440/1024/768/375, Chinese/English, actual signed synthetic profile rendering and live 402 offer; no horizontal overflow. Screenshots: docs/screenshots/platform.
 - C: Vercel independently passed 72 backend +46 React tests, SDK/application builds, avatar EIP-712 protocol regression and real Neon policy tests. Five simultaneous 1000-unit approvals under a 2000-unit daily cap accepted two. Missing/cancelled approvals could not pass the DB guard; executing approval was consumed before settlement.
-- D adds six backend metadata/security tests and one React interaction test. Full candidate: 78 backend +47 React tests (remote acceptance report records actual results).
+- D adds six backend metadata/security tests and one React interaction test. Vercel deployment dpl_2GWuLak5yeefKhdVwoN6uRzbkPwz independently passed 78 backend +47 React tests, SDK/application builds and the avatar EIP-712 protocol regression; state READY at application commit 4387089. Real Neon signed discovery/replay tests and discovery of the five production MCP tools passed. Remote domain-control/A2A data were controlled fixtures.
 - Root/web audits have zero known vulnerabilities at verification. No user's wallet was signed automatically.
 
 ## Final release gates / 正式发布前的实际步骤
 
-1. Authenticated browser acceptance for the complete C/D Preview. The original Edge connection became unavailable. The replacement cloud browser reaches Vercel sign-in; no share-link bypass or protection change was made.
+1. Authenticated browser acceptance for the complete C/D Preview. The original Edge connection became unavailable; the replacement login handoff was cancelled and its browser session is now closed. No share-link bypass or protection change was made. Resume only with an available authenticated Preview session.
 2. One funded Base Sepolia USDC payment, explicitly approved in the payer's wallet, followed by actual chain settlement, cached delivery and repeat-retrieval acceptance. Current evidence explicitly records realSettlement=false. Amount is 0.001 test USDC. The configured Preview receiver is a generated test address; select the operator receiver before final activation.
 3. Exercise a real owner-selected remote Agent endpoint if remote ownership/discovery badges are to be activated for that Agent. Controlled fixture A2A/domain tests never become public verified claims.
 4. After gates pass, merge A→B→C→D through their reviewable PRs, apply additive migrations 005–008 to the production platform database and deploy the exact tested candidate. Production payment flags remain testnet-only; mainnet needs separate activation after testnet acceptance. Native SQLite authorization is unchanged.

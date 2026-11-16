@@ -38,8 +38,10 @@ Primary sources:
 
 Existing Vercel project and isolated Neon Preview database; additive migration 008. FACE_INTEROP_ENABLED and Preview-only FACE_INTEROP_VERIFY_ON_BUILD gate the new capability. No new paid infrastructure or credentials.
 
+Application commit 438708974c87a5c3972e5c41401e5c7db16b89ef; PR https://github.com/CryptographyBloke/Face/pull/8. Preview https://walletface-c95g87iyr-dao-vote.vercel.app is READY (dpl_2GWuLak5yeefKhdVwoN6uRzbkPwz). Vercel independently passed 78 backend and 47 React tests, SDK/application builds and the avatar EIP-712 protocol check. Its live integration check at 2026-11-15T20:21:28.300Z passed real production MCP discovery and synthetic-wallet signed Neon discovery/replay validation.
+
 The build acceptance connects to the actual public production MCP endpoint and lists its five tools without invoking them. Synthetic-wallet Neon tests exercise reviewed discovery persistence, replay rejection and versioned manifest. Remote domain proof/A2A responses in that database test are controlled fixtures and are explicitly labeled; they do not prove ownership of a live third-party Agent.
 
-A/B have real desktop/mobile Preview screenshots. C/D browser acceptance requires an authenticated Vercel Preview session in the available browser. The original browser connection was lost; the replacement browser currently reaches Vercel sign-in. No access protection or temporary public share link has been enabled.
+A/B have real desktop/mobile Preview screenshots. C/D browser acceptance requires an authenticated Vercel Preview session in the available browser. The original connection was lost; the replacement login handoff was cancelled and its browser session is now closed. No access protection change or temporary public share link has been enabled.
 
 Full funded Base Sepolia payment and owner-selected real remote endpoints remain acceptance inputs. Mainnet payments and automated signing stay disabled. Successful payment settlement, service delivery, controller ownership, domain control and capability declarations retain separate evidence fields.
