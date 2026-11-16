@@ -1,3 +1,5 @@
+import { PersonalAgentRepository } from "../personal/repository.mjs";
+import { PersonalAgentService, identityEnabled } from "../personal/service.mjs";
 import { McpServer, createMcpHandler } from "@modelcontextprotocol/server";
 import { z } from "zod";
 import { createToolRegistry, toolSchemas } from "../ai/tools.mjs";
@@ -72,10 +74,41 @@ export function mcpServer({
     (i) => registry().run("listParticipants", i),
   );
   const resolve = async ({ agentId }) => {
-    const repo = repository || new PlatformRepository(env);
+    const repo = repository || new PersonalAgentRepository(env);
     const r = await repo.agent(agentId);
     if (!r) throw new Error("Not found");
-    return checkedAgent(r);
+    const a = await checkedAgent(r);
+    if (identityEnabled(env) && typeof repo.identity === "function") {
+      const identity = await new PersonalAgentService({
+        env,
+        origin: "https://walletface.org",
+        repository: repo,
+      }).identity(r, null);
+      a.personalIdentity = {
+        schemaVersion: 1,
+        profileWallet: identity.profileWallet,
+        declaredController: identity.declaredController,
+        localOnly: identity.localOnly,
+        associations: identity.links
+          .slice(0, 10)
+          .map((l) => ({
+            owner: l.owner,
+            controller: l.controller,
+            status: l.effectiveStatus,
+            verification: l.verification,
+            endpointEvidence: l.endpoint_evidence,
+          })),
+        paymentWallets: identity.paymentWallets.map((w) => ({
+          wallet: w.wallet,
+          network: w.network,
+          controlVerified: w.controlVerified,
+          checkedAt: w.checked_at,
+          settlementProcessed: false,
+        })),
+        registration: identity.registration,
+      };
+    }
+    return a;
   };
   tool(
     "get_agent_profile",
@@ -97,6 +130,7 @@ export function mcpServer({
         registryVerification: a.metadata.registryVerification || null,
         organizationClaims: a.metadata.organizationClaims || [],
         verificationSemantics: a.verificationSemantics,
+        personalIdentity: a.personalIdentity || null,
       };
     },
   );

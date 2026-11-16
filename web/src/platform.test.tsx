@@ -4,6 +4,8 @@ import { MemoryRouter } from "react-router-dom";
 import { PreferencesProvider } from "./app/Preferences";
 import { SignedAction, PlatformSession } from "./platform/client";
 import Agents from "./platform/Agents";
+import Discovery from "./platform/Discovery";
+import type { Agent } from "./platform/Agents";
 import { ConnectAgent } from "./platform/PersonalAgents";
 import Analytics from "./platform/Analytics";
 const wallet = vi.hoisted(() => ({
@@ -268,5 +270,39 @@ describe("Wallet authorized Agent platform", () => {
       screen.queryByRole("button", { name: "Review and sign association" }),
     ).toBeNull();
     expect(fetch).toHaveBeenCalledTimes(2);
+  });
+  it("shows declared service metadata and requires review before a discovery signature", async () => {
+    const agent = {
+      id: "123e4567-e89b-42d3-a456-426614174000",
+      name: "Research",
+      controller: wallet.address,
+      revision: 1,
+      metadata: {
+        endpoints: [{ protocol: "a2a", url: "https://owned.example/card" }],
+      },
+    } as Agent;
+    const fetch = vi
+      .spyOn(globalThis, "fetch")
+      .mockResolvedValue(
+        Response.json({
+          schemaVersion: "walletface.agent-discovery/2",
+          retrievedAt: "2026-11-15T15:00:00Z",
+          localOnly: false,
+          interfaces: [
+            { protocol: "a2a", url: "https://owned.example/card", checks: [] },
+          ],
+        }),
+      );
+    mount(<Discovery agent={agent} />);
+    await screen.findByText(
+      "Endpoint declaration saved; metadata has not been read.",
+    );
+    expect(
+      screen.getByRole("button", {
+        name: "Review and sign metadata discovery",
+      }),
+    ).toBeTruthy();
+    expect(wallet.walletClient.signTypedData).not.toHaveBeenCalled();
+    expect(fetch).toHaveBeenCalledTimes(1);
   });
 });

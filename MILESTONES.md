@@ -70,3 +70,5 @@ v0.5 Copilot is implemented and live-tested in Preview. Additional indexing, sig
 Production awaits formal database migration approval. Remaining indexing reconciliation, contract-account ownership, registry conformance and external operation adapters are listed in [the roadmap](docs/AGENT_IDENTITY_ROADMAP.md).
 
 2026-11-15: v0.5 merged and live on walletface.org; real model/Snapshot/MCP acceptance recorded. Personal Agent Release A adds owner/controller/domain/receiver evidence on a separate branch and isolated Preview DB. x402 receive, controlled spending and external interoperability follow as independently tested releases.
+
+Agent extension delivery: Release A signed personal links and evidence (PR5); Release B testnet x402 receive/receipts (PR6); Release C owner-reviewed policy budgets/settlement guard (PR7); Release D bounded MCP/A2A metadata discovery and identity resolution. Each branch preserves its predecessor. Final production promotion is gated on authenticated C/D browser acceptance and funded testnet settlement; mainnet and autonomous signing stay disabled.

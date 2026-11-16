@@ -131,3 +131,5 @@ Release A adds versioned personal-Agent evidence and signed association actions.
 Release B adds optional testnet-only `/v1/payments/status`, `/report`, `/receipts` and `/receipts/:id`. The report uses x402 v2 PAYMENT-REQUIRED / PAYMENT-SIGNATURE / PAYMENT-RESPONSE. [Exact price, authorization and receipt semantics](docs/X402_RECEIVE_RELEASE_B.md). Free endpoints retain their existing contract.
 
 Release C adds human-reviewed testnet spending policies, per-quote approval, conservative atomic budgets, revocation and a guarded wallet-signing boundary. See [exact routes and enforcement scope](docs/CONTROLLED_SPENDING_RELEASE_C.md).
+
+Release D: GET /v1/platform/agents/:id/discovery; signed agent.probe.mcp and agent.probe.a2a actions; SDK resolveAgentDiscovery and AgentDiscovery. Probes require recent domain control and perform metadata discovery only. [Exact constraints](docs/AGENT_INTEROP_RELEASE_D.md).
