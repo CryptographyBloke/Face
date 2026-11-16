@@ -1,0 +1,98 @@
+{
+  "checkedAt": "2026-11-16T03:02:02.180Z",
+  "productionCommit": "bbcc6511c993ac1586ff1d8df0910556043358bf",
+  "noCredentialsSent": true,
+  "result": [
+    {
+      "name": "wallet",
+      "status": 200,
+      "tool": "getWalletProfile",
+      "error": null,
+      "data": {
+        "chainId": 1,
+        "address": "0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045",
+        "avatar": {
+          "uri": null,
+          "resolvedUrl": null,
+          "urls": [],
+          "source": "none"
+        },
+        "profile": {
+          "name": null,
+          "bio": null,
+          "links": [],
+          "revision": 0
+        },
+        "provenance": {
+          "profileClaimVerified": false,
+          "sources": [
+            "snapshot"
+          ],
+          "warnings": [],
+          "verification": null
+        },
+        "updatedAt": null,
+        "cache": {
+          "fetchedAt": "2026-11-16T03:02:00.982Z",
+          "ttlSeconds": 60
+        }
+      },
+      "provenance": {
+        "source": "walletface",
+        "sourceUrl": "https://walletface.org/u/0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045",
+        "fetchedAt": "2026-11-16T03:02:00.982Z",
+        "scope": "public_profile",
+        "claimVerified": false
+      }
+    },
+    {
+      "name": "proposal",
+      "status": 200,
+      "tool": "getProposal",
+      "error": null,
+      "data": {
+        "title": "[7.3] [Social] Governor Nexus Update",
+        "choices": [
+          "For",
+          "Against",
+          "Abstain"
+        ],
+        "startUtc": "2026-10-29T18:15:08.000Z",
+        "endUtc": "2026-11-03T18:15:08.000Z",
+        "privacy": "",
+        "contentStatus": "available"
+      },
+      "provenance": {
+        "source": "snapshot",
+        "sourceUrl": "https://snapshot.box/#/ens.eth/proposal/0x5bc7802637848e22f47e23615d3dcb2649e10b5feed5033a974eb556cdf3627a",
+        "fetchedAt": "2026-11-16T03:02:02.019Z",
+        "scope": "single_proposal",
+        "privacyPolicy": "Private/shielded ballots and scores are withheld."
+      }
+    },
+    {
+      "name": "forged-role",
+      "status": 400,
+      "tool": null,
+      "error": "VALIDATION",
+      "data": null,
+      "provenance": null
+    },
+    {
+      "name": "forbidden-tool",
+      "status": 403,
+      "tool": null,
+      "error": "READ_ONLY_TOOL",
+      "data": null,
+      "provenance": null
+    },
+    {
+      "name": "wrong-origin",
+      "status": 403,
+      "tool": null,
+      "error": "ORIGIN",
+      "data": null,
+      "provenance": null
+    }
+  ]
+}

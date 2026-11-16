@@ -1,6 +1,12 @@
 # Wallet Face — Product Milestones
 
-> Status updated: 2026-10-31
+> Status updated: 2026-11-16
+
+## Public Agent release / 公开 Agent 版本
+
+Public Copilot conversations, wallet/proposal data tools, signed personal Agent identity and MCP/A2A metadata discovery are deployed to walletface.org. PRs #5–#9 are merged. 80 backend and 48 React tests, SDK/application builds and avatar protocol checks pass. Production browser/anonymous model acceptance is recorded in [release evidence](docs/PUBLIC_AGENT_RELEASE.md).
+
+Payment and spending interfaces are published with accurate disabled execution status. Production activation remains blocked on an explicitly confirmed receiver and funded Base Sepolia settlement acceptance. Export-file completion remains unverified after download automation timed out. Future autonomous signing, mainnet and reputation claims retain their separate release requirements.
 
 ## 0.4 progress / 0.4 进展
 
