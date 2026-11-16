@@ -635,38 +635,40 @@ export function AppShell({ children }: { children: ReactNode }) {
   const { t, lang, setLang, theme, setTheme } = usePreferences();
   const location = useLocation();
   const [drawer, setDrawer] = useState(false);
-  const title = location.pathname.startsWith("/my-agents")
-    ? t("我的 Agents", "My Agents")
-    : location.pathname.startsWith("/agents")
-      ? t("Agent 身份", "Agent identities")
-      : location.pathname.startsWith("/workspaces")
-        ? t("我的工作区", "My workspace")
-        : location.pathname.startsWith("/reports")
-          ? t("治理报告", "Governance reports")
-          : location.pathname.startsWith("/actions")
-            ? t("组织操作", "Organization actions")
-            : location.pathname.startsWith("/organizations")
-              ? t("组织工作区", "Organization workspace")
-              : location.pathname.startsWith("/analytics")
-                ? t("治理统计", "Governance analytics")
-                : location.pathname.startsWith("/ai")
-                  ? "Face Copilot"
-                  : location.pathname.startsWith("/avatar")
-                    ? t("设置头像", "Set avatar")
-                    : location.pathname.startsWith("/spaces")
-                      ? t("探索社区", "Explore communities")
-                      : location.pathname.startsWith("/developers")
-                        ? t("开发者", "Developers")
-                        : location.pathname === "/followed"
-                          ? t("收藏社区", "Following")
-                          : location.pathname.startsWith("/u/") ||
-                              location.pathname === "/profile"
-                            ? t("钱包资料", "Wallet profile")
-                            : location.pathname === "/communities"
-                              ? t("社区服务", "For communities")
-                              : location.pathname === "/privacy"
-                                ? t("隐私与数据", "Privacy & data")
-                                : t("首页", "Home");
+  const title = location.pathname.startsWith("/payments")
+    ? t("Agent 支付", "Agent payments")
+    : location.pathname.startsWith("/my-agents")
+      ? t("我的 Agents", "My Agents")
+      : location.pathname.startsWith("/agents")
+        ? t("Agent 身份", "Agent identities")
+        : location.pathname.startsWith("/workspaces")
+          ? t("我的工作区", "My workspace")
+          : location.pathname.startsWith("/reports")
+            ? t("治理报告", "Governance reports")
+            : location.pathname.startsWith("/actions")
+              ? t("组织操作", "Organization actions")
+              : location.pathname.startsWith("/organizations")
+                ? t("组织工作区", "Organization workspace")
+                : location.pathname.startsWith("/analytics")
+                  ? t("治理统计", "Governance analytics")
+                  : location.pathname.startsWith("/ai")
+                    ? "Face Copilot"
+                    : location.pathname.startsWith("/avatar")
+                      ? t("设置头像", "Set avatar")
+                      : location.pathname.startsWith("/spaces")
+                        ? t("探索社区", "Explore communities")
+                        : location.pathname.startsWith("/developers")
+                          ? t("开发者", "Developers")
+                          : location.pathname === "/followed"
+                            ? t("收藏社区", "Following")
+                            : location.pathname.startsWith("/u/") ||
+                                location.pathname === "/profile"
+                              ? t("钱包资料", "Wallet profile")
+                              : location.pathname === "/communities"
+                                ? t("社区服务", "For communities")
+                                : location.pathname === "/privacy"
+                                  ? t("隐私与数据", "Privacy & data")
+                                  : t("首页", "Home");
   useEffect(() => {
     document.title = `${title} · Wallet Face`;
     document

@@ -84,3 +84,5 @@ Registry standard conformance and real-world identities are not inferred. Produc
 Details and test limits: [platform architecture](docs/PLATFORM_ARCHITECTURE.md), [acceptance](docs/AI_AGENT_TEST_REPORT.md).
 
 Personal-Agent associations use separate owner/controller signatures, revision-bound metadata, nonce-based remote-origin checks and independent receiving-wallet proofs. Additive migration 005 atomically consumes nonces and audits changes. Profile edits stale prior associations; owner refresh clears old controller/domain evidence. See [Release A security scope](docs/AGENT_IDENTITY_RELEASE_A.md). No model tool can invoke these writes or authorize spending.
+
+x402 beta is fixed to Base Sepolia USDC and server-owned requirements. Unique authorization nonce/payer/asset/network plus durable transitions prevent concurrent resettlement. Reports are computed/cached before settlement; ambiguous outcomes require chain reconciliation. Independent USDC Transfer and AuthorizationUsed logs establish settlement; no model can authorize payment or alter a receiver. [Payment security details](docs/X402_RECEIVE_RELEASE_B.md).
