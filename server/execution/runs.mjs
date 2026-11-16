@@ -1,9 +1,10 @@
 import { createHash, randomBytes, randomUUID } from "node:crypto";
+import { researchWindow } from "./window.mjs";
 import { ApiError } from "../validation.mjs";
 import { digest } from "../platform/authorization.mjs";
 import { createToolRegistry } from "../ai/tools.mjs";
 import { internalCopilot } from "./copilot-adapter.mjs";
-import { Catalog, ExecutionRepository,platformServices } from "./catalog.mjs";
+import { Catalog, ExecutionRepository, platformServices } from "./catalog.mjs";
 import { runInput, validateArguments } from "./schemas.mjs";
 import { executeMcp, executeA2a, a2aRpc, normalizeA2a } from "./adapters.mjs";
 export const tokenHash = (value) =>
@@ -65,7 +66,11 @@ export class RunRepository extends ExecutionRepository {
       (
         await this.db.query(
           "UPDATE face_platform.agent_runs r SET state='executing',execution_id=$2::uuid,started_at=coalesce(started_at,now()),lease_until=now()+interval '60 seconds',updated_at=now() WHERE r.id=$1::uuid AND state='awaiting_approval' AND NOT cancel_requested AND expires_at>now() AND (r.service_id=ANY($3::text[]) OR EXISTS(SELECT 1 FROM face_platform.agent_services s JOIN face_platform.agents a ON a.id=s.agent_id WHERE s.id::text=r.service_id AND s.revision::text=r.service_version AND s.published AND NOT s.paused AND s.execution_approved AND s.config->'price'='null'::jsonb AND a.published AND a.revision=s.agent_revision AND EXISTS(SELECT 1 FROM face_platform.agent_links l WHERE l.agent_id=a.id AND l.owner=s.owner AND l.status='active' AND l.controller_confirmed AND l.agent_revision=a.revision AND EXISTS(SELECT 1 FROM jsonb_array_elements(l.endpoint_evidence) e WHERE e->>'url'=s.config->>'endpointOrigin' AND (e->>'checkedAt')::timestamptz>now()-interval '24 hours')))) RETURNING r.*",
-          [id, executionId,platformServices('https://walletface.org').map(s=>s.id)],
+          [
+            id,
+            executionId,
+            platformServices("https://walletface.org").map((s) => s.id),
+          ],
         )
       )[0] || null
     );
@@ -112,12 +117,13 @@ export class RunRepository extends ExecutionRepository {
   }
   async reserve(ip, secret) {
     const hour = Math.floor(Date.now() / 3600000),
+      day = Math.floor(Date.now() / 86400000),
       hash = tokenHash(secret + ":" + ip).slice(0, 24);
     const rows = await this.db.query(
-      "SELECT face_platform.reserve_quota($1::text[],$2::bigint[],now()+interval '2 hours') AS ok",
+      "SELECT face_platform.reserve_quota($1::text[],$2::bigint[],now()+interval '2 days') AS ok",
       [
-        [`run:global:${hour}`, `run:ip:${hour}:${hash}`],
-        [1000, 30],
+        [`run:global:${hour}`, `run:ip:${hour}:${hash}`, `run:day:${day}`],
+        [1000, 30, 2000],
       ],
     );
     if (!rows[0]?.ok)
@@ -139,7 +145,12 @@ export async function internalResearch(
   args,
   { signal, onProgress = async () => {}, language = "en" } = {},
 ) {
-  const registry = createToolRegistry({ snapshot, signal, maxCalls: 2 }),
+  const window = researchWindow(snapshot, args);
+  const registry = createToolRegistry({
+      snapshot: window.snapshot,
+      signal,
+      maxCalls: 2,
+    }),
     spaceId = args.spaceId;
   await onProgress({ kind: "tool_started", tool: "getSpace" });
   const space = await registry.run("getSpace", { spaceId });
@@ -151,8 +162,8 @@ export async function internalResearch(
     p = activity.provenance;
   const text =
     language === "zh"
-      ? `${space.data.space.name || spaceId} 公开治理报告\n观测扫描内有 ${d.publicVotes} 条公开投票、${d.uniqueWallets} 个钱包。扫描了 ${p.proposalsScanned} 项提案和 ${p.votesScanned} 条投票记录。\n统计范围仅限本次可用扫描，隐私投票已排除；公开投票不代表组织成员身份。\n读取时间：${p.fetchedAt}`
-      : `${space.data.space.name || spaceId} public governance report\nThe observed scan contains ${d.publicVotes} public votes from ${d.uniqueWallets} wallets, with ${p.proposalsScanned} proposals and ${p.votesScanned} vote records scanned.\nStatistics cover this available scan; private ballots are omitted. Voting is not organization membership.\nRetrieved: ${p.fetchedAt}`;
+      ? `${space.data.space.name || spaceId} 公开治理报告\nUTC 区间：${p.queryRange.startUtc} 至 ${p.queryRange.endUtc}（不含结束时刻）。提案以创建时间筛选，区间内观测到 ${p.proposalsMatchedInScan} 项。\n观测扫描内有 ${d.publicVotes} 条公开投票、${d.uniqueWallets} 个钱包。扫描了 ${p.proposalsScanned} 项提案和 ${p.votesScanned} 条投票记录。\n统计范围仅限本次可用扫描，隐私投票已排除；公开投票不代表组织成员身份。\n读取时间：${p.fetchedAt}`
+      : `${space.data.space.name || spaceId} public governance report\nUTC interval: ${p.queryRange.startUtc} to ${p.queryRange.endUtc} (end exclusive). ${p.proposalsMatchedInScan} proposals matched by creation time.\nThe observed scan contains ${d.publicVotes} public votes from ${d.uniqueWallets} wallets, with ${p.proposalsScanned} proposals and ${p.votesScanned} vote records scanned.\nStatistics cover this available scan; private ballots are omitted. Voting is not organization membership.\nRetrieved: ${p.fetchedAt}`;
   return {
     text,
     evidence: [space, activity],

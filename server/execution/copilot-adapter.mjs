@@ -1,11 +1,13 @@
 import { createAgentApi } from "../ai/chat.mjs";
+import { researchWindow } from "./window.mjs";
 import { ApiError } from "../validation.mjs";
 export async function internalCopilot(
   snapshot,
   input,
   { signal, onProgress = async () => {}, origin, env, ip },
 ) {
-  const api = createAgentApi({ snapshot, origin, env }),
+  const window = researchWindow(snapshot, input.arguments);
+  const api = createAgentApi({ snapshot: window.snapshot, origin, env }),
     request = new Request(origin + "/v1/ai/chat", {
       method: "POST",
       headers: {
@@ -16,7 +18,7 @@ export async function internalCopilot(
           : { Authorization: "Bearer " + env.FACE_AI_BETA_TOKEN }),
       },
       body: JSON.stringify({
-        context: input.arguments,
+        context: { spaceId: input.arguments.spaceId },
         language: input.language,
         messages: [{ role: "user", content: input.task }],
       }),
@@ -86,6 +88,7 @@ export async function internalCopilot(
     return {
       text,
       evidence,
+      queryRange: window.queryRange,
       usage: done.usage,
       metered: done.metered,
       toolCalls: done.toolCalls,

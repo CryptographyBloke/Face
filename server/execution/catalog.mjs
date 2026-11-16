@@ -1,3 +1,4 @@
+import { z } from "zod";
 import { InteropRepository, InteropService } from "../interop/service.mjs";
 import { serviceInput, checkSchema } from "./schemas.mjs";
 import { endpointUrl } from "./http.mjs";
@@ -13,6 +14,18 @@ const schema = {
   required: ["spaceId"],
   additionalProperties: false,
 };
+const researchSchema = {
+  ...schema,
+  properties: {
+    ...schema.properties,
+    periodDays: {
+      type: "integer",
+      minimum: 1,
+      maximum: 365,
+      description: "UTC lookback days; default 30. Bounded observed data only.",
+    },
+  },
+};
 export function platformServices(origin) {
   return [
     {
@@ -24,7 +37,7 @@ export function platformServices(origin) {
       category: "governance",
       protocol: "internal",
       capability: "copilot_governance",
-      inputSchema: schema,
+      inputSchema: researchSchema,
       endpointUrl: null,
       price: null,
       platformProvided: true,
@@ -40,7 +53,7 @@ export function platformServices(origin) {
       category: "governance",
       protocol: "internal",
       capability: "governance_report",
-      inputSchema: schema,
+      inputSchema: researchSchema,
       endpointUrl: null,
       price: null,
       platformProvided: true,
@@ -71,9 +84,9 @@ export function platformServices(origin) {
       category: "governance",
       protocol: "a2a",
       capability: "governance_research",
-      inputSchema: schema,
+      inputSchema: researchSchema,
       endpointUrl: origin + "/v1/research-agent/rpc",
-      schemaHash: digest(schema),
+      schemaHash: digest(researchSchema),
       price: null,
       platformProvided: true,
       revision: 1,
@@ -237,8 +250,22 @@ export class MarketplaceControl extends InteropService {
       taskExecutionRequiresOperatorReview: true,
     };
   }
+  async pauseContext(actor, input) {
+    const payload = z
+      .object({ id: z.string().uuid(), revision: z.number().int().positive() })
+      .strict()
+      .parse(input);
+    const saved = await this.repository.service(payload.id, actor);
+    if (!saved || saved.owner !== actor || saved.revision !== payload.revision)
+      throw new ApiError(
+        409,
+        "SERVICE_CHANGED",
+        "Service owner or revision changed",
+      );
+    return payload;
+  }
   async challenge(actor, action, input) {
-    if (action !== "market.service.upsert")
+    if (!["market.service.upsert", "market.service.pause"].includes(action))
       return super.challenge(actor, action, input);
     if (this.env.FACE_EXECUTION_ENABLED !== "true")
       throw new ApiError(
@@ -247,14 +274,21 @@ export class MarketplaceControl extends InteropService {
         "Agent execution is disabled",
       );
     actor = actor.toLowerCase();
-    const payload = await this.serviceContext(actor, input),
+    const payload =
+        action === "market.service.pause"
+          ? await this.pauseContext(actor, input)
+          : await this.serviceContext(actor, input),
       typedData = makeAuthorization(this.origin, actor, action, payload);
     await this.repository.createChallenge(typedData, payload);
     return { typedData, payload };
   }
   async execute(input) {
     const saved = await this.repository.challenge(input.nonce);
-    if (saved?.payload?.typedData?.message?.action !== "market.service.upsert")
+    if (
+      !["market.service.upsert", "market.service.pause"].includes(
+        saved?.payload?.typedData?.message?.action,
+      )
+    )
       return super.execute(input);
     if (this.env.FACE_EXECUTION_ENABLED !== "true")
       throw new ApiError(
@@ -279,7 +313,10 @@ export class MarketplaceControl extends InteropService {
     const base = Object.fromEntries(
         Object.keys(serviceInput.shape).map((k) => [k, input.payload[k]]),
       ),
-      current = await this.serviceContext(actor, base);
+      current =
+        typed.message.action === "market.service.pause"
+          ? await this.pauseContext(actor, input.payload)
+          : await this.serviceContext(actor, base);
     if (digest(current) !== digest(input.payload))
       throw new ApiError(409, "SERVICE_CHANGED", "Service context changed");
     return this.repository.applyService(
@@ -320,12 +357,14 @@ export class Catalog {
         row.profile_published &&
         row.control_current,
       platformProvided: false,
-      executionApproved:row.execution_approved===true,
+      executionApproved: row.execution_approved === true,
       updatedAt: row.updated_at,
     };
   }
   status(service) {
-    const approved = approvedService(service, this.env)&&(service.platformProvided||service.executionApproved===true),
+    const approved =
+        approvedService(service, this.env) &&
+        (service.platformProvided || service.executionApproved === true),
       current = service.platformProvided || service.profileCurrent;
     return {
       ...service,

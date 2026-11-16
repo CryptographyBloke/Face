@@ -223,7 +223,13 @@ export class FaceClient {
     const reader = response.body?.getReader();
     if (!reader) throw Error("Task stream missing");
     const decoder = new TextDecoder();
-    let buffer = "";
+    let buffer = "",
+      finished = false;
+    const parse = (line: string) => {
+      const event = JSON.parse(line) as AgentRunEvent;
+      if (event.kind === "done") finished = true;
+      return event;
+    };
     try {
       while (true) {
         const part = await reader.read();
@@ -234,11 +240,13 @@ export class FaceClient {
         while ((end = buffer.indexOf("\n")) >= 0) {
           const line = buffer.slice(0, end);
           buffer = buffer.slice(end + 1);
-          if (line.trim()) yield JSON.parse(line) as AgentRunEvent;
+          if (line.trim()) yield parse(line);
         }
       }
       buffer += decoder.decode();
-      if (buffer.trim()) yield JSON.parse(buffer) as AgentRunEvent;
+      if (buffer.trim()) yield parse(buffer);
+      if (!finished)
+        throw Error("Task stream interrupted; reopen the task before retrying");
     } finally {
       await reader.cancel().catch(() => {});
       reader.releaseLock();

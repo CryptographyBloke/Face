@@ -212,7 +212,14 @@ export default function Marketplace() {
                     "Publisher declaration; control checked separately",
                   )}
             </p>
-            <small>{s.availability}</small>
+            <small>
+              {t(
+                ...(statusNames[s.availability] || [
+                  s.availability,
+                  s.availability,
+                ]),
+              )}
+            </small>
             <div className="actions">
               <Link
                 className="button primary"
@@ -245,6 +252,28 @@ export default function Marketplace() {
       <Link to="/my-agents">{t("管理我的 Agent", "Manage my Agents")} →</Link>
     </section>
   );
+}
+const statusNames: Record<string, [string, string]> = {
+  ready: ["可以使用", "Ready"],
+  paused: ["已暂停", "Paused"],
+  stale_profile: ["需要重新验证", "Reverification needed"],
+  pending_operator_review: ["等待执行审核", "Awaiting execution review"],
+  payment_activation_required: ["等待支付验收", "Payment acceptance pending"],
+  awaiting_approval: ["请审核任务", "Review required"],
+  executing: ["正在执行", "Executing"],
+  completed: ["已完成", "Completed"],
+  failed: ["执行失败", "Failed"],
+  cancelled: ["已取消", "Cancelled"],
+  waiting_remote: ["等待远程 Agent", "Waiting for remote Agent"],
+  needs_input: ["需要补充输入", "Input required"],
+  execution_unknown: ["执行结果待核查", "Execution outcome unknown"],
+};
+function parsedArguments(value: string): Record<string, unknown> {
+  try {
+    return JSON.parse(value);
+  } catch {
+    return {};
+  }
 }
 export function Playground() {
   const { id } = useParams(),
@@ -452,12 +481,18 @@ export function Playground() {
           {error}
         </p>
       )}
+      <WalletSession />
       {service && (
         <>
           <div className="panel">
             <p>
               {service.protocol.toUpperCase()} · {service.capability} ·{" "}
-              {service.availability}
+              {t(
+                ...(statusNames[service.availability] || [
+                  service.availability,
+                  service.availability,
+                ]),
+              )}
             </p>
             <p className="break-address">
               {service.endpointUrl ||
@@ -490,6 +525,56 @@ export function Playground() {
                 )}
               />
             </label>
+            {service.platformProvided && (
+              <label>
+                {t("Snapshot Space", "Snapshot Space")}
+                <input
+                  value={String(parsedArguments(args).spaceId || "")}
+                  onChange={(e) =>
+                    setArgs(
+                      JSON.stringify({
+                        ...parsedArguments(args),
+                        spaceId: e.target.value,
+                      }),
+                    )
+                  }
+                  maxLength={100}
+                />
+              </label>
+            )}
+            {service.platformProvided &&
+              "periodDays" in
+                ((service.inputSchema.properties || {}) as Record<
+                  string,
+                  unknown
+                >) && (
+                <label>
+                  {t("统计区间（UTC）", "Analysis period (UTC)")}
+                  <select
+                    value={String(parsedArguments(args).periodDays || 30)}
+                    onChange={(e) =>
+                      setArgs(
+                        JSON.stringify({
+                          ...parsedArguments(args),
+                          periodDays: Number(e.target.value),
+                        }),
+                      )
+                    }
+                  >
+                    {[7, 30, 90, 365].map((n) => (
+                      <option key={n} value={n}>
+                        {n} {t("天", "days")}
+                      </option>
+                    ))}
+                  </select>
+                  <small>
+                    {t(
+                      "按提案创建时间及投票时间筛选本次扫描；历史扫描上限仍适用。",
+                      "Filters proposal creation and vote timestamps in the observed scan; scan limits still apply.",
+                    )}
+                  </small>
+                </label>
+              )}
             <details>
               <summary>{t("本次参数与能力", "Inputs and capability")}</summary>
               <p>
@@ -534,7 +619,8 @@ export function Playground() {
       {run && (
         <article className="panel">
           <h2>
-            {t("任务状态", "Task status")}: {run.state}
+            {t("任务状态", "Task status")}:{" "}
+            {t(...(statusNames[run.state] || [run.state, run.state]))}
           </h2>
           <p className="break-address">{run.id}</p>
           <h3>{run.plan.name}</h3>
@@ -789,6 +875,7 @@ export function ServiceEditor() {
     [schema, setSchema] = useState(
       '{"type":"object","properties":{},"additionalProperties":false}',
     ),
+    [price, setPrice] = useState<Service["price"]>(null),
     [paused, setPaused] = useState(false),
     [error, setError] = useState(""),
     [choices, setChoices] = useState<{ name: string; inputSchema?: unknown }[]>(
@@ -848,6 +935,7 @@ export function ServiceEditor() {
         setEndpoint(s.discoveryUrl || s.endpointUrl || "");
         setCapability(s.capability);
         setSchema(JSON.stringify(s.inputSchema, null, 2));
+        setPrice(s.price);
         setPaused(s.availability === "paused");
       })
       .catch((e) => setError(e.message));
@@ -961,8 +1049,21 @@ export function ServiceEditor() {
             "This release publishes free research services. Paid execution opens separately after real settlement acceptance.",
           )}
         </p>
+        {revision > 0 && (
+          <SignedAction
+            action="market.service.pause"
+            payload={{ id: serviceId, revision }}
+            onDone={(r) => {
+              setRevision(Number(r.revision));
+              setPaused(true);
+            }}
+          >
+            {t("立即签名暂停服务", "Sign to pause service immediately")}
+          </SignedAction>
+        )}
         <SignedAction
           action="market.service.upsert"
+          onDone={(r) => setRevision(Number(r.revision))}
           payload={{
             id: serviceId,
             agentId,
@@ -977,7 +1078,7 @@ export function ServiceEditor() {
             inputSchema: parsed,
             published: true,
             paused,
-            price: null,
+            price,
           }}
           disabled={!parsed || !name || !capability || !agentId || !endpoint}
         >

@@ -154,3 +154,9 @@ See [implemented platform](docs/PLATFORM_ARCHITECTURE.md) and [verified acceptan
 v0.5 is live on walletface.org; [production acceptance](docs/V05_PRODUCTION_ACCEPTANCE.md) records deployment, actual model/MCP checks and rollback. Existing wallet/avatar publication is preserved.
 
 Personal Agents and testnet payments are developed in independent A–D releases. Routes: /my-agents, /agents/:id, /payments, /spending. [Identity](docs/AGENT_IDENTITY_RELEASE_A.md), [receive](docs/X402_RECEIVE_RELEASE_B.md), [spending](docs/CONTROLLED_SPENDING_RELEASE_C.md), [interop](docs/AGENT_INTEROP_RELEASE_D.md). v0.5 remains live while final extension acceptance completes.
+
+## Agent Execution candidate / Agent 执行候选版
+
+The marketplace candidate adds `/agents`, `/agents/:id/playground`, private recoverable tasks and `/developer/agents`. Internal research and Copilot use explicit UTC intervals and scan provenance. Official MCP execution and A2A v1 adapters execute reviewed read-only capabilities. See [Marketplace](docs/AGENT_MARKETPLACE.md) and [acceptance status](docs/FINAL_PRODUCT_ACCEPTANCE.md). Payment execution remains independently gated.
+
+服务市场候选版包含任务审核、执行过程、结果恢复和开发者统计。第三方服务须先验证身份、端点及能力，并获得独立执行批准。

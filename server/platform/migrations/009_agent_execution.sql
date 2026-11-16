@@ -24,7 +24,15 @@ RETURNS jsonb LANGUAGE plpgsql AS $$
 DECLARE c face_platform.challenges%ROWTYPE;a face_platform.agents%ROWTYPE;s face_platform.agent_services%ROWTYPE;orig text;
 BEGIN
  SELECT * INTO c FROM face_platform.challenges WHERE nonce=p_nonce FOR UPDATE;
- IF NOT FOUND OR c.used_at IS NOT NULL OR c.expires_at<=now() OR c.actor<>p_actor OR c.action<>p_action OR c.payload_hash<>p_hash OR c.origin<>p_origin OR p_action<>'market.service.upsert' THEN RAISE EXCEPTION 'FACE_MARKET_AUTH';END IF;
+ IF NOT FOUND OR c.used_at IS NOT NULL OR c.expires_at<=now() OR c.actor<>p_actor OR c.action<>p_action OR c.payload_hash<>p_hash OR c.origin<>p_origin OR p_action NOT IN ('market.service.upsert','market.service.pause') THEN RAISE EXCEPTION 'FACE_MARKET_AUTH';END IF;
+ IF p_action='market.service.pause' THEN
+  SELECT * INTO s FROM face_platform.agent_services WHERE id=(p_data->>'id')::uuid FOR UPDATE;
+  IF NOT FOUND OR s.owner<>p_actor OR s.revision<>(p_data->>'revision')::integer THEN RAISE EXCEPTION 'FACE_MARKET_REVISION';END IF;
+  UPDATE face_platform.agent_services SET paused=true,execution_approved=false,revision=revision+1,config=jsonb_set(config,'{paused}','true'::jsonb),updated_at=now() WHERE id=s.id RETURNING * INTO s;
+  UPDATE face_platform.challenges SET used_at=now() WHERE nonce=p_nonce;
+  INSERT INTO face_platform.audit_events(actor,action,target,payload_hash,proof,outcome) VALUES(p_actor,p_action,s.id::text,p_hash,p_proof,'service_paused');
+  RETURN jsonb_build_object('id',s.id,'revision',s.revision);
+ END IF;
  SELECT * INTO a FROM face_platform.agents WHERE id=(p_data->>'agentId')::uuid FOR UPDATE;
  IF NOT FOUND OR a.controller<>p_actor OR a.revision<>(p_data->>'agentRevision')::integer OR NOT a.published THEN RAISE EXCEPTION 'FACE_MARKET_OWNER';END IF;
  orig=p_data->>'endpointOrigin';
@@ -42,3 +50,6 @@ BEGIN
  RETURN jsonb_build_object('id',s.id,'revision',s.revision);
 END;$$;
 INSERT INTO face_platform.schema_migrations(version) VALUES(9) ON CONFLICT DO NOTHING;
+
+-- Research idempotency binds the complete declared public query.
+ALTER TABLE face_platform.public_research_tasks ADD COLUMN IF NOT EXISTS args_hash text;

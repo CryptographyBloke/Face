@@ -11,3 +11,11 @@ Anonymous runs use 256-bit capability tokens stored only as server hashes and br
 The public A2A compatibility service stores only public governance results and a Space ID for one-day access; request text and wallet identity are not stored. It implements JSON-RPC v1 SendMessage/GetTask/CancelTask and returns explicit terminal states. It is a platform-controlled interoperability service, not independent proof of third-party Agent ownership or reliability. OAuth-protected remote services are unsupported in this release; no credential forwarding or OAuth compliance is claimed.
 
 Protocol sources checked: https://a2a-protocol.org/v1.0.0/specification/ and https://ts.sdk.modelcontextprotocol.io/v2/client/ . Installed SDK source/types are the authority for the MCP call signatures.
+
+## UTC ranges and service suspension
+
+Internal research and Copilot freeze a server-computed `[start,end)` interval (default 30 days, configurable 1–365), filter proposal creation/public vote timestamps, and recompute participant counts and ranking. Original scan provenance remains attached. Internal and A2A public reports calculate all totals in code. A time filter never establishes complete historical coverage.
+
+`market.service.pause` is a distinct wallet-signed, revision-bound, nonce-consuming action. It atomically disables execution approval and increments the service revision, even if endpoint evidence has expired. Resuming requires publication checks and renewed operator approval. A task claimed before revocation can already be running remotely; cancellation records delivery state, without promising rollback of the remote service.
+
+The platform-controlled public A2A service executes bounded blocking `SendMessage` (25-second data budget); it explicitly rejects non-blocking requests. The external adapter requests non-blocking execution and persists returned task IDs for `GetTask`/`CancelTask`. Autonomous background polling and crash-safe long-running internal jobs require a later durable workflow integration.

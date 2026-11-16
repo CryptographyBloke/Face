@@ -163,6 +163,8 @@ export async function a2aRpc(
   return boundedResult(b.result);
 }
 export function normalizeA2a(result) {
+  if (result.task && result.message)
+    throw new ApiError(502, "A2A_RESPONSE", "Ambiguous A2A response");
   if (result.message) {
     const p = z
       .object({ role: z.literal("ROLE_AGENT"), parts: z.array(part).max(50) })
@@ -232,7 +234,7 @@ export async function executeA2a(service, input, options = {}) {
           ],
         },
         configuration: {
-          returnImmediately: true,
+          returnImmediately: !service.platformProvided,
           acceptedOutputModes: ["text/plain", "application/json"],
           historyLength: 0,
         },

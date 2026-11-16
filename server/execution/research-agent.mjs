@@ -1,3 +1,5 @@
+import { researchArguments } from "./window.mjs";
+import { digest } from "../platform/authorization.mjs";
 import { z } from "zod";
 import { randomUUID } from "node:crypto";
 import { platformDb } from "../platform/db.mjs";
@@ -86,6 +88,16 @@ export function createResearchAgent({
           : [],
       });
       if (b.method === "SendMessage") {
+        if (b.params.configuration?.returnImmediately === true)
+          return Response.json({
+            jsonrpc: "2.0",
+            id,
+            error: {
+              code: -32004,
+              message:
+                "This bounded research service supports blocking SendMessage; use returnImmediately=false",
+            },
+          });
         const message = z
             .object({
               messageId: z.string().uuid(),
@@ -106,19 +118,24 @@ export function createResearchAgent({
             .strict()
             .parse(b.params.message),
           data = message.parts.find((p) => p.data)?.data;
-        const args = z
-          .object({ spaceId: z.string().regex(/^[a-z0-9][a-z0-9._-]{0,99}$/) })
+        const declaration = z
+          .object({
+            capability: z.literal("governance_research"),
+            arguments: researchArguments,
+          })
           .strict()
-          .parse(data?.arguments);
+          .parse(data);
+        const args = declaration.arguments,
+          argsHash = digest(args);
         const inserted = await current.query(
-          "INSERT INTO face_platform.public_research_tasks(id,space_id,state) VALUES($1::uuid,$2,'working') ON CONFLICT DO NOTHING RETURNING *",
-          [message.messageId, args.spaceId],
+          "INSERT INTO face_platform.public_research_tasks(id,space_id,args_hash,state) VALUES($1::uuid,$2,$3,'working') ON CONFLICT DO NOTHING RETURNING *",
+          [message.messageId, args.spaceId, argsHash],
         );
         if (!inserted[0]) {
           const r = (
             await current.query(
-              "SELECT * FROM face_platform.public_research_tasks WHERE id=$1::uuid AND space_id=$2 AND expires_at>now()",
-              [message.messageId, args.spaceId],
+              "SELECT * FROM face_platform.public_research_tasks WHERE id=$1::uuid AND space_id=$2 AND args_hash=$3 AND expires_at>now()",
+              [message.messageId, args.spaceId, argsHash],
             )
           )[0];
           if (!r) throw Error("Task ID conflict");

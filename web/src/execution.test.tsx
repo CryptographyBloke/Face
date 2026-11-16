@@ -141,7 +141,7 @@ describe("Agent execution product", () => {
       }),
     );
     mount(true);
-    await screen.findByText(/payment_activation_required/);
+    await screen.findByText(/Payment acceptance pending/);
     fireEvent.change(screen.getByLabelText("Task description"), {
       target: { value: "Task" },
     });

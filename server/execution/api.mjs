@@ -29,7 +29,7 @@ export function createExecutionApi({
           readOnlyResearch: true,
           protocols: ["internal", "mcp", "a2a"],
           categories,
-          retentionDays: 30,
+          accessDays: 30,
           mainnetEnabled: false,
         });
       if (env.FACE_EXECUTION_ENABLED !== "true" && !service)

@@ -4,6 +4,7 @@ import { randomUUID } from "node:crypto";
 import { createMcpHandler } from "@modelcontextprotocol/server";
 import { mcpServer } from "../server/mcp/server.mjs";
 import {
+  MarketplaceControl,
   Catalog,
   platformServices,
   approvedService,
@@ -17,7 +18,13 @@ import {
   executeA2a,
   normalizeA2a,
 } from "../server/execution/adapters.mjs";
-import { RunService, tokenHash } from "../server/execution/runs.mjs";
+import { researchWindow } from "../server/execution/window.mjs";
+import {
+  RunRepository,
+  internalResearch,
+  RunService,
+  tokenHash,
+} from "../server/execution/runs.mjs";
 import { createExecutionApi } from "../server/execution/api.mjs";
 import { publicRequest } from "../server/execution/http.mjs";
 import { digest } from "../server/platform/authorization.mjs";
@@ -54,73 +61,8 @@ const snapshot = {
   directory: async () => structuredClone(dataset),
   user: async () => null,
 };
-class MemoryRuns {
-  rows = new Map();
-  log = [];
-  reservations = 0;
-  async reserve() {
-    this.reservations++;
-  }
-  async read(id, actor, secret) {
-    const r = this.rows.get(id);
-    return r &&
-      ((r.owner && r.owner === actor) ||
-        (!r.owner && r.access_hash === tokenHash(secret)))
-      ? structuredClone(r)
-      : null;
-  }
-  async create(input, service, owner, accessHash, planHash) {
-    if (this.rows.has(input.id)) throw Error("duplicate");
-    const r = {
-      id: input.id,
-      service_id: service.id,
-      service_version: String(service.revision),
-      owner,
-      access_hash: accessHash,
-      request_hash: digest(input),
-      plan_hash: planHash,
-      plan: structuredClone(service),
-      input: structuredClone(input),
-      state: "awaiting_approval",
-      result: null,
-    };
-    this.rows.set(r.id, r);
-    return structuredClone(r);
-  }
-  async event(id, kind, data) {
-    this.log.push({ id, kind, data });
-  }
-  async events(id) {
-    return this.log.filter((e) => e.id === id);
-  }
-  async expireLease() {}
-  async claim(id, executionId) {
-    const r = this.rows.get(id);
-    if (r.state !== "awaiting_approval" || r.cancel_requested) return null;
-    r.state = "executing";
-    r.execution_id = executionId;
-    return structuredClone(r);
-  }
-  async update(id, executionId, state, result, error, remoteTaskId) {
-    const r = this.rows.get(id);
-    if (
-      r.execution_id !== executionId ||
-      !["executing", "waiting_remote", "needs_input"].includes(r.state)
-    )
-      return null;
-    r.state = r.cancel_requested ? "cancelled" : state;
-    r.result = r.cancel_requested ? null : result;
-    r.error_code = error;
-    r.remote_task_id = remoteTaskId;
-    return structuredClone(r);
-  }
-  async cancel(id) {
-    const r = this.rows.get(id);
-    r.cancel_requested = true;
-    if (r.state !== "executing") r.state = "cancelled";
-    return structuredClone(r);
-  }
-}
+import { MemoryRuns } from "./fixtures/execution-memory.mjs";
+
 function setup(options = {}) {
   const repository = new MemoryRuns(),
     s = {
@@ -309,7 +251,7 @@ test("A2A v1 adapter validates task states, exact JSON-RPC IDs and explicit user
       const rpc = JSON.parse(i.body);
       method = rpc.method;
       assert.equal(rpc.params.message.role, "ROLE_USER");
-      assert.equal(rpc.params.configuration.returnImmediately, true);
+      assert.equal(rpc.params.configuration.returnImmediately, false);
       return Response.json({
         jsonrpc: "2.0",
         id: rpc.id,
@@ -402,5 +344,95 @@ test("execution API enforces origin, private access and sanitized validation wit
       )
     ).status,
     400,
+  );
+});
+
+test("explicit UTC window recomputes ranking and retains partial-scan provenance", async () => {
+  const end = Math.floor(Date.now() / 1000),
+    voterA = "0x" + "11".repeat(20),
+    voterB = "0x" + "22".repeat(20);
+  const d = structuredClone(dataset);
+  d.publicVotes = [
+    { voter: voterA, created: end - 86400 },
+    { voter: voterB, created: end - 40 * 86400 },
+    { voter: voterA, created: end - 30 * 86400 },
+    { voter: voterA, created: end },
+  ];
+  d.proposals = [
+    { id: "old", created: end - 40 * 86400 },
+    { id: "recent", created: end - 86400 },
+    { id: "unknown" },
+  ];
+  const scoped = researchWindow(
+    { directory: async () => d },
+    { spaceId: "ens.eth", periodDays: 30 },
+    end * 1000,
+  );
+  const selected = await scoped.snapshot.directory("ens.eth");
+  assert.equal(selected.publicVotes.length, 2);
+  assert.equal(selected.participants.length, 1);
+  assert.equal(selected.participants[0].publicVotes, 2);
+  assert.equal(selected.proposals[0].id, "recent");
+  assert.equal(selected.provenance.votesScanned, 500);
+  assert.equal(selected.provenance.votesComplete, false);
+  assert.equal(selected.provenance.missingProposalTimesInScan, 1);
+  assert.equal(selected.provenance.queryRange.start, end - 30 * 86400);
+  assert.throws(() => scoped.snapshot.directory("yam.eth"));
+  const report = await internalResearch(
+    { directory: async () => d },
+    { spaceId: "ens.eth", periodDays: 30 },
+    { language: "zh" },
+  );
+  assert.match(report.text, /UTC/);
+  assert.equal(report.evidence[1].provenance.completeness, "scan_limited");
+});
+test("wallet-owned run never accepts the guest credential, including the correct secret", async () => {
+  const { service } = setup();
+  const owner = "0x" + "11".repeat(20),
+    token = "x".repeat(43);
+  const run = await service.create(input(), owner, "ip", token);
+  assert.equal(run.accessToken, undefined);
+  await assert.rejects(service.read(run.id, null, token));
+  await assert.rejects(service.read(run.id, "0x" + "22".repeat(20), token));
+  assert.equal((await service.read(run.id, owner, null)).id, run.id);
+});
+test("shared execution quota binds daily and hourly buckets atomically", async () => {
+  let recorded;
+  const repository = new RunRepository(env, {
+    query: async (sql, params) => {
+      recorded = { sql, params };
+      return [{ ok: true }];
+    },
+  });
+  await repository.reserve("public-ip", env.FACE_SESSION_SECRET);
+  assert.deepEqual(recorded.params[1], [1000, 30, 2000]);
+  assert.match(recorded.params[0][2], /^run:day:/);
+  assert.match(recorded.sql, /2 days/);
+  const denied = new RunRepository(env, { query: async () => [{ ok: false }] });
+  await assert.rejects(
+    denied.reserve("ip", "secret"),
+    (e) => e.code === "RUN_QUOTA",
+  );
+});
+
+test("signed pause preparation checks owner and exact revision without depending on endpoint uptime", async () => {
+  const owner = "0x" + "11".repeat(20),
+    id = randomUUID();
+  const service = new MarketplaceControl({
+    origin,
+    env,
+    snapshot,
+    repository: { service: async () => ({ id, owner, revision: 3 }) },
+  });
+  assert.deepEqual(await service.pauseContext(owner, { id, revision: 3 }), {
+    id,
+    revision: 3,
+  });
+  await assert.rejects(
+    service.pauseContext("0x" + "22".repeat(20), { id, revision: 3 }),
+  );
+  await assert.rejects(service.pauseContext(owner, { id, revision: 2 }));
+  await assert.rejects(
+    service.pauseContext(owner, { id, revision: 3, paused: false }),
   );
 });
