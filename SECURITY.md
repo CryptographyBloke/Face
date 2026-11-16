@@ -82,3 +82,5 @@ Endpoint-control verification permits only pinned public HTTPS destinations with
 Controller signatures prove EOA control at authorization time; service control, declared organization relations and registry token ownership are distinct evidence.
 Registry standard conformance and real-world identities are not inferred. Production schema application requires owner approval.
 Details and test limits: [platform architecture](docs/PLATFORM_ARCHITECTURE.md), [acceptance](docs/AI_AGENT_TEST_REPORT.md).
+
+Personal-Agent associations use separate owner/controller signatures, revision-bound metadata, nonce-based remote-origin checks and independent receiving-wallet proofs. Additive migration 005 atomically consumes nonces and audits changes. Profile edits stale prior associations; owner refresh clears old controller/domain evidence. See [Release A security scope](docs/AGENT_IDENTITY_RELEASE_A.md). No model tool can invoke these writes or authorize spending.

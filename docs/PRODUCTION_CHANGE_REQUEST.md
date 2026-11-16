@@ -1,5 +1,7 @@
 # Production change request / 正式发布变更
 
+**Outcome:** owner approved on 2026-11-15; all four migrations and v0.5 production deployment completed. See V05_PRODUCTION_ACCEPTANCE.md. The request below is retained as the approved change scope.
+
 Owner review target: Wallet Face Agent platform code `38a78d1b0c61a9b77b535dfd1a342311b70c4d8d`.
 PR https://github.com/CryptographyBloke/Face/pull/4 .
 Validated application Preview: https://walletface-3sx17fb8b-dao-vote.vercel.app .

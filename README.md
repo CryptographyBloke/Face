@@ -151,4 +151,4 @@ MIT. Snapshot research attribution and the upstream MIT notice are in
 Agent profiles, signed private reports, organization workspaces, historical indexing, reviewed internal actions and read-only MCP are implemented.
 Routes: `/agents`, `/workspaces`, `/analytics`, `/organizations`, `/reports/new`, `/actions/new`; MCP: `/v1/mcp`.
 See [implemented platform](docs/PLATFORM_ARCHITECTURE.md) and [verified acceptance](docs/AI_AGENT_TEST_REPORT.md).
-Formal database migration and production promotion await owner approval; existing wallet/avatar publication is preserved.
+v0.5 is live on walletface.org; [production acceptance](docs/V05_PRODUCTION_ACCEPTANCE.md) records deployment, actual model/MCP checks and rollback. Existing wallet/avatar publication is preserved.

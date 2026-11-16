@@ -190,3 +190,69 @@ export class FaceClient {
     );
   }
 }
+
+/** Personal Agent evidence v1. Capabilities and prices remain publisher declarations. */
+export interface PersonalAgentIdentity {
+  schemaVersion: 1;
+  agentId: string;
+  profileWallet: string;
+  declaredController: string;
+  localOnly: boolean;
+  links: Array<{
+    id: string;
+    owner: string;
+    controller: string;
+    revision: number;
+    effectiveStatus:
+      | "pending"
+      | "active"
+      | "stale_profile"
+      | "disconnected"
+      | "revoked";
+    availability:
+      | "local_not_publicly_reachable"
+      | "service_availability_unchecked";
+    verification: {
+      ownerSignature: boolean;
+      controllerSignature: boolean;
+      activeAssociation: boolean;
+      endpointControl: boolean;
+    };
+    endpoint_evidence: Array<{
+      url: string;
+      proofUrl: string;
+      checkedAt: string;
+    }>;
+  }>;
+  paymentWallets: Array<{
+    wallet: string;
+    network: string;
+    revision: number;
+    controlVerified: boolean;
+    revoked: boolean;
+    settlementProcessed: false;
+  }>;
+  registration: {
+    current: boolean;
+    checked_at: string;
+    evidence: Record<string, unknown>;
+  } | null;
+  capabilitiesStatus: "self_declared";
+  serviceDelivery: "not_attested";
+}
+export function resolveAgentIdentity(
+  client: FaceClient,
+  id: string,
+  options: RequestInit = {},
+) {
+  if (
+    !/^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(
+      id,
+    )
+  )
+    throw new Error("Invalid Agent ID");
+  return client.request<PersonalAgentIdentity>(
+    `/v1/platform/agents/${id}/identity`,
+    options,
+  );
+}

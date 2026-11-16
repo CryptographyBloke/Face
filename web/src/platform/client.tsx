@@ -160,7 +160,10 @@ export function SignedAction({
               </p>
               <pre>
                 {JSON.stringify(
-                  { ...review.endpointControl, controller: signer },
+                  {
+                    ...review.endpointControl,
+                    controller: review.endpointControl.controller ?? signer,
+                  },
                   null,
                   2,
                 )}

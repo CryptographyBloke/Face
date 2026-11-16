@@ -108,7 +108,7 @@ Infrastructure: existing Vercel project, free Neon project with isolated Preview
 Temporary free Upstash was approved/created earlier; current quotas use Neon, so Redis expiry does not gate the candidate.
 NewAPI monetary costs are unknown; 95,486 model tokens reported across five live generations, including the corrective regression. AI remains owner beta, five requests/day.
 
-Production is unchanged. Formal schema application was blocked by automatic approval review as a consequential migration needing owner confirmation.
+Production is live at walletface.org on deployment dpl_5UyBL32456RYrRm9GN4WtxowTvXo, application 5d745097ddfa82a05980e40cf74c722da7398c59. The owner approved formal schema initialization and migrations 001–004 completed. [Production acceptance](docs/V05_PRODUCTION_ACCEPTANCE.md).
 No existing SQLite authorization data was migrated. RPC/real operator endpoint evidence and external action adapters retain the limits documented in [the roadmap](docs/AGENT_IDENTITY_ROADMAP.md).
 
 Specific formal migration approval: [production change request](docs/PRODUCTION_CHANGE_REQUEST.md).

@@ -96,3 +96,5 @@ Implementation details and limits: [AI architecture](docs/AI_AGENT_ARCHITECTURE.
 Source comparison: [baseline report](docs/AI_AGENT_BASELINE.md). The alternative main branch is not merged. New isolated platform tables use versioned migrations; legacy SQLite authorization remains unchanged.
 
 Durable Agent and governance modules: [platform architecture](docs/PLATFORM_ARCHITECTURE.md).
+
+Personal Agent Release A extends existing signed Agent profiles with optional runtime controller, service declarations and curated ERC-8004 references. `server/personal/` separates association authorization, read projection, registry reads and strict schemas; migration 005 adds durable evidence. [Data flow and verification semantics](docs/AGENT_IDENTITY_RELEASE_A.md).

@@ -121,6 +121,11 @@ function ProfileView({ address }: { address: string }) {
               )}
             </Link>
             {self && (
+              <Link className="button" to="/my-agents">
+                {t("我的 Agents", "My Agents")}
+              </Link>
+            )}
+            {self && (
               <Link className="button primary" to="/avatar">
                 <Icon name="image" size={17} />
                 {t("更换头像", "Change avatar")}
