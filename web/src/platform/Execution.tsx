@@ -352,7 +352,7 @@ export function Playground() {
         },
         ...auth(secret),
       });
-      setRun(created);
+      setRun({ ...created, accessToken: undefined });
       setEvents([]);
       const next = [{ id: runId, task }, ...history].slice(0, 30);
       setHistory(next);
@@ -723,7 +723,11 @@ export function Playground() {
                   className="button"
                   onClick={() =>
                     download(
-                      JSON.stringify(run, null, 2),
+                      JSON.stringify(
+                        { ...run, accessToken: undefined },
+                        null,
+                        2,
+                      ),
                       "application/json",
                       "wallet-face-task.json",
                     )
