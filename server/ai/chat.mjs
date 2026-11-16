@@ -121,7 +121,7 @@ export function createAgentApi({
         throw new ApiError(
           503,
           "AI_DISABLED",
-          "AI beta requires model access and a shared quota store. Public data tools are available.",
+          "AI requires configured model access and a shared quota store. Public data tools are available.",
         );
       authorizeBeta(request, env);
       await quota.reserve(ip);

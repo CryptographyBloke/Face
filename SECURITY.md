@@ -69,10 +69,10 @@ Model input is text-only; fixed system instructions treat all retrieved content 
 Zod schemas reject arbitrary URLs, GraphQL, extra properties and client-supplied system roles.
 Escaped text rendering and server-built source cards prevent retrieved/model HTML from executing.
 Semantic prompt injection can still mislead prose; capability boundaries and code-computed evidence remain enforced.
-AI execution requires a 32-character owner beta key, model provider access and shared atomic PostgreSQL or Redis reservations.
+AI execution requires model provider access and shared atomic PostgreSQL or Redis reservations. Public mode is explicitly configured by `FACE_AI_ACCESS=public`; beta mode additionally requires a 32-character owner access key. IP quota hashing uses the server session secret (or beta token), never a client-supplied salt.
 Quotas fail closed. Conversations are page-memory only; quota stores retain hashed-IP counters and aggregate token usage. Explicitly signed saved reports are separate private records.
 Provider errors are sanitized. Public data routes keep the existing bounded per-process controls; they incur no model cost.
-See [actual controls and limits](docs/AI_AGENT_ARCHITECTURE.md). Preview uses owner-provided server-side NewAPI access and an owner beta token. Free Neon storage is configured; no paid service/quota was enabled.
+See [actual controls and limits](docs/AI_AGENT_ARCHITECTURE.md). Public release is authorized after the owner configured a provider-side API-key spending limit. Server-only NewAPI access and free Neon storage are retained; no new paid plan or quota purchase was made.
 
 ## Signed platform operations
 

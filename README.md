@@ -7,11 +7,11 @@
 **Wallet Face — Identity for Humans & AI Agents**
 
 Face Copilot adds real public Snapshot tools, proposal details, deterministic participation statistics,
-evidence cards and a restricted-beta streaming AI integration to the green v0.4 application.
-Public data tools work immediately. Paid model execution defaults off until model provider access,
-an owner beta key and shared PostgreSQL (or Redis) quotas are configured.
+evidence cards and streaming AI integration to the green v0.4 application.
+Public chat is enabled with `FACE_AI_ACCESS=public`, server-only model credentials and shared PostgreSQL (or Redis) quotas.
+The optional beta mode retains its access code. Provider billing limits are managed by the owner.
 
-公开数据工具、提案详情、代码计算的参与统计与证据卡片已接入；AI 模型执行通过内测开关启用。
+公开数据工具、提案详情、代码计算的参与统计与证据卡片已接入；公开模式下访客无需访问码即可对话。Agent 关联、审批与测试网支付通过独立的钱包签名流程执行。
 配置、测试状态与后续 Agent 身份规划见 [Agent architecture](docs/AI_AGENT_ARCHITECTURE.md)、
 [test report](docs/AI_AGENT_TEST_REPORT.md) 与 [identity roadmap](docs/AGENT_IDENTITY_ROADMAP.md)。
 

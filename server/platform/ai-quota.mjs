@@ -6,6 +6,7 @@ export function postgresQuota(
   limits,
   now = () => Date.now(),
   dbFactory = platformDb,
+  hashSecret = env.FACE_SESSION_SECRET || env.FACE_AI_BETA_TOKEN,
 ) {
   const getDb = () => dbFactory(env);
   return {
@@ -13,7 +14,7 @@ export function postgresQuota(
       const day = Math.floor(now() / 86400000),
         hour = Math.floor(now() / 3600000),
         hash = createHash("sha256")
-          .update(env.FACE_AI_BETA_TOKEN + ":" + ip)
+          .update(hashSecret + ":" + ip)
           .digest("hex")
           .slice(0, 24),
         scope = env.VERCEL_ENV || "development";

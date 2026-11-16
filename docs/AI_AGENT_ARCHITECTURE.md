@@ -35,15 +35,15 @@ No semantic proof of arbitrary model prose is claimed.
 - At most 8 text-only history messages, 3,000 characters/message, 10KB input, 16KB HTTP body.
 - At most 4 model steps, 800 output tokens/step, 6 tool calls, one concurrent tool execution, 45 seconds total.
 - 40KB per-step system/message context guard and 16KB streamed output guard; no automatic provider retries.
-- Owner beta token (32+ characters), provider credentials and shared quota storage are mandatory.
+- Provider credentials and shared quota storage are mandatory. Explicit public mode needs no visitor access code; beta mode requires an owner token. A 32-character server session secret or beta token salts hashed-IP quotas.
 - Preview uses `FACE_AI_QUOTA_STORE=postgres`: atomic PostgreSQL transaction/advisory lock reserves requests/IP/token budget. Redis Lua remains an optional adapter.
-- Maximum **5 requests/day globally**, **3/IP/hour**, **1,000,000 reserved tokens/day**; each attempt reserves 200,000 tokens before model execution.
+- Public defaults: **200 requests/day globally**, **10/IP/hour**, **40,000,000 reserved tokens/day**. Beta defaults remain 5/day, 3/IP/hour and 1,000,000 reserved tokens/day. Every attempt reserves 200,000 tokens before model execution. Server variables `FACE_AI_DAILY_REQUESTS`, `FACE_AI_IP_HOURLY_REQUESTS`, `FACE_AI_DAILY_RESERVED_TOKENS` configure these limits; invalid values disable availability.
 - Failed/cancelled attempts keep reservations. Quota failures stop execution. A failed final usage write returns `metered:false` without releasing the reservation.
 - IPs are salted/hashed. Aggregate usage is retained separately from prompts; chats stay in page memory.
 
 NewAPI per-million input/output prices are owner/channel-specific and unavailable to this session. Estimated request charge is
 `inputTokens × inputPrice / 1e6 + outputTokens × outputPrice / 1e6`.
-Daily token limits bound model activity, not a trustworthy provider monetary cap. Execution therefore remains owner-controlled beta.
+Daily token limits bound model activity. The owner configured a provider-side API-key spending limit and authorized public execution; this application cannot independently audit that provider limit.
 The development cost target is under US$1/day when provider rates permit it; no monetary guarantee or zero-spend claim is made.
 Observed model usage and live results are in [acceptance](AI_AGENT_TEST_REPORT.md).
 

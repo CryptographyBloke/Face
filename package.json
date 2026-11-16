@@ -16,7 +16,7 @@
     "smoke": "node scripts/smoke.mjs",
     "legacy:cli": "node src/cli.mjs",
     "smoke:ai": "node scripts/smoke-ai.mjs",
-    "build:release-preview": "npm test && npm --prefix web test && npm --prefix packages/sdk run build && npm run test:protocol && npm run build && node scripts/verify-ai-live.mjs && node scripts/verify-platform-live.mjs && node scripts/verify-identity-live.mjs && node scripts/verify-payments-live.mjs && node scripts/verify-spending-live.mjs && node scripts/verify-interop-live.mjs"
+    "build:release-preview": "npm test && npm --prefix web test && npm --prefix packages/sdk run build && npm run test:protocol && npm run build && node scripts/verify-ai-live.mjs && node scripts/verify-platform-live.mjs && node scripts/verify-identity-live.mjs && node scripts/verify-payments-live.mjs && node scripts/verify-spending-live.mjs && node scripts/verify-interop-live.mjs && node scripts/verify-public-release.mjs"
   },
   "engines": {
     "node": ">=24"

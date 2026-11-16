@@ -7,7 +7,12 @@ import {
   analyzeDataset,
 } from "../server/ai/tools.mjs";
 import { createAgentApi, systemPrompt } from "../server/ai/chat.mjs";
-import { aiStatus, createQuota, LIMITS } from "../server/ai/quota.mjs";
+import {
+  aiStatus,
+  aiLimits,
+  createQuota,
+  LIMITS,
+} from "../server/ai/quota.mjs";
 import { createApi } from "../server/app.mjs";
 import { agentProfileV1 } from "../server/identity/profile.mjs";
 import { MockLanguageModelV4 } from "ai/test";
@@ -315,6 +320,75 @@ test("quota failures prevent model calls and return actionable status", async ()
   });
   assert.equal((await h(request("/v1/ai/chat", body))).status, 429);
   assert.equal(called, false);
+});
+test("public chat accepts no access code but still reserves shared budget before model execution", async () => {
+  const publicEnv = {
+    ...env,
+    FACE_AI_ACCESS: "public",
+    FACE_AI_BETA_TOKEN: undefined,
+    FACE_SESSION_SECRET: "server-only-".repeat(4),
+  };
+  assert.equal(aiStatus(publicEnv).mode, "public");
+  assert.equal(aiStatus(publicEnv).available, true);
+  assert.equal(aiLimits(publicEnv).globalDailyRequests, 200);
+  let reserved = 0,
+    generated = 0;
+  const h = agent({
+    env: publicEnv,
+    quota: {
+      reserve: async () => {
+        reserved++;
+      },
+      record: async () => {},
+    },
+    generate: () => {
+      assert.equal(reserved, 1);
+      generated++;
+      return {
+        fullStream: (async function* () {
+          yield { type: "error" };
+        })(),
+      };
+    },
+  });
+  const req = request("/v1/ai/chat", body);
+  req.headers.delete("authorization");
+  const r = await h(req);
+  await r.text();
+  assert.equal(r.status, 200);
+  assert.equal(generated, 1);
+  assert.equal(
+    aiStatus({ ...publicEnv, FACE_SESSION_SECRET: "" }).available,
+    false,
+  );
+  assert.equal(
+    aiStatus({ ...publicEnv, FACE_AI_ACCESS: "pubic" }).available,
+    false,
+  );
+});
+test("public quota uses configured shared limits and hides the server hashing secret", async () => {
+  const publicEnv = {
+    ...env,
+    FACE_AI_ACCESS: "public",
+    FACE_SESSION_SECRET: "private-server-salt-".repeat(3),
+    FACE_AI_DAILY_REQUESTS: "100",
+    FACE_AI_IP_HOURLY_REQUESTS: "7",
+    FACE_AI_DAILY_RESERVED_TOKENS: "20000000",
+  };
+  let args;
+  await createQuota(publicEnv, async (_u, o) => {
+    args = JSON.parse(o.body);
+    return Response.json({ result: 1 });
+  }).reserve("1.2.3.4");
+  assert.deepEqual(args.slice(-4), ["100", "7", "200000", "20000000"]);
+  assert.ok(!JSON.stringify(args).includes(publicEnv.FACE_SESSION_SECRET));
+  assert.ok(!JSON.stringify(args).includes("1.2.3.4"));
+  for (const value of ["0", "-1", "NaN", "Infinity", "1.5", "10001", ""]) {
+    assert.equal(
+      aiStatus({ ...publicEnv, FACE_AI_DAILY_REQUESTS: value }).available,
+      false,
+    );
+  }
 });
 test("shared atomic Redis reservation uses global, private-IP and token keys; fails closed", async () => {
   let command;
