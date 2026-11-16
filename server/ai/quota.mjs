@@ -16,20 +16,79 @@ export const LIMITS = Object.freeze({
   ipHourlyRequests: 3,
   globalDailyTokens: 1000000,
 });
+export function quotaSecret(env) {
+  return env.FACE_SESSION_SECRET || env.FACE_AI_BETA_TOKEN || "";
+}
+export function aiLimits(env = process.env) {
+  const publicAccess = env.FACE_AI_ACCESS === "public";
+  const limits = { ...LIMITS };
+  const options = [
+    [
+      "globalDailyRequests",
+      "FACE_AI_DAILY_REQUESTS",
+      publicAccess ? 200 : 5,
+      10000,
+    ],
+    [
+      "ipHourlyRequests",
+      "FACE_AI_IP_HOURLY_REQUESTS",
+      publicAccess ? 10 : 3,
+      100,
+    ],
+    [
+      "globalDailyTokens",
+      "FACE_AI_DAILY_RESERVED_TOKENS",
+      publicAccess ? 40000000 : 1000000,
+      2000000000,
+    ],
+  ];
+  for (const [key, name, fallback, maximum] of options) {
+    const raw = env[name];
+    const value = raw === undefined ? fallback : Number(raw);
+    if (!Number.isSafeInteger(value) || value < 1 || value > maximum)
+      throw new ApiError(503, "AI_CONFIG", `Invalid ${name}`);
+    limits[key] = value;
+  }
+  if (limits.globalDailyTokens < limits.reservedTokens)
+    throw new ApiError(
+      503,
+      "AI_CONFIG",
+      "Daily token reservation is below one request",
+    );
+  return Object.freeze(limits);
+}
 export function aiStatus(env = process.env) {
   const missing = [];
   if (env.FACE_AI_ENABLED !== "true") missing.push("FACE_AI_ENABLED");
   const config = providerConfig(env);
   missing.push(...config.missing);
-  if (!env.FACE_AI_BETA_TOKEN || env.FACE_AI_BETA_TOKEN.length < 32)
+  const access = env.FACE_AI_ACCESS || "beta";
+  if (!["public", "beta"].includes(access))
+    missing.push("FACE_AI_ACCESS (public or beta)");
+  if (
+    access === "beta" &&
+    (!env.FACE_AI_BETA_TOKEN || env.FACE_AI_BETA_TOKEN.length < 32)
+  )
     missing.push("FACE_AI_BETA_TOKEN (32+ characters)");
+  if (quotaSecret(env).length < 32)
+    missing.push("server quota hashing secret (32+ characters)");
+  let limits = LIMITS;
+  try {
+    limits = aiLimits(env);
+  } catch (e) {
+    missing.push(e.message);
+  }
   if (env.FACE_AI_QUOTA_STORE === "postgres") {
     if (!env.FACE_DATABASE_URL) missing.push("shared Postgres quota store");
   } else if (!env.UPSTASH_REDIS_REST_URL || !env.UPSTASH_REDIS_REST_TOKEN)
     missing.push("shared Redis quota store");
   return {
     available: missing.length === 0,
-    mode: missing.length ? "data-only" : "restricted-beta",
+    mode: missing.length
+      ? "data-only"
+      : access === "public"
+        ? "public"
+        : "restricted-beta",
     missing,
     model: config.model,
     provider: config.provider,
@@ -42,10 +101,11 @@ export function aiStatus(env = process.env) {
       "getProposal",
       "analyzeParticipation",
     ],
-    limits: LIMITS,
+    limits,
   };
 }
 export function authorizeBeta(request, env) {
+  if (env.FACE_AI_ACCESS === "public") return;
   const value = request.headers.get("authorization") || "";
   const expected = "Bearer " + env.FACE_AI_BETA_TOKEN;
   const a = Buffer.from(value),
@@ -60,7 +120,7 @@ export function createQuota(
   now = () => Date.now(),
 ) {
   if (env.FACE_AI_QUOTA_STORE === "postgres")
-    return postgresQuota(env, LIMITS, now);
+    return postgresQuota(env, aiLimits(env), now, undefined, quotaSecret(env));
   async function command(args) {
     if (
       !/^https:\/\/[^/]+\.upstash\.io\/?$/.test(
@@ -95,10 +155,11 @@ export function createQuota(
   }
   return {
     async reserve(ip) {
+      const limits = aiLimits(env);
       const day = Math.floor(now() / 86400000),
         hour = Math.floor(now() / 3600000);
       const hash = createHash("sha256")
-        .update(env.FACE_AI_BETA_TOKEN + ":" + ip)
+        .update(quotaSecret(env) + ":" + ip)
         .digest("hex")
         .slice(0, 24);
       const ok = await command([
@@ -108,10 +169,10 @@ export function createQuota(
         `face:ai:v1:day:${day}`,
         `face:ai:v1:ip:${hour}:${hash}`,
         `face:ai:v1:tokens:${day}`,
-        String(LIMITS.globalDailyRequests),
-        String(LIMITS.ipHourlyRequests),
-        String(LIMITS.reservedTokens),
-        String(LIMITS.globalDailyTokens),
+        String(limits.globalDailyRequests),
+        String(limits.ipHourlyRequests),
+        String(limits.reservedTokens),
+        String(limits.globalDailyTokens),
       ]);
       if (ok !== 1)
         throw new ApiError(

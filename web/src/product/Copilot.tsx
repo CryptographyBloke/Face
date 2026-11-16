@@ -460,7 +460,9 @@ export default function Copilot({
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          ...(beta ? { Authorization: "Bearer " + beta } : {}),
+          ...(status.mode !== "public" && beta
+            ? { Authorization: "Bearer " + beta }
+            : {}),
         },
         body: JSON.stringify({
           context,
@@ -598,6 +600,10 @@ export default function Copilot({
         </div>
         <div className="platform-links">
           <Link to="/agents">{t("Agent 身份", "Agent identities")}</Link>
+          <Link to="/my-agents">{t("连接我的 Agent", "Connect my Agent")}</Link>
+          <Link to="/actions/new">{t("审批操作", "Review actions")}</Link>
+          <Link to="/spending">{t("消费授权", "Spending approvals")}</Link>
+          <Link to="/payments">{t("测试网支付", "Testnet payments")}</Link>
           <Link
             to={
               "/reports/new" +
@@ -614,7 +620,12 @@ export default function Copilot({
       <div className="copilot-status" role="status">
         <span className={status?.available ? "status-dot on" : "status-dot"} />
         {status?.available
-          ? t("AI 内测 · 只读工具", "AI beta · read-only tools")
+          ? status.mode === "public"
+            ? t(
+                "AI 已开放 · 公开数据工具",
+                "AI open to everyone · public data tools",
+              )
+            : t("AI 内测 · 只读工具", "AI beta · read-only tools")
           : status
             ? t(
                 "公开数据可用 · AI 待激活",
@@ -770,7 +781,7 @@ export default function Copilot({
             </button>
           </div>
         </form>
-        {status?.available && (
+        {status?.available && status.mode !== "public" && (
           <details>
             <summary>{t("内测访问", "Beta access")}</summary>
             <input

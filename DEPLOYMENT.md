@@ -104,6 +104,8 @@ Use the existing Vercel project, repository root, `npm ci && npm --prefix web ci
 | NEWAPI_API_KEY | Server-only sensitive provider key |
 | NEWAPI_ALLOW_HTTP | Explicit opt-in for the owner's HTTP provider endpoint |
 | FACE_AI_BETA_TOKEN | 32+ character owner beta access code |
+| FACE_AI_ACCESS=public | Public conversations without a visitor code; default beta |
+| FACE_AI_DAILY_REQUESTS / FACE_AI_IP_HOURLY_REQUESTS / FACE_AI_DAILY_RESERVED_TOKENS | Public defaults 200/day, 10/IP/hour, 40M reserved tokens/day; provider billing cap remains owner-managed |
 | FACE_AI_QUOTA_STORE=postgres | Durable shared quotas |
 | FACE_DATABASE_URL | Environment-specific Neon connection |
 | FACE_PLATFORM_ENABLED=true | Persistent platform switch |
@@ -134,3 +136,5 @@ Release B: additive migration 006, `FACE_X402_ENABLED`, `FACE_X402_RECEIVER`, op
 Release C adds human-reviewed testnet spending policies, per-quote approval, conservative atomic budgets, revocation and a guarded wallet-signing boundary. See [exact routes and enforcement scope](docs/CONTROLLED_SPENDING_RELEASE_C.md).
 
 Release D Preview: migration 008, FACE_INTEROP_ENABLED, Preview-only FACE_INTEROP_VERIFY_ON_BUILD. The complete release verification script runs backend/React tests, SDK/build/protocol checks and separately flagged integration checks; AI model verification remains off unless explicitly activated. [Release D acceptance scope](docs/AGENT_INTEROP_RELEASE_D.md).
+
+Public production release: apply additive migrations 005–008 and runtime table/sequence grants to the existing platform database, then enable FACE_IDENTITY_ENABLED, FACE_INTEROP_ENABLED, FACE_SPENDING_ENABLED and FACE_X402_ENABLED. Identity falls back to the production FACE_DATABASE_URL; never copy the Preview database URL. FACE_RELEASE_VERIFY_ON_BUILD=true verifies public configuration, schema versions, runtime access and the spending trigger without signing or charging. Preview-only synthetic write checks remain off in production. The paid demonstration remains Base Sepolia-only and funded settlement acceptance is recorded separately.

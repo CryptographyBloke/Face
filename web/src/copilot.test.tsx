@@ -50,6 +50,47 @@ function dataFetch(status = { available: false, mode: "data-only" }) {
     );
 }
 describe("Face Copilot", () => {
+  it("opens public conversation without access-code input and links to reviewed operations", async () => {
+    const fetch = vi
+      .spyOn(globalThis, "fetch")
+      .mockImplementation(async (input) =>
+        String(input).includes("/status")
+          ? Response.json({ available: true, mode: "public" })
+          : new Response(
+              [
+                { type: "text", text: "Public analysis [1]." },
+                {
+                  type: "done",
+                  usage: { totalTokens: 5 },
+                  toolCalls: 1,
+                  metered: true,
+                },
+              ]
+                .map((x) => JSON.stringify(x) + "\n")
+                .join(""),
+            ),
+      );
+    mount();
+    await screen.findByText("AI open to everyone · public data tools");
+    expect(screen.queryByLabelText("Beta access key")).toBeNull();
+    expect(
+      screen
+        .getByRole("link", { name: "Connect my Agent" })
+        .getAttribute("href"),
+    ).toBe("/my-agents");
+    expect(
+      screen
+        .getByRole("link", { name: "Spending approvals" })
+        .getAttribute("href"),
+    ).toBe("/spending");
+    fireEvent.change(screen.getByLabelText("Governance question"), {
+      target: { value: "Analyze ENS" },
+    });
+    fireEvent.click(screen.getByRole("button", { name: "Send" }));
+    await screen.findByText("Public analysis [1].");
+    const call = fetch.mock.calls.find(([url]) => url === "/v1/ai/chat");
+    expect(call?.[1]?.headers).toEqual({ "Content-Type": "application/json" });
+  });
   it("shows honest disabled AI and returns real tool response cards with scan scope and trusted source", async () => {
     const fetch = dataFetch();
     mount();

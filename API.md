@@ -93,11 +93,11 @@ package-name ownership, reviewed metadata and explicit authorization.
 
 | Endpoint | Contract |
 |---|---|
-| `GET /v1/ai/status` | Available flag, data-only/restricted-beta mode, model ID, missing config names, six tools and limits |
+| `GET /v1/ai/status` | Available flag, data-only/restricted-beta/public mode, model ID, missing config names, six tools and effective limits |
 | `POST /v1/ai/tools/:name` | Strict tool input → `{tool,data,provenance,untrustedContent:true}`; public same-origin read-only research |
 | `POST /v1/ai/chat` | `{messages:[{role:"user" or "assistant",content}],context:{spaceId?,address?,proposalId?},language:"zh" or "en"}` → NDJSON |
 
-Chat requires `Authorization: Bearer <owner beta key>` and exact application Origin. Native mutation routes remain independent.
+Chat requires exact application Origin. With `FACE_AI_ACCESS=public`, visitors send no access key; shared quotas still apply before model execution. Beta mode requires `Authorization: Bearer <owner beta key>`. Native and platform mutations retain their separate signed authorization.
 Example public tool request: `POST /v1/ai/tools/getProposal` with `{spaceId:"ens.eth",proposalId:"0x…64 hex characters"}`.
 
 Tool inputs:

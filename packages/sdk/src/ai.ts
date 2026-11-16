@@ -34,7 +34,7 @@ export interface Evidence {
 }
 export interface AgentStatus {
   available: boolean;
-  mode: "data-only" | "restricted-beta";
+  mode: "data-only" | "restricted-beta" | "public";
   model: string | null;
   readOnly: true;
   tools: ToolName[];
