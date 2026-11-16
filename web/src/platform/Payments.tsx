@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
+import { assertSigningPermit,type SigningPermit } from "./spending-policy";
 import { usePreferences } from "../app/Preferences";
 import { useWallet } from "../app/WalletProvider";
 import { WalletSession, usePlatformSession } from "./client";
@@ -42,8 +43,9 @@ export default function Payments() {
   const { t } = usePreferences(),
     { wallet } = useWallet(),
     { token } = usePlatformSession();
+  const [params] = useSearchParams();
   const [status, setStatus] = useState<Status | null>(null),
-    [space, setSpace] = useState("ens.eth"),
+    [space, setSpace] = useState(params.get("spaceId") || "ens.eth"),
     [offer, setOffer] = useState<PaymentRequired | null>(null),
     [review, setReview] = useState(false),
     [busy, setBusy] = useState(false),
@@ -106,7 +108,7 @@ export default function Payments() {
           "/v1/payments/report?spaceId=" +
           encodeURIComponent(space) +
           "&requestId=" +
-          crypto.randomUUID(),
+          (params.get("requestId") || crypto.randomUUID()),
         r = await fetch(url),
         d = await r.json();
       if (r.status !== 402)
@@ -173,6 +175,11 @@ export default function Payments() {
           new ExactEvmScheme({
             address: wallet.address,
             signTypedData: async (data) => {
+              const quoteId=new URL(offer.resource.url).searchParams.get("requestId");
+              const response=await fetch("/v1/spending/permit?quoteId="+quoteId+"&payer="+wallet.address);
+              const permit=await response.json();
+              if (!response.ok) throw Error(permit.error?.message||"Spending approval unavailable");
+              assertSigningPermit(permit as SigningPermit,quoteId!,wallet.address,a,offer.resource.url,BigInt(String(data.message.validBefore)));
               // The wallet remains the human approval boundary; no signer is exposed to Copilot.
               if (
                 data.domain.chainId !== 84532 ||
@@ -311,6 +318,7 @@ export default function Payments() {
           </button>
         )}
       </div>
+      {offer && <div className="panel"><p>{t("报价 ID", "Quote ID")}: {new URL(offer.resource.url).searchParams.get("requestId")}</p><Link to="/spending">{t("所有者限额与逐笔审批", "Owner limits and per-payment approval")} →</Link></div>}
       {result && (
         <article className="panel">
           <h2>{t("支付与交付记录", "Payment and delivery record")}</h2>

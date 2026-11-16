@@ -14,6 +14,7 @@ import { SpacesProvider } from "./app/SpacesProvider";
 import { AppShell } from "./app/AppShell";
 import { EmptyState, LoadingSkeleton, ToastProvider } from "./ui/primitives";
 import "./product.css";
+const Spending = lazy(() => import("./platform/Spending"));
 const Payments = lazy(() => import("./platform/Payments"));
 const MyAgents = lazy(() => import("./platform/PersonalAgents"));
 const ConnectAgent = lazy(() =>
@@ -105,6 +106,7 @@ export function ProductRoutes() {
     <Routes>
       <Route element={<Layout />}>
         <Route path="payments" element={<Payments />} />
+        <Route path="spending" element={<Spending />} />
         <Route index element={<Home />} />
         <Route path="ai" element={<Copilot />} />
         <Route path="agents" element={<Agents />} />

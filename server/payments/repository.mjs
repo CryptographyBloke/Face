@@ -56,6 +56,7 @@ export class PaymentRepository {
         );
       return { record, claimed: rows.length === 1 };
     } catch (e) {
+      if (/FACE_SPEND/.test(e.message)) throw new ApiError(403,"SPENDING_APPROVAL_REQUIRED","An active owner approval and current spending policy are required");
       if (/duplicate key/.test(e.message))
         throw new ApiError(
           409,

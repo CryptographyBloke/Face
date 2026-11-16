@@ -103,6 +103,7 @@ export default function MyAgents() {
           {t("连接 Agent", "Connect Agent")}
         </Link>
       </header>
+      <Link to="/spending">{t("Agent 支出限额", "Agent spending limits")} →</Link>
       <Link to="/payments">
         {t("支付与结算记录", "Payments and receipts")} →
       </Link>

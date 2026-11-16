@@ -635,7 +635,9 @@ export function AppShell({ children }: { children: ReactNode }) {
   const { t, lang, setLang, theme, setTheme } = usePreferences();
   const location = useLocation();
   const [drawer, setDrawer] = useState(false);
-  const title = location.pathname.startsWith("/payments")
+  const title = location.pathname.startsWith("/spending")
+    ? t("受控支出", "Controlled spending")
+    : location.pathname.startsWith("/payments")
     ? t("Agent 支付", "Agent payments")
     : location.pathname.startsWith("/my-agents")
       ? t("我的 Agents", "My Agents")

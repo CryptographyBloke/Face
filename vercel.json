@@ -1,6 +1,6 @@
 {
   "installCommand": "npm ci && npm --prefix web ci",
-  "buildCommand": "npm run build && node scripts/verify-ai-live.mjs && node scripts/verify-platform-live.mjs && node scripts/verify-identity-live.mjs && node scripts/verify-payments-live.mjs",
+  "buildCommand": "npm run build:release-preview",
   "outputDirectory": "web/dist",
   "framework": null,
   "redirects": [
@@ -126,6 +126,10 @@
     },
     {
       "source": "/payments",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/spending",
       "destination": "/index.html"
     }
   ],

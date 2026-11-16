@@ -25,6 +25,7 @@ function handle(request) {
     (path.startsWith("/v1/ai/") ||
       path.startsWith("/v1/platform/") ||
       path.startsWith("/v1/payments/") ||
+      path.startsWith("/v1/spending/") ||
       path === "/v1/mcp") &&
     !handlers.has(u.origin)
   ) {
@@ -35,6 +36,7 @@ function handle(request) {
     path.startsWith("/v1/ai/") ||
     path.startsWith("/v1/platform/") ||
     path.startsWith("/v1/payments/") ||
+      path.startsWith("/v1/spending/") ||
     path === "/v1/mcp"
       ? handlers.get(u.origin)
       : api;

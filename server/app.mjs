@@ -1,3 +1,4 @@
+import { createSpendingApi } from "./spending/api.mjs";
 import { createPaymentApi } from "./payments/api.mjs";
 import { createPublicMcp } from "./mcp/server.mjs";
 import { createPlatformApi } from "./platform/api.mjs";
@@ -17,6 +18,7 @@ export function createApi({
   agentOptions = {},
   platformOptions = {},
   paymentOptions = {},
+  spendingOptions = {},
 }) {
   const agent = createAgentApi({
     snapshot,
@@ -27,6 +29,7 @@ export function createApi({
   });
   const platform = createPlatformApi({ snapshot, origin, ...platformOptions });
   const mcp = createPublicMcp({ snapshot, store, ens, origin });
+  const spending = createSpendingApi({origin,...spendingOptions});
   const payments = createPaymentApi({ snapshot, origin, ...paymentOptions });
   const buckets = new Map();
   return async (request, clientIp = "local") => {
@@ -58,6 +61,7 @@ export function createApi({
           "Request limit exceeded. Retry later.",
         );
       }
+      if (url.pathname.startsWith("/v1/spending/")) return spending(request);
       if (url.pathname.startsWith("/v1/payments/"))
         return payments(request, clientIp);
       if (request.method === "OPTIONS") {

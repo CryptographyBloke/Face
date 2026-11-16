@@ -1,0 +1,5 @@
+import{it,expect,vi}from'vitest';
+import{assertSigningPermit}from'./platform/spending-policy';
+const requirements={scheme:'exact',network:'eip155:84532' as const,asset:'0x036CbD53842c5426634e7929541eC2318f3dCF7e',amount:'1000',payTo:'0x2222222222222222222222222222222222222222',maxTimeoutSeconds:120,extra:{}};
+const payer='0x1111111111111111111111111111111111111111',url='https://walletface.test/v1/payments/report',permit={managed:true,allowed:true,humanApprovalRequired:true,quoteId:'quote',payer,requirements,resourceUrl:url,expiresAt:1000,approvalHash:'verified-proof'};
+it('signing boundary rejects revoked, altered or expired approval before invoking a wallet',()=>{const walletSign=vi.fn();const sign=(p=permit)=>{assertSigningPermit(p,'quote',payer,requirements,url,900n);walletSign();};for(const patch of[{allowed:false},{humanApprovalRequired:false},{expiresAt:899},{payer:requirements.payTo},{resourceUrl:'https://evil.test'},{requirements:{...requirements,amount:'1'}},{requirements:{...requirements,payTo:payer}}])expect(()=>sign({...permit,...patch})).toThrow();expect(walletSign).not.toHaveBeenCalled();sign();expect(walletSign).toHaveBeenCalledTimes(1);});
