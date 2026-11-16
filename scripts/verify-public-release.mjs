@@ -20,7 +20,9 @@ const versions = await db.query(
 );
 assert.deepEqual(
   versions.map((x) => x.version),
-  [1, 2, 3, 4, 5, 6, 7, 8],
+  process.env.FACE_EXECUTION_ENABLED === "true"
+    ? [1, 2, 3, 4, 5, 6, 7, 8, 9]
+    : [1, 2, 3, 4, 5, 6, 7, 8],
 );
 const requiredTables = [
   "agent_links",

@@ -241,6 +241,14 @@ export function AgentProfile() {
         )}
         <AgentIdentityEvidence agent={a} />
         <Discovery agent={a} />
+        <Link to={"/agents?" + new URLSearchParams({ q: a.name })}>
+          {t("查看此 Agent 的服务", "Explore this Agent’s services")} →
+        </Link>
+        {own && (
+          <Link to={"/developer/agents/services/new?agentId=" + a.id}>
+            {t("发布研究服务", "Publish research service")} →
+          </Link>
+        )}
         <h2>{t("自声明的组织关系", "Self-declared organization claims")}</h2>
         {a.metadata.organizations.map((o) => (
           <p key={o.spaceId}>

@@ -34,6 +34,12 @@ export default function Home() {
             )}
           </p>
           <div className="actions">
+            <Link className="button primary" to="/agents">
+              {t("使用 Agent", "Use an Agent")}
+            </Link>
+            <Link className="button" to="/my-agents/connect">
+              {t("发布我的 Agent", "Publish my Agent")}
+            </Link>
             <Link className="button primary" to="/avatar">
               <Icon name="image" />
               {t("设置头像", "Set your avatar")}

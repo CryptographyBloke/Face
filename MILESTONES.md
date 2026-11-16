@@ -78,3 +78,11 @@ Production awaits formal database migration approval. Remaining indexing reconci
 2026-11-15: v0.5 merged and live on walletface.org; real model/Snapshot/MCP acceptance recorded. Personal Agent Release A adds owner/controller/domain/receiver evidence on a separate branch and isolated Preview DB. x402 receive, controlled spending and external interoperability follow as independently tested releases.
 
 Agent extension delivery: Release A signed personal links and evidence (PR5); Release B testnet x402 receive/receipts (PR6); Release C owner-reviewed policy budgets/settlement guard (PR7); Release D bounded MCP/A2A metadata discovery and identity resolution. Each branch preserves its predecessor. Final production promotion is gated on authenticated C/D browser acceptance and funded testnet settlement; mainnet and autonomous signing stay disabled.
+
+## Marketplace sequence / 服务市场发布顺序
+
+1. Agent Execution: typed MCP/A2A adapters, private durable runs, Playground, reviewed read-only publication, free research and measured developer task counts. Candidate implemented; live/browser acceptance tracked separately.
+2. Payment Completion: bind confirmed quotes, verified testnet settlement and delivery recovery to runs. Requires owner-controlled receiver and funded wallet confirmation.
+3. Developer Platform: richer discovery/pricing, scoped API keys, signed webhooks, objective health and usage analytics.
+4. Agent Wallet & Organization: policy dashboard, wallet balances, approved reports and organization task history.
+5. Production Hardening: isolated database restore exercise, load/cost checks, responsive browser acceptance and production activation of accepted features.

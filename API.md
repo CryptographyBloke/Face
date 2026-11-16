@@ -133,3 +133,21 @@ Release B adds optional testnet-only `/v1/payments/status`, `/report`, `/receipt
 Release C adds human-reviewed testnet spending policies, per-quote approval, conservative atomic budgets, revocation and a guarded wallet-signing boundary. See [exact routes and enforcement scope](docs/CONTROLLED_SPENDING_RELEASE_C.md).
 
 Release D: GET /v1/platform/agents/:id/discovery; signed agent.probe.mcp and agent.probe.a2a actions; SDK resolveAgentDiscovery and AgentDiscovery. Probes require recent domain control and perform metadata discovery only. [Exact constraints](docs/AGENT_INTEROP_RELEASE_D.md).
+
+## Agent Execution candidate
+
+| Method | Route | Authorization |
+|---|---|---|
+| GET | `/v1/marketplace/status` | Public; feature/access/protocol status |
+| GET | `/v1/marketplace/services` | Public; `q/category/protocol/price` filters |
+| GET | `/v1/marketplace/services/:id` | Public service plan |
+| POST | `/v1/agent-runs` | Exact app Origin; `id/serviceId/task/arguments/language/retainResult:true`; optional wallet session |
+| GET | `/v1/agent-runs/:id` | Owner wallet session or guest `X-Face-Run-Token` |
+| POST | `/v1/agent-runs/:id/execute` | Same credential + `approved:true,planHash`; NDJSON events and final `done` |
+| POST | `/v1/agent-runs/:id/cancel` | Same credential; `{}` |
+| POST | `/v1/agent-runs/:id/poll` | Same credential; `{}`; pending A2A task only |
+| GET | `/v1/marketplace/developer/analytics?days=30` | Wallet session; owned services only |
+| GET | `/v1/research-agent/card` | Public A2A v1 Agent Card |
+| POST | `/v1/research-agent/rpc` | Public-data-only bounded A2A SendMessage/GetTask/CancelTask |
+
+Built-in research arguments: `spaceId`, optional integer `periodDays` (1–365, default 30); MCP `get_space` keeps `spaceId` only. Guest creation accepts a client-generated 256-bit base64url `X-Face-Run-Token`; its hash is persisted. Owner tasks require the matching wallet session even if a guest secret is known. Signed platform actions `market.service.upsert` and `market.service.pause` reuse existing nonce authorization. SDK exposes typed list/get/create/read/cancel and an async execution-event iterator.

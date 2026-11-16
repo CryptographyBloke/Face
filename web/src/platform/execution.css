@@ -1,0 +1,75 @@
+.execution-filters {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr 1fr;
+  gap: 16px;
+}
+.execution-filters label,
+.execution-playground label {
+  display: grid;
+  gap: 8px;
+}
+.execution-filters input,
+.execution-filters select,
+.execution-playground input,
+.execution-playground textarea {
+  max-width: 100%;
+  min-width: 0;
+}
+.execution-playground textarea {
+  min-height: 110px;
+}
+.execution-playground pre {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  font-size: 12px;
+  max-height: 440px;
+  overflow: auto;
+}
+.execution-playground .execution-answer {
+  white-space: pre-wrap;
+  line-height: 1.8;
+  overflow-wrap: anywhere;
+  margin: 24px 0;
+}
+.execution-playground .actions {
+  flex-wrap: wrap;
+}
+.execution-playground article {
+  overflow-wrap: anywhere;
+}
+.execution-playground [role="log"] {
+  font-size: 13px;
+  color: var(--muted);
+  max-height: 220px;
+  overflow: auto;
+}
+.execution-playground input[type="checkbox"] {
+  width: auto;
+  justify-self: start;
+}
+.agent-card small {
+  overflow-wrap: anywhere;
+}
+.agent-card .actions {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-top: 18px;
+}
+@media (max-width: 900px) {
+  .execution-filters {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+@media (max-width: 520px) {
+  .execution-filters {
+    grid-template-columns: 1fr;
+  }
+  .execution-playground .button {
+    max-width: 100%;
+    white-space: normal;
+  }
+  .execution-playground pre {
+    font-size: 11px;
+  }
+}

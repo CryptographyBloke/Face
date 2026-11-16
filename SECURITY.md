@@ -90,3 +90,11 @@ x402 beta is fixed to Base Sepolia USDC and server-owned requirements. Unique au
 Release C adds human-reviewed testnet spending policies, per-quote approval, conservative atomic budgets, revocation and a guarded wallet-signing boundary. See [exact routes and enforcement scope](docs/CONTROLLED_SPENDING_RELEASE_C.md).
 
 External service discovery requires a signed current profile, active association and domain-control proof within 24 hours. MCP requests use DNS-pinned HTTPS, a three-method metadata allowlist, bounded bytes/deadlines and no forwarded credentials or redirects. Tools/list annotations and A2A capabilities stay operator declarations. No external tool or task is executed. [Release D](docs/AGENT_INTEROP_RELEASE_D.md).
+
+## Agent Execution safeguards
+
+Each remote capability needs operator allowlisting and database execution approval, current signed owner/controller linkage, fresh domain proof, matching discovered input schema and current published service/profile revisions. Configuration edits invalidate execution approval. Immediate signed pause does not depend on endpoint uptime. The atomic run claim repeats database authorization checks.
+
+HTTPS transport pins a validated public DNS address per request, rejects private IPs/redirects/credentials/non-443 ports, and limits request/response size and deadlines. MCP permits one exact approved tool call, bounded discovery and no reconnect; server-initiated instructions cannot expand permissions. A2A results and all remote text remain untrusted, escaped output. Wallet/provider credentials are never forwarded.
+
+Guest task tokens are 256-bit, hash-only in the database and session-only in the browser. Wallet tasks cannot be read using guest credentials. Shared limits are 2,000 operations/day, 1,000/hour globally and 30/hour per hashed IP; existing AI quotas apply independently. Interrupted leases become `execution_unknown` and are never silently rerun. Physical record cleanup, remote OAuth and durable long-running internal workflows remain separate release work.

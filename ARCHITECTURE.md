@@ -102,3 +102,7 @@ Personal Agent Release A extends existing signed Agent profiles with optional ru
 Release D adds a signed read-only service discovery layer in server/interop, atomic metadata provenance (migration 008), a v2 public discovery manifest, and bounded personal identity projections in the existing five MCP tools. [Protocol and permission boundaries](docs/AGENT_INTEROP_RELEASE_D.md).
 
 Public release 2026-11-16: `FACE_AI_ACCESS=public` permits visitor chat without an access code while shared PostgreSQL quotas still precede model execution. The model/MCP registries remain read-only; the UI links into separately signed Agent/report/action workflows. Additive platform migrations 005–008 are live. Production payment/spending execution is off pending an owner-confirmed receiver and funded acceptance. [Actual deployment and evidence](docs/PUBLIC_AGENT_RELEASE.md).
+
+## Agent Execution boundary
+
+`server/execution` separates catalog authorization, private task persistence, bounded HTTPS transport, MCP/A2A adapters and existing Copilot model execution. PostgreSQL migration 009 adds service versions, run claims, leases and append-only progress. Human plan approval and a compare-and-set database claim precede invocation. Credentials and private task content are never forwarded to an external endpoint; only the approved task/arguments are sent. [Detailed architecture](docs/AGENT_EXECUTION_ARCHITECTURE.md).

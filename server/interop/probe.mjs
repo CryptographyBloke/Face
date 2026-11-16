@@ -257,6 +257,7 @@ export async function probeMcp(url, { fetcher = pinnedMcpFetch } = {}) {
         name: t.name.slice(0, 100),
         description: t.description?.slice(0, 1000) || "",
         declaredReadOnly: t.annotations?.readOnlyHint === true,
+        inputSchema: t.inputSchema,
       })),
       toolExecution: false,
       claims: "operator_declared",
