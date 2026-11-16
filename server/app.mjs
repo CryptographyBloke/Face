@@ -1,4 +1,6 @@
 import { createSpendingApi } from "./spending/api.mjs";
+import { createExecutionApi } from "./execution/api.mjs";
+import { createResearchAgent } from "./execution/research-agent.mjs";
 import { createPaymentApi } from "./payments/api.mjs";
 import { createPublicMcp } from "./mcp/server.mjs";
 import { createPlatformApi } from "./platform/api.mjs";
@@ -19,6 +21,7 @@ export function createApi({
   platformOptions = {},
   paymentOptions = {},
   spendingOptions = {},
+  executionOptions = {},
 }) {
   const agent = createAgentApi({
     snapshot,
@@ -29,8 +32,18 @@ export function createApi({
   });
   const platform = createPlatformApi({ snapshot, origin, ...platformOptions });
   const mcp = createPublicMcp({ snapshot, store, ens, origin });
-  const spending = createSpendingApi({origin,...spendingOptions});
+  const spending = createSpendingApi({ origin, ...spendingOptions });
   const payments = createPaymentApi({ snapshot, origin, ...paymentOptions });
+  const execution = createExecutionApi({
+    snapshot,
+    origin,
+    ...executionOptions,
+  });
+  const researchAgent = createResearchAgent({
+    snapshot,
+    origin,
+    ...executionOptions,
+  });
   const buckets = new Map();
   return async (request, clientIp = "local") => {
     const url = new URL(request.url);
@@ -80,6 +93,14 @@ export function createApi({
         throw new ApiError(405, "METHOD", "Method not allowed");
       if (url.pathname === "/v1/mcp") return mcp(request);
       if (url.pathname.startsWith("/v1/ai/")) return agent(request, clientIp);
+      if (url.pathname.startsWith("/v1/research-agent/"))
+        return researchAgent(request, clientIp);
+      if (
+        url.pathname.startsWith("/v1/marketplace/") ||
+        url.pathname === "/v1/agent-runs" ||
+        url.pathname.startsWith("/v1/agent-runs/")
+      )
+        return execution(request, clientIp);
       if (url.pathname.startsWith("/v1/platform/"))
         return platform(request, clientIp);
       if (write && requestOrigin !== origin)

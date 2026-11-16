@@ -15,6 +15,18 @@ import { AppShell } from "./app/AppShell";
 import { EmptyState, LoadingSkeleton, ToastProvider } from "./ui/primitives";
 import "./product.css";
 const Spending = lazy(() => import("./platform/Spending"));
+const Marketplace = lazy(() => import("./platform/Execution"));
+const Playground = lazy(() =>
+  import("./platform/Execution").then((m) => ({ default: m.Playground })),
+);
+const DeveloperDashboard = lazy(() =>
+  import("./platform/Execution").then((m) => ({
+    default: m.DeveloperDashboard,
+  })),
+);
+const ServiceEditor = lazy(() =>
+  import("./platform/Execution").then((m) => ({ default: m.ServiceEditor })),
+);
 const Payments = lazy(() => import("./platform/Payments"));
 const MyAgents = lazy(() => import("./platform/PersonalAgents"));
 const ConnectAgent = lazy(() =>
@@ -109,7 +121,14 @@ export function ProductRoutes() {
         <Route path="spending" element={<Spending />} />
         <Route index element={<Home />} />
         <Route path="ai" element={<Copilot />} />
-        <Route path="agents" element={<Agents />} />
+        <Route path="agents" element={<Marketplace />} />
+        <Route path="agents/directory" element={<Agents />} />
+        <Route path="agents/:id/playground" element={<Playground />} />
+        <Route path="developer/agents" element={<DeveloperDashboard />} />
+        <Route
+          path="developer/agents/services/:id"
+          element={<ServiceEditor />}
+        />
         <Route path="my-agents" element={<MyAgents />} />
         <Route path="my-agents/connect" element={<ConnectAgent />} />
         <Route path="my-agents/links/:id" element={<AgentLinkPage />} />

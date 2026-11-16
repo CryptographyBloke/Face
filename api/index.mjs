@@ -22,7 +22,10 @@ function handle(request) {
   const path = route ? "/" + route.replace(/^\//, "") : u.pathname;
   u.searchParams.delete("_route");
   if (
-    (path.startsWith("/v1/ai/") ||
+    (path.startsWith("/v1/marketplace/") ||
+      path.startsWith("/v1/agent-runs") ||
+      path.startsWith("/v1/research-agent/") ||
+      path.startsWith("/v1/ai/") ||
       path.startsWith("/v1/platform/") ||
       path.startsWith("/v1/payments/") ||
       path.startsWith("/v1/spending/") ||
@@ -33,10 +36,13 @@ function handle(request) {
     handlers.set(u.origin, createApi({ snapshot, origin: u.origin }));
   }
   const handler =
+    path.startsWith("/v1/marketplace/") ||
+    path.startsWith("/v1/agent-runs") ||
+    path.startsWith("/v1/research-agent/") ||
     path.startsWith("/v1/ai/") ||
     path.startsWith("/v1/platform/") ||
     path.startsWith("/v1/payments/") ||
-      path.startsWith("/v1/spending/") ||
+    path.startsWith("/v1/spending/") ||
     path === "/v1/mcp"
       ? handlers.get(u.origin)
       : api;

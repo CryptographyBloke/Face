@@ -131,6 +131,10 @@
     {
       "source": "/spending",
       "destination": "/index.html"
+    },
+    {
+      "source": "/developer/:path*",
+      "destination": "/index.html"
     }
   ],
   "crons": [

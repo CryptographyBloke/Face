@@ -1,4 +1,5 @@
 import { InteropService, interopEnabled } from "../interop/service.mjs";
+import { MarketplaceControl } from "../execution/catalog.mjs";
 import { scheduledRefresh } from "./scheduler.mjs";
 import { createHash } from "node:crypto";
 import { GovernanceIndex } from "./indexer.mjs";
@@ -83,7 +84,7 @@ export function createPlatformApi({
           "PLATFORM_DISABLED",
           "Agent platform is unavailable",
         );
-      current ||= new InteropService({ snapshot, origin, env });
+      current ||= new MarketplaceControl({ snapshot, origin, env });
       const repo = current.repository;
       const index = new GovernanceIndex({ snapshot, db: repo.db });
       const reserve = async (kind, ip, max = 10) => {

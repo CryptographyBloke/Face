@@ -1,3 +1,17 @@
+import type {
+  AgentService,
+  AgentRun,
+  CreateAgentRun,
+  RunCredentials,
+  AgentRunEvent,
+} from "./execution";
+export type {
+  AgentService,
+  AgentRun,
+  CreateAgentRun,
+  RunCredentials,
+  AgentRunEvent,
+} from "./execution";
 export interface Profile {
   chainId: 1;
   address: string;
@@ -104,6 +118,132 @@ export function validateSpace(value: string) {
   return value;
 }
 export class FaceClient {
+  private runHeaders(credentials: RunCredentials = {}, write = false) {
+    return {
+      ...(write ? { "Content-Type": "application/json" } : {}),
+      ...(write && this.baseUrl
+        ? { Origin: new URL(this.baseUrl).origin }
+        : {}),
+      ...(credentials.accessToken
+        ? { "X-Face-Run-Token": credentials.accessToken }
+        : {}),
+      ...(credentials.sessionToken
+        ? { Authorization: "Bearer " + credentials.sessionToken }
+        : {}),
+    };
+  }
+  listAgentServices(
+    query: {
+      q?: string;
+      category?: string;
+      protocol?: string;
+      price?: "free" | "paid";
+    } = {},
+    options: RequestInit = {},
+  ) {
+    const p = new URLSearchParams(
+      Object.entries(query).filter(([, v]) => v !== undefined) as [
+        string,
+        string,
+      ][],
+    );
+    return this.request<{ items: AgentService[] }>(
+      "/v1/marketplace/services?" + p,
+      options,
+    );
+  }
+  getAgentService(id: string, options: RequestInit = {}) {
+    return this.request<AgentService>(
+      "/v1/marketplace/services/" + encodeURIComponent(id),
+      options,
+    );
+  }
+  createAgentRun(
+    input: CreateAgentRun,
+    credentials: RunCredentials = {},
+    options: RequestInit = {},
+  ) {
+    return this.request<AgentRun>("/v1/agent-runs", {
+      ...options,
+      method: "POST",
+      headers: { ...this.runHeaders(credentials, true), ...options.headers },
+      body: JSON.stringify(input),
+    });
+  }
+  getAgentRun(
+    id: string,
+    credentials: RunCredentials,
+    options: RequestInit = {},
+  ) {
+    return this.request<AgentRun>("/v1/agent-runs/" + encodeURIComponent(id), {
+      ...options,
+      headers: { ...this.runHeaders(credentials), ...options.headers },
+    });
+  }
+  cancelAgentRun(
+    id: string,
+    credentials: RunCredentials,
+    options: RequestInit = {},
+  ) {
+    return this.request<AgentRun>(
+      "/v1/agent-runs/" + encodeURIComponent(id) + "/cancel",
+      {
+        ...options,
+        method: "POST",
+        headers: { ...this.runHeaders(credentials, true), ...options.headers },
+        body: "{}",
+      },
+    );
+  }
+  async *executeAgentRun(
+    id: string,
+    approval: { approved: true; planHash: string },
+    credentials: RunCredentials,
+    signal?: AbortSignal,
+  ): AsyncGenerator<AgentRunEvent> {
+    const response = await this.fetcher(
+      this.baseUrl.replace(/\/$/, "") +
+        "/v1/agent-runs/" +
+        encodeURIComponent(id) +
+        "/execute",
+      {
+        method: "POST",
+        headers: this.runHeaders(credentials, true),
+        body: JSON.stringify(approval),
+        signal: AbortSignal.any([
+          ...(signal ? [signal] : []),
+          AbortSignal.timeout(50000),
+        ]),
+      },
+    );
+    if (!response.ok)
+      throw Error(
+        (await response.json()).error?.message || "Task execution failed",
+      );
+    const reader = response.body?.getReader();
+    if (!reader) throw Error("Task stream missing");
+    const decoder = new TextDecoder();
+    let buffer = "";
+    try {
+      while (true) {
+        const part = await reader.read();
+        if (part.done) break;
+        buffer += decoder.decode(part.value, { stream: true });
+        if (buffer.length > 250000) throw Error("Task stream exceeds limit");
+        let end;
+        while ((end = buffer.indexOf("\n")) >= 0) {
+          const line = buffer.slice(0, end);
+          buffer = buffer.slice(end + 1);
+          if (line.trim()) yield JSON.parse(line) as AgentRunEvent;
+        }
+      }
+      buffer += decoder.decode();
+      if (buffer.trim()) yield JSON.parse(buffer) as AgentRunEvent;
+    } finally {
+      await reader.cancel().catch(() => {});
+      reader.releaseLock();
+    }
+  }
   constructor(
     public baseUrl = "",
     private fetcher: typeof fetch = (input, init) => fetch(input, init),
