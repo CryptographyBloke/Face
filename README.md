@@ -32,7 +32,7 @@ and display their address; Snapshot avatar signing currently uses an Ethereum/EV
 | Route / 路由 | Feature / 功能 |
 |---|---|
 | `/` | Home, wallet identity, followed/recent shortcuts / 首页、钱包身份和社区快捷入口 |
-| `/ai` | Face Copilot, six public tools, streaming AI beta / 治理助手与公开工具 |
+| `/ai` | Face Copilot, six public tools, public streaming chat / 治理助手与公开对话 |
 | `/spaces/:id/ai` | Contextual AI Insights / 社区 AI 洞察 |
 | `/spaces/:id/proposals/:hash` | Proposal research and explanation / 提案研究与解释 |
 | `/avatar` | JPG/PNG → IPFS → gasless Snapshot signature / 头像上传与签名发布 |

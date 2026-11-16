@@ -1,10 +1,11 @@
 # Wallet Face — final release candidate / 最终发布候选
 
-Updated 2026-11-16 Asia/Singapore. Production remains the independently accepted v0.5 while the complete Agent extension undergoes final acceptance.
+Updated 2026-11-16 Asia/Singapore. Public Copilot, signed Agent identity and metadata discovery are live. Production payment/spending execution remains disabled after automatic approval rejected the unconfirmed receiving address and incomplete funded-settlement acceptance. [Current deployment and actual validation](PUBLIC_AGENT_RELEASE.md).
 
 | Track | Branch / application commit | PR | Working deployment |
 | --- | --- | --- | --- |
-| v0.5 live | feature/face-ai-agent-v05 / 5d745097ddfa82a05980e40cf74c722da7398c59 | https://github.com/CryptographyBloke/Face/pull/4 (merged) | https://walletface.org/ai |
+| Public release live | feature/snapshot-inspired-ui-v04 / bbcc6511c993ac1586ff1d8df0910556043358bf | https://github.com/CryptographyBloke/Face/pull/9 (merged) | https://walletface.org/ai |
+| Prior v0.5 rollback | feature/face-ai-agent-v05 / 5d745097ddfa82a05980e40cf74c722da7398c59 | https://github.com/CryptographyBloke/Face/pull/4 (merged) | Retained Vercel deployment dpl_5UyBL32456RYrRm9GN4WtxowTvXo |
 | A — personal identity | feature/face-agent-identity-a / c9593a4e26740e54f7d71baae6d600346f54afe4 | https://github.com/CryptographyBloke/Face/pull/5 | https://walletface-p5vgkoxru-dao-vote.vercel.app/my-agents |
 | B — testnet receive | feature/face-x402-receive-b / 2d1bd5ec23867210f0b99fffdbfe65ea0c8e2a88 (evidence 40e4efc) | https://github.com/CryptographyBloke/Face/pull/6 | https://walletface-fjnvvtacc-dao-vote.vercel.app/payments |
 | C — reviewed spending | feature/face-controlled-spending-c / db81f77e803752b495dba979af379ff1e9176773 | https://github.com/CryptographyBloke/Face/pull/7 | https://walletface-2prdt0hnr-dao-vote.vercel.app/spending |
@@ -30,10 +31,10 @@ MCP/A2A metadata discovery requires profile authorization, an active association
 
 ## Final release gates / 正式发布前的实际步骤
 
-1. Authenticated browser acceptance for the complete C/D Preview. The original Edge connection became unavailable; the replacement login handoff was cancelled and its browser session is now closed. No share-link bypass or protection change was made. Resume only with an available authenticated Preview session.
+1. Public production browser checks now pass at all four required Copilot widths; signed identity/connection and disabled spending/payment screens render accurately. Export-file completion remains unverified after download automation timed out. No share-link bypass or protection change was made.
 2. One funded Base Sepolia USDC payment, explicitly approved in the payer's wallet, followed by actual chain settlement, cached delivery and repeat-retrieval acceptance. Current evidence explicitly records realSettlement=false. Amount is 0.001 test USDC. The configured Preview receiver is a generated test address; select the operator receiver before final activation.
 3. Exercise a real owner-selected remote Agent endpoint if remote ownership/discovery badges are to be activated for that Agent. Controlled fixture A2A/domain tests never become public verified claims.
-4. After gates pass, merge A→B→C→D through their reviewable PRs, apply additive migrations 005–008 to the production platform database and deploy the exact tested candidate. Production payment flags remain testnet-only; mainnet needs separate activation after testnet acceptance. Native SQLite authorization is unchanged.
+4. PRs #5–#9 are merged; additive migrations 005–008 and grants restricted to new tables/sequences are applied to the production platform database. Production deployment dpl_J6KgKFBSe23PFW5NVvti99tkzSDA serves the tested public candidate. Payments/spending are off; mainnet needs separate activation after testnet acceptance. Native SQLite authorization is unchanged.
 
 Production rollback remains dpl_GjPfmyukWFpKuzk5AYHS83YxF9vD (3f505dc3); accepted v0.5 deployment dpl_5UyBL32456RYrRm9GN4WtxowTvXo is also retained. No registry contract, paid plan, custody, subscription, commission or autonomous financial operation was added.
 
@@ -41,6 +42,6 @@ Production rollback remains dpl_GjPfmyukWFpKuzk5AYHS83YxF9vD (3f505dc3); accepte
 
 Existing free Neon project only; isolated identity/payment Preview database, separate production database, scoped runtime roles and additive migrations. Existing Vercel project/domains are preserved.
 
-Observed NewAPI acceptance usage: 107,274 provider-reported tokens across v0.5 checks; later A–D checks make no paid model calls. NewAPI channel prices are owner-managed and unavailable to this code, so monetary AI cost is not fabricated. Restricted beta caps remain five requests/day, bounded IP quota, 1M reserved tokens/day, 800 output tokens/step, four steps/six tools and 45 seconds; inspect the configured status for exact values.
+Observed NewAPI acceptance usage: 131,006 provider-reported tokens including 23,732 for the two public-release chats; A–D checks made no paid model calls. NewAPI channel prices are owner-managed and unavailable to this code, so monetary AI cost is not fabricated. Public caps are 200 requests/day, 10/IP/hour, 40M reserved tokens/day, 800 output tokens/step, four steps/six tools and 45 seconds; inspect the configured status for exact values. The owner reports a provider-side key spending cap.
 
-Server-only provider credentials already exist. Trusted ENS/Base Sepolia RPCs enable real registry reads. A–D feature flags and Preview-only verification flags are documented per release. Full paid settlement, real remote ownership, C/D browser screenshots and mainnet activation are pending inputs, not claimed as complete.
+Server-only provider credentials already exist. Trusted ENS/Base Sepolia RPCs enable real registry reads. Full funded settlement, confirmed operator receiver, real remote ownership and mainnet activation remain pending; they are not claimed as complete.

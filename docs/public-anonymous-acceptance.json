@@ -1,0 +1,43 @@
+{
+  "checkedAt": "2026-11-16T03:10:06.256536+00:00",
+  "origin": "https://walletface.org",
+  "authorizationHeaderSent": false,
+  "walletSessionSent": false,
+  "spaceId": "yam.eth",
+  "language": "en",
+  "tools": [
+    "getSpace"
+  ],
+  "evidence": [
+    {
+      "source": "snapshot",
+      "sourceUrl": "https://snapshot.box/#/yam.eth",
+      "fetchedAt": "2026-11-16T02:59:57.330Z",
+      "cutoff": 1794797989,
+      "votesScanned": 500,
+      "publicVotesIncluded": 500,
+      "privateVotesOmitted": 0,
+      "proposalsScanned": 50,
+      "votesComplete": false,
+      "proposalsComplete": false,
+      "scanLimits": {
+        "votes": 500,
+        "proposals": 50
+      },
+      "privacyPolicy": "Public governance participation from the bounded Snapshot scan. Shielded/private proposal votes are omitted.",
+      "scope": "bounded_public_governance_scan",
+      "completeness": "scan_limited"
+    }
+  ],
+  "answer": "yam.eth is the Snapshot Space \u201cYam\u201d on Ethereum (network 1); its metadata says only delegated YAM can be used to vote, with delegation available to yourself or another address. Retrieved at 2026-11-16T02:59:57.330Z. [1]",
+  "completion": {
+    "type": "done",
+    "usage": {
+      "inputTokens": 11695,
+      "outputTokens": 85,
+      "totalTokens": 11780
+    },
+    "toolCalls": 1,
+    "metered": true
+  }
+}
