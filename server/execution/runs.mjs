@@ -13,25 +13,33 @@ export const tokenHash = (value) =>
     .digest("hex");
 export class RunRepository extends ExecutionRepository {
   async create(input, service, owner, accessHash, planHash) {
-    const rows = await this.db.query(
-      "INSERT INTO face_platform.agent_runs(id,service_id,service_version,owner,access_hash,request_hash,plan_hash,plan,input,state) VALUES($1::uuid,$2,$3,$4,$5,$6,$7,$8::jsonb,$9::jsonb,'awaiting_approval') ON CONFLICT DO NOTHING RETURNING *",
+    // Separate statements in one READ COMMITTED transaction: the count snapshot
+    // is taken after acquiring the shared lock, including concurrent commits.
+    const batches = await this.db.transaction([
       [
-        input.id,
-        service.id,
-        String(service.revision),
-        owner,
-        accessHash,
-        digest(input),
-        planHash,
-        JSON.stringify(service),
-        JSON.stringify(input),
+        "SELECT pg_advisory_xact_lock(hashtextextended('face_execution_storage',0))",
       ],
-    );
+      [
+        "INSERT INTO face_platform.agent_runs(id,service_id,service_version,owner,access_hash,request_hash,plan_hash,plan,input,state) SELECT $1::uuid,$2,$3,$4,$5,$6,$7,$8::jsonb,$9::jsonb,'awaiting_approval' WHERE (SELECT count(*) FROM face_platform.agent_runs)<300 ON CONFLICT DO NOTHING RETURNING *",
+        [
+          input.id,
+          service.id,
+          String(service.revision),
+          owner,
+          accessHash,
+          digest(input),
+          planHash,
+          JSON.stringify(service),
+          JSON.stringify(input),
+        ],
+      ],
+    ]);
+    const rows = batches[1];
     if (!rows[0])
       throw new ApiError(
-        409,
-        "RUN_EXISTS",
-        "Task ID already exists; reopen the original task with its private access credential",
+        429,
+        "RUN_CAPACITY",
+        "Task ID is reserved or retained task storage is full; reopen the original task or retry after operator maintenance",
       );
     return rows[0];
   }

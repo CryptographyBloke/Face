@@ -3,6 +3,10 @@ import { writeFile } from "node:fs/promises";
 import { randomUUID } from "node:crypto";
 import { Snapshot } from "../server/snapshot.mjs";
 import { RunService, RunRepository } from "../server/execution/runs.mjs";
+import { createServer } from "node:http";
+import { createNodeHandler } from "../server/http.mjs";
+import { createResearchAgent } from "../server/execution/research-agent.mjs";
+import { executeA2a, a2aRpc } from "../server/execution/adapters.mjs";
 import { executeMcp } from "../server/execution/adapters.mjs";
 import { platformServices } from "../server/execution/catalog.mjs";
 if (process.env.FACE_EXECUTION_VERIFY_ON_BUILD !== "true") process.exit(0);
@@ -50,12 +54,56 @@ const mcp = await executeMcp(
 );
 assert.equal(mcp.structured.tool, "getSpace");
 assert.equal(mcp.structured.data.space.id, "yam.eth");
+// Actual HTTP protocol exchange against the project-controlled implementation,
+// using real PostgreSQL and Snapshot; transport override is local test wiring.
+// This does not establish independently operated external Agent ownership.
+const research = createResearchAgent({ snapshot, origin, env: process.env });
+const httpServer = createServer(createNodeHandler(research));
+await new Promise((resolve) => httpServer.listen(0, "127.0.0.1", resolve));
+let a2aResult;
+try {
+  const port = httpServer.address().port;
+  const fetcher = (_url, init) =>
+    fetch(`http://127.0.0.1:${port}/v1/research-agent/rpc`, {
+      ...init,
+      headers: { ...init.headers, "Content-Type": "application/json" },
+    });
+  const a2aService = platformServices(origin).find((s) => s.protocol === "a2a"),
+    a2aInput = {
+      ...input,
+      id: randomUUID(),
+      arguments: { spaceId: "ens.eth", periodDays: 30 },
+    };
+  a2aResult = await executeA2a(a2aService, a2aInput, { fetcher });
+  assert.equal(a2aResult.state, "completed");
+  assert.ok(a2aResult.result.text.includes("UTC interval"));
+  const reopened = await a2aRpc(
+    a2aService,
+    "GetTask",
+    { id: a2aResult.remoteTaskId },
+    { fetcher },
+  );
+  assert.equal(reopened.status.state, "TASK_STATE_COMPLETED");
+  const repeated = await executeA2a(a2aService, a2aInput, { fetcher });
+  assert.equal(repeated.remoteTaskId, a2aResult.remoteTaskId);
+  await assert.rejects(
+    executeA2a(
+      a2aService,
+      { ...a2aInput, arguments: { spaceId: "ens.eth", periodDays: 7 } },
+      { fetcher },
+    ),
+  );
+} finally {
+  await new Promise((resolve) => httpServer.close(resolve));
+}
 const report = {
   checkedAt: new Date().toISOString(),
   realPostgres: true,
   realSnapshot: true,
   realPublicMcpTool: true,
   realA2aHttp: false,
+  controlledA2aHttp: true,
+  controlledA2aPersistentReplay: true,
   independentThirdPartyOwnership: false,
   paidModelCalls: 0,
   testnetSettlementVerified: false,

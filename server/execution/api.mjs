@@ -30,6 +30,8 @@ export function createExecutionApi({
           protocols: ["internal", "mcp", "a2a"],
           categories,
           accessDays: 30,
+          retainedTaskCapacity: 300,
+          publicResearchTaskCapacity: 100,
           mainnetEnabled: false,
         });
       if (env.FACE_EXECUTION_ENABLED !== "true" && !service)

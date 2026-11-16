@@ -1,5 +1,6 @@
 import { researchArguments } from "./window.mjs";
 import { digest } from "../platform/authorization.mjs";
+import { ApiError } from "../validation.mjs";
 import { z } from "zod";
 import { randomUUID } from "node:crypto";
 import { platformDb } from "../platform/db.mjs";
@@ -127,10 +128,16 @@ export function createResearchAgent({
           .parse(data);
         const args = declaration.arguments,
           argsHash = digest(args);
-        const inserted = await current.query(
-          "INSERT INTO face_platform.public_research_tasks(id,space_id,args_hash,state) VALUES($1::uuid,$2,$3,'working') ON CONFLICT DO NOTHING RETURNING *",
-          [message.messageId, args.spaceId, argsHash],
-        );
+        const batches = await current.transaction([
+          [
+            "SELECT pg_advisory_xact_lock(hashtextextended('face_execution_storage',0))",
+          ],
+          [
+            "INSERT INTO face_platform.public_research_tasks(id,space_id,args_hash,state) SELECT $1::uuid,$2,$3,'working' WHERE (SELECT count(*) FROM face_platform.public_research_tasks)<100 ON CONFLICT DO NOTHING RETURNING *",
+            [message.messageId, args.spaceId, argsHash],
+          ],
+        ]);
+        const inserted = batches[1];
         if (!inserted[0]) {
           const r = (
             await current.query(
@@ -138,7 +145,12 @@ export function createResearchAgent({
               [message.messageId, args.spaceId, argsHash],
             )
           )[0];
-          if (!r) throw Error("Task ID conflict");
+          if (!r)
+            throw new ApiError(
+              429,
+              "RESEARCH_CAPACITY",
+              "Task ID conflicts or retained public task capacity reached",
+            );
           return Response.json({
             jsonrpc: "2.0",
             id,
@@ -198,17 +210,20 @@ export function createResearchAgent({
           },
         });
       return Response.json({ jsonrpc: "2.0", id, result: render(rows[0]) });
-    } catch {
+    } catch (error) {
       return Response.json(
         {
           jsonrpc: "2.0",
           id,
           error: {
-            code: -32602,
-            message: "Invalid or unavailable public research task",
+            code: error instanceof ApiError ? -32000 : -32602,
+            message:
+              error instanceof ApiError
+                ? error.message
+                : "Invalid or unavailable public research task",
           },
         },
-        { status: 400 },
+        { status: error instanceof ApiError ? error.status : 400 },
       );
     }
   };
